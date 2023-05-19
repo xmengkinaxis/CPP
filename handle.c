@@ -19,11 +19,12 @@ NOTE:
     - a source file which implements these APIs
     - a header file which declares all internal functions and the internal data structure for the handle
     - a source file which implements these internal functions
+* IDE: Visual Studio Code with GCC
 
 FUNCTIONAL 
 APIs for client: 
 1. create a handle
-2. lookup an object by giving a handle
+2. get an object by giving a handle
 3. delete a handle 
 
 Internal functions: 
@@ -31,41 +32,124 @@ Internal functions:
 2. associate the handle with a data object 
 3. retire/destruct/delete a handle
 4. lookup/query
-5. manage (statistic for analysis, free, inused, total, maximum)
+5. manage (statistic for analysis, used, free, etc.)
 
 NON-FUNCTIONAL 
 * performance is key
-* highly scaleble 
+* highly scalable 
 
+Tasks: 
+1. (done) define handle, data, and context
+2. (done) define APIs
+3. (done) add usages into main and run; 
+4. define the internal functions; 
+4. add the management
+5. implement the create api
+6. implement the delete api
+7. implement the get api
 */
 
 #include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <time.h>
 
+const int HANDLE_MAX = 1e5; 
 typedef int HANDLE; 
 
 // a complex data structure/object in the OS
-struct Data {
+typedef struct Data {
     // Can define something here
-    int id; // e.g.
-}; 
+    uint64_t id; // e.g.
+    int input; 
+    HANDLE myHandle; 
+} DATA; 
 
-// the context for the data structure/object in the OS
-struct Context {
-    // Can define something here
-    int threadId; // e.g.
-}; 
+typedef struct Item {
+    struct Item *prev, *next; 
+    DATA data; 
+} ITEM;
 
+// statistic information on handles 
+typedef struct HandleSummary {
+    uint32_t used; 
+    uint32_t free; 
+} HANDLE_SUMMARY;
+
+// declaration of APIs for clients: 
+HANDLE handleCreate(int input); 
+DATA handleGetData(HANDLE handle);
+void handleDelete(HANDLE handle);
+bool handleIsValid(HANDLE handle); 
+HANDLE_SUMMARY handleSummarize(); 
+
+// implementation of APIs for clients
+HANDLE handleCreate(int input) {
+    // Todo: create a handle here and associate it with the data
+    HANDLE handle = 1; 
+    assert(handleIsValid(handle)); 
+    return handle; 
+}
+
+DATA handleGetData(HANDLE handle) 
+{
+    assert(handleIsValid(handle));
+    // Todo: get the data associated with the handle
+    DATA data; 
+    return data; 
+}
+
+void handleDelete(HANDLE handle) {
+    assert(handleIsValid(handle)); 
+    // Todo: delete the handle
+    handle = -1; 
+    assert(!handleIsValid(handle));
+}
+
+bool handleIsValid(HANDLE handle) {
+    return 0 <= handle && handle < HANDLE_MAX; 
+}
+
+
+HANDLE_SUMMARY handleSummarize() {
+    HANDLE_SUMMARY summary = {.used = 0, .free = 0};
+    // Todo: get the statistic information
+    return summary; 
+}
+
+void assertState(int used, int free)
+{
+    HANDLE_SUMMARY summary = handleSummarize(); 
+    assert(summary.used == used); 
+    assert(summary.free == free);
+}
 
 /* 
 Usage examples and tests
 */
 int main() {
-    printf("Hello, World!\n");
     // assert the statistic is empty now 
+    assertState(0, 0);
+
     // create
+    srand(time(NULL)); 
+    int input = rand(); 
+    HANDLE handle = handleCreate(input);   
+    assert(handleIsValid(handle));
+    // assertState(1, 0);
+    assertState(0, 0);
+
     // look up
-    // assert one is inused now
+    DATA data = handleGetData(handle);     
+    // assert one is used now
+
     // delete
-    // assert it is empty again
+    handleDelete(handle); 
+    // assert it is empty again    
+    assertState(0, 0);
+
+    printf("Hello, World!\n");
     return 0;
 }
