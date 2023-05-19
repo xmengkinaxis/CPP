@@ -42,8 +42,8 @@ Tasks:
 1. (done) define handle, data, and context
 2. (done) define APIs
 3. (done) add usages into main and run; 
-4. define the internal functions; 
-4. add the management
+4. (done) define the internal functions; 
+4. (done) add the management
 5. implement the create api
 6. implement the delete api
 7. implement the get api
@@ -55,9 +55,14 @@ Tasks:
 #include <stdlib.h>
 #include <assert.h>
 #include <time.h>
+#include <semaphore.h>
 
-const int HANDLE_MAX = 1e5; 
+#define HANDLE_MAX 10 
+
+const int OK = 0; 
+const int NON_EXIT = -1; 
 typedef int HANDLE; 
+const int INVALID_HANDLE = -1; 
 
 // a complex data structure/object in the OS
 typedef struct Data {
@@ -78,17 +83,29 @@ typedef struct HandleSummary {
     uint32_t free; 
 } HANDLE_SUMMARY;
 
+
+/******************************************************************************
+* APIs for clients
+******************************************************************************/
+
+// declaration for internal functions
+static HANDLE createHandleAndData(int input); 
+static DATA fetchDataFromHandle(HANDLE handle);
+static int deleteHandleAndData(HANDLE handle);
+static bool isInRangeHandle(HANDLE handle);
+static bool isInUsedHandle(HANDLE handle);
+static HANDLE_SUMMARY summarizeHandles(); 
+
 // declaration of APIs for clients: 
 HANDLE handleCreate(int input); 
 DATA handleGetData(HANDLE handle);
-void handleDelete(HANDLE handle);
+int handleDelete(HANDLE handle);
 bool handleIsValid(HANDLE handle); 
 HANDLE_SUMMARY handleSummarize(); 
 
 // implementation of APIs for clients
 HANDLE handleCreate(int input) {
-    // Todo: create a handle here and associate it with the data
-    HANDLE handle = 1; 
+    HANDLE handle = createHandleAndData(input); 
     assert(handleIsValid(handle)); 
     return handle; 
 }
@@ -96,28 +113,92 @@ HANDLE handleCreate(int input) {
 DATA handleGetData(HANDLE handle) 
 {
     assert(handleIsValid(handle));
-    // Todo: get the data associated with the handle
-    DATA data; 
+    DATA data = fetchDataFromHandle(handle); 
     return data; 
 }
 
-void handleDelete(HANDLE handle) {
+int handleDelete(HANDLE handle) {
     assert(handleIsValid(handle)); 
-    // Todo: delete the handle
-    handle = -1; 
+    int code = deleteHandleAndData(handle);
     assert(!handleIsValid(handle));
+    return code; 
 }
 
 bool handleIsValid(HANDLE handle) {
-    return 0 <= handle && handle < HANDLE_MAX; 
+    return isInRangeHandle(handle) && isInUsedHandle(handle); 
 }
-
 
 HANDLE_SUMMARY handleSummarize() {
     HANDLE_SUMMARY summary = {.used = 0, .free = 0};
-    // Todo: get the statistic information
+    summary = summarizeHandles();
     return summary; 
 }
+
+/******************************************************************************
+* Internal functions
+******************************************************************************/
+static ITEM* systemHandle[HANDLE_MAX];
+static int usedCount = 0; 
+static int freeCount = 0; 
+static int nextFreeIndex = 0; 
+static sem_t handleSemaphore; 
+static const DATA dummyData; 
+static const ITEM dummyItem; 
+
+static HANDLE createHandleAndData(int input)
+{
+    sem_wait(handleSemaphore);
+    // Todo 
+    // create an item and data
+    // create a handle 
+    HANDLE handle = 0; //  INVALID_HANDLE; 
+    systemHandle[handle] = &dummyItem; 
+    // associate the handle with item
+    return handle; 
+} 
+
+static DATA fetchDataFromHandle(HANDLE handle)
+{
+    sem_wait(handleSemaphore);
+    if (!isInUsedHandle(handle)) {
+        return dummyData; 
+    }
+    return systemHandle[handle]->data;
+}
+
+static int deleteHandleAndData(HANDLE handle)
+{
+    if (!isInUsedHandle(handle)) {
+        return NON_EXIT; 
+    }
+    // Todo: 
+    // Delete the data; 
+    // Delete the handle; 
+    systemHandle[handle] = NULL; 
+    // add into the free list
+    return OK; 
+}
+
+static bool isInRangeHandle(HANDLE handle)
+{
+    return 0 <= handle && handle < HANDLE_MAX; 
+}
+
+static bool isInUsedHandle(HANDLE handle)
+{
+    return isInRangeHandle(handle) && NULL != systemHandle[handle]; 
+}
+
+static HANDLE_SUMMARY summarizeHandles()
+{
+    sem_wait(handleSemaphore);
+    HANDLE_SUMMARY summary = {.used = usedCount, .free = freeCount};
+    return summary; 
+}
+
+/******************************************************************************
+* Usage examples and tests
+******************************************************************************/
 
 void assertState(int used, int free)
 {
@@ -126,9 +207,7 @@ void assertState(int used, int free)
     assert(summary.free == free);
 }
 
-/* 
-Usage examples and tests
-*/
+
 int main() {
     // assert the statistic is empty now 
     assertState(0, 0);
