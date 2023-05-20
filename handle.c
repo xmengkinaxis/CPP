@@ -44,6 +44,7 @@ Tasks:
 3. (done) add usages into main and run; 
 4. (done) define the internal functions; 
 4. (done) add the management
+4. add singleThread and multiple thread demo
 5. implement the create api
 6. implement the delete api
 7. implement the get api
@@ -56,6 +57,7 @@ Tasks:
 #include <assert.h>
 #include <time.h>
 #include <semaphore.h>
+#include <pthread.h>
 
 #define HANDLE_MAX 10 
 
@@ -208,7 +210,8 @@ void assertState(int used, int free)
 }
 
 
-int main() {
+void singleThreadDemo() {
+    
     // assert the statistic is empty now 
     assertState(0, 0);
 
@@ -228,6 +231,48 @@ int main() {
     handleDelete(handle); 
     // assert it is empty again    
     assertState(0, 0);
+}
+
+void* threadSingleHandle(void* arg) {
+    int id = (int) arg; 
+    printf("Thread arg: %d\n", id); 
+    // Todo
+    return NULL;
+}
+
+void* threadMultipleHandles(void* arg) {
+    int id = (int) arg; 
+    printf("Thread arg: %d\n", id); 
+    // Todo
+    return NULL;
+}
+
+typedef void* (THREAD_FUNC)(void*); 
+
+int multipleThreadsDemo(THREAD_FUNC func) {
+#define THREAD_MAX 3 
+    pthread_t threads[THREAD_MAX];
+    int args[THREAD_MAX];
+    int result = 0;
+    for (int i = 0; i < THREAD_MAX; ++i) {
+        args[i] = i + 1; 
+        result = pthread_create(&threads[i], NULL, func, (void*)args[i]);
+        if (OK != result) {
+            return -1; 
+        }
+    }
+
+    for (int i = 0; i < THREAD_MAX; ++i) {
+        pthread_join(threads[i], NULL);
+    }
+    return OK; 
+}
+
+int main() {
+    singleThreadDemo(); 
+
+    multipleThreadsDemo(threadSingleHandle); 
+    multipleThreadsDemo(threadMultipleHandles);
 
     printf("Hello, World!\n");
     return 0;
