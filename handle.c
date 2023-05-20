@@ -63,9 +63,10 @@ Tasks:
 5. (done) add the management
 6. (done) add singleThread and multiple thread demo
 7. (done) implement the create api
-8. implement the delete api
+8. (done) implement the delete api
 9. (done) implement the get api
 10. add multiple thread tests
+11. improve the free list
 */
 
 #include <stdio.h>
@@ -157,6 +158,7 @@ HANDLE_SUMMARY handleSummarize() {
 /******************************************************************************
 * Internal functions
 ******************************************************************************/
+// a circular queue of all handles
 static DATA* systemHandle[HANDLE_MAX];
 
 // use semaphore for its initialization does not need a special function call
@@ -207,17 +209,20 @@ static DATA fetchDataFromHandle(HANDLE handle)
     return *(systemHandle[handle]);
 }
 
+static void addFreeHandle(HANDLE handle);
 static int deleteHandleAndData(HANDLE handle)
 {
     if (!isInUsedHandle(handle)) {
         return NON_EXIT; 
     }
-    // Todo: 
+
     // Delete the data; 
     free(systemHandle[handle]); 
     // add into the free list
+    addFreeHandle(handle);
     // Delete the handle; 
     systemHandle[handle] = NULL; 
+
     return OK; 
 }
 
@@ -238,10 +243,13 @@ static HANDLE_SUMMARY summarizeHandles()
     return summary; 
 }
 
-static bool isMostFree()
+static bool isFreeMajor()
 {
+    sem_wait(&countSemaphore);
     // return true if 75% handles are still free
-    return usedCount < (HANDLE_MAX >> 2); 
+    bool mostFree = usedCount < (HANDLE_MAX >> 2); 
+    sem_post(&countSemaphore);
+    return mostFree; 
 }
 
 static void addOneUsed() 
@@ -262,15 +270,17 @@ static void addOneFree()
     sem_post(&countSemaphore);
 }
 
+static HANDLE oneLinearSearch();
 static HANDLE getFreeHandle() 
 {
-    int linearHandle = 0;
     // first do a linear search when most are still free
-    if (atomic_load(&freeIndex) < HANDLE_MAX && isMostFree()) {
-        do {
-            linearHandle = atomic_fetch_add(&freeIndex, 1) + 1; 
-        } while (isInUsedHandle(linearHandle));
-
+    if (atomic_load(&freeIndex) < HANDLE_MAX && isFreeMajor()) {
+        int linearHandle = oneLinearSearch();
+        if (!isInRangeHandle(atomic_load(&freeIndex)) && isFreeMajor()) {
+            // try again from the index 0
+            atomic_store(&freeIndex, -1);
+            linearHandle = oneLinearSearch(); 
+        }
         if (isInRangeHandle(linearHandle)) {
             addOneUsed(); 
             return linearHandle;
@@ -279,10 +289,11 @@ static HANDLE getFreeHandle()
 
     // second search the free queue 
     HANDLE freeHandle = INVALID_HANDLE;
+    ITEM *first = NULL; 
     {
         sem_wait(&freeSemaphore);
         if (head && tail) {
-            ITEM *first = head; 
+            first = head; 
             if (head == tail) {
                 head = tail = NULL; 
             } else {
@@ -294,14 +305,45 @@ static HANDLE getFreeHandle()
         sem_post(&freeSemaphore);
         if (INVALID_HANDLE != freeHandle) {
             addOneUsed();  
+            free(first); 
         }
     }
 
-    if (HANDLE_MAX >= linearHandle && isMostFree() ) {
-        atomic_store(&freeIndex, -1);
+    return freeHandle; 
+}
+
+static HANDLE oneLinearSearch() 
+{
+    HANDLE handle = INVALID_HANDLE; 
+    do {
+        handle = atomic_fetch_add(&freeIndex, 1) + 1; 
+    } while (isInUsedHandle(handle));
+    return handle; 
+}
+
+static void addFreeHandle(HANDLE handle)
+{
+    if (isFreeMajor()) {
+        systemHandle[handle] = NULL; 
+        addOneFree();
+        return; 
     }
 
-    return freeHandle; 
+    // add it to the free queue
+    ITEM *item = (ITEM *) malloc(sizeof(ITEM));
+    item->prev = item->next = NULL; 
+    item->handle = handle; 
+    {
+        sem_wait(&freeSemaphore);
+        if (NULL == head && NULL == tail) {
+            head = tail = item; 
+        }
+        tail->next = item; 
+        item->prev = tail; 
+        tail = item; 
+        sem_post(&freeSemaphore);
+    }
+    addOneFree(); 
 }
 
 /******************************************************************************
@@ -336,8 +378,7 @@ void singleThreadDemo() {
     // delete
     handleDelete(handle); 
     // assert it is empty again  
-    // assertState(0, HANDLE_MAX);    
-    assertState(1, HANDLE_MAX - 1);
+    assertState(0, HANDLE_MAX); 
 }
 
 void* threadSingleHandle(void* arg) {
