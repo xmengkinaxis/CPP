@@ -185,8 +185,10 @@ static const ITEM dummyItem;
 
 static void initializeSystemHandles()
 {
-    systemHandles[0].prev = INVALID_HANDLE; 
-    systemHandles[HANDLE_MAX - 1].next = INVALID_HANDLE; 
+    head = 0; 
+    tail = HANDLE_MAX - 1; 
+    systemHandles[head].prev = INVALID_HANDLE; 
+    systemHandles[tail].next = INVALID_HANDLE; 
 
     for (int i = 1; i < HANDLE_MAX; ++i) {
         systemHandles[i].prev = i - 1; 
@@ -194,9 +196,8 @@ static void initializeSystemHandles()
     for (int i = 0; i < HANDLE_MAX - 1; ++i) {
         systemHandles[i].next = i + 1; 
     }
-
-    head = 0; 
-    tail = HANDLE_MAX - 1; 
+    assert(INVALID_HANDLE == systemHandles[head].prev);
+    assert(INVALID_HANDLE == systemHandles[tail].next);
 }
 
 static HANDLE fetchFreeHandle();
@@ -279,30 +280,33 @@ static void addOneFree()
 
 static HANDLE fetchFreeHandle() 
 {
-    // second search the free queue 
-    HANDLE freeHandle = INVALID_HANDLE;
+    // get one from the free queue 
+    HANDLE handle = INVALID_HANDLE;
     {
         sem_wait(&freeSemaphore);
         if (INVALID_HANDLE != head && INVALID_HANDLE != tail) {
-            freeHandle = head; 
+            handle = head; 
             if (head == tail) {
                 head = tail = INVALID_HANDLE; 
             } else {
-                head = systemHandles[freeHandle].next; 
+                head = systemHandles[handle].next; 
+                systemHandles[head].prev = INVALID_HANDLE; 
             }
-            systemHandles[freeHandle].prev = systemHandles[freeHandle].next = INVALID_HANDLE; 
+            systemHandles[handle].prev = systemHandles[handle].next = INVALID_HANDLE; 
         }
         sem_post(&freeSemaphore);
-        if (INVALID_HANDLE != freeHandle) {
+        if (INVALID_HANDLE != handle) {
             addOneUsed();  
         }
     }
 
-    return freeHandle; 
+    return handle; 
 }
 
 static void returnFreeHandle(HANDLE handle)
 {
+    assert(INVALID_HANDLE == systemHandles[handle].prev);
+    assert(INVALID_HANDLE == systemHandles[handle].next);
     // add it to the free queue
     {
         sem_wait(&freeSemaphore);
@@ -399,7 +403,7 @@ void* threadMultipleHandlesReversed(void* arg) {
 }
 
 void* threadMultipleHandlesStress(void* arg) {
-#define REQUEST_MAX 2 
+#define REQUEST_MAX 20 
     int id = (int) arg; 
     printf("Thread arg: %d\n", id);
     HANDLE handles[REQUEST_MAX];
@@ -418,10 +422,10 @@ void* threadMultipleHandlesStress(void* arg) {
     
     for (int count = REQUEST_MAX; 0 < count; ) {
         int id = rand() % REQUEST_MAX; 
-        if (NULL == handles[id]) { continue; }
+        if (INVALID_HANDLE == handles[id]) { continue; }
         printf("Thread arg: %d delete handle %d from %d counts \n", id, handles[id], count);
         handleDelete(handles[id]);
-        handles[id] = NULL;
+        handles[id] = INVALID_HANDLE;
         --count; 
     }
     return NULL;
@@ -431,7 +435,7 @@ void* threadMultipleHandlesStress(void* arg) {
 typedef void* (THREAD_FUNC)(void*); 
 
 int multipleThreadsDemo(THREAD_FUNC func) {
-#define THREAD_MAX 3 
+#define THREAD_MAX 5 
     pthread_t threads[THREAD_MAX];
     int args[THREAD_MAX];
     int result = 0;
