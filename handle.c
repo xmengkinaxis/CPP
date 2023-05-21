@@ -53,12 +53,12 @@ NOTE:
     - a source file which implements these APIs
     - a header file which declares all internal functions and the internal data structures for the handles
     - a source file which implements these internal functions
+    - a source file which demonstrates the usages and run some tests
 * Use only C library in order to make the code portable
 * IDE: Visual Studio Code with GCC
 
-
 FURTHER IMPROVEMENT
-* can use other light-weight synchronization mechanims, such mutex or spinlock instead of semaphore
+* can use other light-weight synchronization mechanims, such as spinlock instead of semaphore
 * the performance can be achieved by implementing a lock-free queue
 */
 
@@ -171,7 +171,7 @@ HANDLE tail = INVALID_HANDLE;
 
 static const DATA dummyData; 
 
-static void initializeSystemHandles()
+void initializeSystemHandles()
 {
     head = 0; 
     tail = HANDLE_MAX - 1; 
@@ -281,12 +281,12 @@ static HANDLE fetchFreeHandle()
                 head = systemHandles[handle].next; 
                 systemHandles[head].prev = INVALID_HANDLE; 
             }
-            systemHandles[handle].prev = systemHandles[handle].next = INVALID_HANDLE; 
         }
         sem_post(&freeSemaphore);
     }
 
     if (INVALID_HANDLE != handle) {
+        systemHandles[handle].prev = systemHandles[handle].next = INVALID_HANDLE; 
         addOneUsed();  
     }
 
@@ -346,8 +346,8 @@ void singleThreadDemo() {
     assertState(0, HANDLE_MAX); 
 }
 
-void* threadMultipleHandlesInorder(void* arg) {
-    int id = (int) arg; 
+void* threadMultipleHandlesForward(void* arg) {
+    intptr_t id = (intptr_t) arg; 
     printf("Thread arg: %d\n", id); 
     HANDLE handle1 = handleCreate(100); 
     HANDLE handle2 = handleCreate(200); 
@@ -361,8 +361,8 @@ void* threadMultipleHandlesInorder(void* arg) {
     return NULL;
 }
 
-void* threadMultipleHandlesDisorder(void* arg) {
-    int id = (int) arg; 
+void* threadMultipleHandlesRandom(void* arg) {
+    intptr_t id = (intptr_t) arg; 
     printf("Thread arg: %d\n", id); 
     HANDLE handle1 = handleCreate(101); 
     HANDLE handle2 = handleCreate(201); 
@@ -376,8 +376,8 @@ void* threadMultipleHandlesDisorder(void* arg) {
     return NULL;
 }
 
-void* threadMultipleHandlesReversed(void* arg) {
-    int id = (int) arg; 
+void* threadMultipleHandlesBackward(void* arg) {
+    intptr_t id = (intptr_t) arg; 
     printf("Thread arg: %d\n", id);
     HANDLE handle1 = handleCreate(102); 
     HANDLE handle2 = handleCreate(202); 
@@ -392,8 +392,8 @@ void* threadMultipleHandlesReversed(void* arg) {
 }
 
 void* threadMultipleHandlesStress(void* arg) {
-#define REQUEST_MAX 20 
-    int id = (int) arg; 
+#define REQUEST_MAX 22 
+    intptr_t id = (intptr_t) arg; 
     printf("Thread arg: %d\n", id);
     HANDLE handles[REQUEST_MAX];
     int values[REQUEST_MAX];    
@@ -423,12 +423,12 @@ void* threadMultipleHandlesStress(void* arg) {
 typedef void* (THREAD_FUNC)(void*); 
 
 int multipleThreadsDemo(THREAD_FUNC func) {
-#define THREAD_MAX 5 
+#define THREAD_MAX 6 
     pthread_t threads[THREAD_MAX];
     int args[THREAD_MAX];
     for (int i = 0; i < THREAD_MAX; ++i) {
         args[i] = i + 1; 
-        int result = pthread_create(&threads[i], NULL, func, (void*)args[i]);
+        int result = pthread_create(&threads[i], NULL, func, (void*)(intptr_t)args[i]);
         if (OK != result) {
             return -1; 
         }
@@ -448,9 +448,9 @@ int main() {
 
     singleThreadDemo(); 
 
-    multipleThreadsDemo(threadMultipleHandlesInorder);
-    multipleThreadsDemo(threadMultipleHandlesDisorder);
-    multipleThreadsDemo(threadMultipleHandlesReversed);
+    multipleThreadsDemo(threadMultipleHandlesForward);
+    multipleThreadsDemo(threadMultipleHandlesRandom);
+    multipleThreadsDemo(threadMultipleHandlesBackward);
     multipleThreadsDemo(threadMultipleHandlesStress);
     
     // assert it is empty again  
