@@ -82,8 +82,6 @@ Tasks:
 #include <pthread.h>
 #include <stdatomic.h>
 
-// define it to 11 in order to test a multiple case: 
-// three threads, each requires 4 handles
 #define HANDLE_MAX 100 
 
 const int OK = 0; 
@@ -161,8 +159,12 @@ HANDLE_SUMMARY handleSummarize() {
 /******************************************************************************
 * Internal functions
 ******************************************************************************/
+typedef struct Item {
+    HANDLE prev, next; 
+    DATA* data; 
+} ITEM;
 // a circular queue of all handles
-static DATA* systemHandle[HANDLE_MAX];
+static ITEM systemHandles[HANDLE_MAX];
 
 // use semaphore for its initialization does not need a special function call
 static sem_t countSemaphore;  
@@ -173,23 +175,35 @@ static sem_t handleSemaphore;
 
 // use a queue to hold the free handles
 // so that the access on a stale handle could be captured
-typedef struct Item {
-    struct Item *prev, *next; 
-    HANDLE handle;
-} ITEM;
 
 static sem_t freeSemaphore; 
-static ITEM* head = NULL; 
-static ITEM* tail = NULL; 
+HANDLE head = INVALID_HANDLE; 
+HANDLE tail = INVALID_HANDLE; 
 
 static const DATA dummyData; 
 static const ITEM dummyItem; 
 
-static HANDLE getFreeHandle();
+static void initializeSystemHandles()
+{
+    systemHandles[0].prev = INVALID_HANDLE; 
+    systemHandles[HANDLE_MAX - 1].next = INVALID_HANDLE; 
+
+    for (int i = 1; i < HANDLE_MAX; ++i) {
+        systemHandles[i].prev = i - 1; 
+    }
+    for (int i = 0; i < HANDLE_MAX - 1; ++i) {
+        systemHandles[i].next = i + 1; 
+    }
+
+    head = 0; 
+    tail = HANDLE_MAX - 1; 
+}
+
+static HANDLE fetchFreeHandle();
 static HANDLE createHandleAndData(int input)
 {    
-    // get a free handle     
-    HANDLE handle = getFreeHandle();
+    // fetch a free handle
+    HANDLE handle = fetchFreeHandle();
     if (INVALID_HANDLE == handle) {
         return INVALID_HANDLE; 
     }
@@ -199,7 +213,7 @@ static HANDLE createHandleAndData(int input)
     data->value = input; 
 
     // associate the handle with the data
-    systemHandle[handle] = data; 
+    systemHandles[handle].data = data; 
 
     return handle; 
 } 
@@ -209,10 +223,10 @@ static DATA fetchDataFromHandle(HANDLE handle)
     if (!isInUsedHandle(handle)) {
         return dummyData; 
     }
-    return *(systemHandle[handle]);
+    return *(systemHandles[handle].data);
 }
 
-static void addFreeHandle(HANDLE handle);
+static void returnFreeHandle(HANDLE handle);
 static int deleteHandleAndData(HANDLE handle)
 {
     if (!isInUsedHandle(handle)) {
@@ -220,11 +234,10 @@ static int deleteHandleAndData(HANDLE handle)
     }
 
     // Delete the data; 
-    free(systemHandle[handle]); 
-    // add into the free list
-    addFreeHandle(handle);
-    // Delete the handle; 
-    systemHandle[handle] = NULL; 
+    free(systemHandles[handle].data); 
+    systemHandles[handle].data = NULL; 
+    // return the handle back into the free list
+    returnFreeHandle(handle);
 
     return OK; 
 }
@@ -236,7 +249,7 @@ static bool isInRangeHandle(HANDLE handle)
 
 static bool isInUsedHandle(HANDLE handle)
 {
-    return isInRangeHandle(handle) && NULL != systemHandle[handle]; 
+    return isInRangeHandle(handle) && NULL != systemHandles[handle].data; 
 }
 
 static HANDLE_SUMMARY summarizeHandles()
@@ -244,15 +257,6 @@ static HANDLE_SUMMARY summarizeHandles()
     sem_wait(handleSemaphore);
     HANDLE_SUMMARY summary = {.used = usedCount, .free = freeCount};
     return summary; 
-}
-
-static bool isFreeMajor()
-{
-    sem_wait(&countSemaphore);
-    // return true if 75% handles are still free
-    bool mostFree = usedCount <= (HANDLE_MAX >> 2); 
-    sem_post(&countSemaphore);
-    return mostFree; 
 }
 
 static void addOneUsed() 
@@ -273,77 +277,42 @@ static void addOneFree()
     sem_post(&countSemaphore);
 }
 
-static HANDLE oneLinearSearch();
-static HANDLE getFreeHandle() 
+static HANDLE fetchFreeHandle() 
 {
-    // first do a linear search when most are still free
-    if (atomic_load(&freeIndex) < HANDLE_MAX && isFreeMajor()) {
-        int linearHandle = oneLinearSearch();
-        if (!isInRangeHandle(atomic_load(&freeIndex)) && isFreeMajor()) {
-            // try again from the index 0
-            atomic_store(&freeIndex, -1);
-            linearHandle = oneLinearSearch(); 
-        }
-        if (isInRangeHandle(linearHandle)) {
-            addOneUsed(); 
-            return linearHandle;
-        }
-    }
-
     // second search the free queue 
     HANDLE freeHandle = INVALID_HANDLE;
-    ITEM *first = NULL; 
     {
         sem_wait(&freeSemaphore);
-        if (head && tail) {
-            first = head; 
+        if (INVALID_HANDLE != head && INVALID_HANDLE != tail) {
+            freeHandle = head; 
             if (head == tail) {
-                head = tail = NULL; 
+                head = tail = INVALID_HANDLE; 
             } else {
-                head = first->next; 
+                head = systemHandles[freeHandle].next; 
             }
-            first->prev = first->next = NULL; 
-            freeHandle = first->handle;
+            systemHandles[freeHandle].prev = systemHandles[freeHandle].next = INVALID_HANDLE; 
         }
         sem_post(&freeSemaphore);
         if (INVALID_HANDLE != freeHandle) {
             addOneUsed();  
-            free(first); 
         }
     }
 
     return freeHandle; 
 }
 
-static HANDLE oneLinearSearch() 
+static void returnFreeHandle(HANDLE handle)
 {
-    HANDLE handle = INVALID_HANDLE; 
-    do {
-        handle = atomic_fetch_add(&freeIndex, 1) + 1; 
-    } while (isInUsedHandle(handle));
-    return handle; 
-}
-
-static void addFreeHandle(HANDLE handle)
-{
-    if (isFreeMajor()) {
-        systemHandle[handle] = NULL; 
-        addOneFree();
-        return; 
-    }
-
     // add it to the free queue
-    ITEM *item = (ITEM *) malloc(sizeof(ITEM));
-    item->prev = item->next = NULL; 
-    item->handle = handle; 
     {
         sem_wait(&freeSemaphore);
-        if (NULL == head && NULL == tail) {
-            head = tail = item; 
+        if (INVALID_HANDLE == head && INVALID_HANDLE == tail) {
+            head = tail = handle; 
+        } else {
+            systemHandles[tail].next = handle; 
+            systemHandles[handle].prev = tail; 
+            tail = handle; 
         }
-        tail->next = item; 
-        item->prev = tail; 
-        tail = item; 
         sem_post(&freeSemaphore);
     }
     addOneFree(); 
@@ -481,6 +450,8 @@ int multipleThreadsDemo(THREAD_FUNC func) {
 }
 
 int main() {
+    initializeSystemHandles();
+
     // assert it is empty again  
     assertState(0, HANDLE_MAX); 
 
