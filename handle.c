@@ -36,40 +36,30 @@ ASSUMPTIONS
 
 POSSIBLE MITIGATION IF SOME ABOVE ASSUMPTIONS ARE CHANGED
 1. Add the ownership for a handle to enforce the handle can be accessed by its creator, 
-or to allow its ownership be transferred to another thread
+   or to allow its ownership be transferred to another thread
 2. Need an independent thread to do garbage-collection for the handle which is created without deletion
 3. System could main a list of handles for each thread, so that it can delete all handles when 
    the thread crashes, to avoid wasting handles
 4. Can allocate the handles randomly instead of sequentially, to make a thread harder 
     to guess or fabric a handle
 5. Can encode and decode the handle instead of using an integer directly
-6. If there is an independent thread, all handles can be initialized into the free list, 
-   and there is no linear search anymore 
 
 NOTE: 
 * Need to map a handle with the type HANDLE to a data with the type Data as its internal data structure
 * The handle should be a unique key in the system which represents an association with the a specific data object
 * The handle starts from zero, increases as more are allocated, and reuses to keep compact
 * Ideally the file content should be divided into the following files
-    - a header file which declares all APIs used by clients and the handle
+    - a header file which declares all APIs used by clients
     - a source file which implements these APIs
-    - a header file which declares all internal functions and the internal data structure for the handle
+    - a header file which declares all internal functions and the internal data structures for the handles
     - a source file which implements these internal functions
+* Use only C library in order to make the code portable
 * IDE: Visual Studio Code with GCC
 
-Tasks: 
-1. (done) define handle, data, and context
-2. (done) define APIs
-3. (done) add usages into main and run; 
-4. (done) define the internal functions; 
-5. (done) add the management
-6. (done) add singleThread and multiple thread demo
-7. (done) implement the create api
-8. (done) implement the delete api
-9. (done) implement the get api
-10. (done) add multiple thread tests
-11. improve the free list: circular buffer and 
-     and when to switch from linear to free list
+
+FURTHER IMPROVEMENT
+* can use other light-weight synchronization mechanims, such mutex or spinlock instead of semaphore
+* the performance can be achieved by implementing a lock-free queue
 */
 
 #include <stdio.h>
@@ -80,13 +70,14 @@ Tasks:
 #include <time.h>
 #include <semaphore.h>
 #include <pthread.h>
-#include <stdatomic.h>
 
+// the limit for handles in the system
 #define HANDLE_MAX 100 
+
+typedef int HANDLE; 
 
 const int OK = 0; 
 const int NON_EXIT = -1; 
-typedef int HANDLE; 
 const int INVALID_HANDLE = -1; 
 
 // a complex data structure/object in the OS
@@ -96,6 +87,7 @@ typedef struct Data {
     /* e.g.
     uint64_t id; 
     HANDLE myHandle; 
+    pthread_t threadId; 
     */
 } DATA; 
 
@@ -111,10 +103,9 @@ typedef struct HandleSummary {
 ******************************************************************************/
 
 // declaration for internal functions
-static HANDLE createHandleAndData(int input); 
+static HANDLE createHandleForData(int input); 
 static DATA fetchDataFromHandle(HANDLE handle);
 static int deleteHandleAndData(HANDLE handle);
-static bool isInRangeHandle(HANDLE handle);
 static bool isInUsedHandle(HANDLE handle);
 static HANDLE_SUMMARY summarizeHandles(); 
 
@@ -127,7 +118,7 @@ HANDLE_SUMMARY handleSummarize();
 
 // implementation of APIs for clients
 HANDLE handleCreate(int input) {
-    HANDLE handle = createHandleAndData(input); 
+    HANDLE handle = createHandleForData(input); 
     assert(handleIsValid(handle)); 
     return handle; 
 }
@@ -147,7 +138,7 @@ int handleDelete(HANDLE handle) {
 }
 
 bool handleIsValid(HANDLE handle) {
-    return isInRangeHandle(handle) && isInUsedHandle(handle); 
+    return isInUsedHandle(handle); 
 }
 
 HANDLE_SUMMARY handleSummarize() {
@@ -163,25 +154,22 @@ typedef struct Item {
     HANDLE prev, next; 
     DATA* data; 
 } ITEM;
-// a circular queue of all handles
+
+// a queue of all handles
 static ITEM systemHandles[HANDLE_MAX];
 
 // use semaphore for its initialization does not need a special function call
 static sem_t countSemaphore;  
 static int usedCount = 0; 
 static int freeCount = HANDLE_MAX; 
-static atomic_int freeIndex = -1; 
-static sem_t handleSemaphore; 
 
 // use a queue to hold the free handles
 // so that the access on a stale handle could be captured
-
 static sem_t freeSemaphore; 
 HANDLE head = INVALID_HANDLE; 
 HANDLE tail = INVALID_HANDLE; 
 
 static const DATA dummyData; 
-static const ITEM dummyItem; 
 
 static void initializeSystemHandles()
 {
@@ -201,7 +189,7 @@ static void initializeSystemHandles()
 }
 
 static HANDLE fetchFreeHandle();
-static HANDLE createHandleAndData(int input)
+static HANDLE createHandleForData(int input)
 {    
     // fetch a free handle
     HANDLE handle = fetchFreeHandle();
@@ -255,8 +243,9 @@ static bool isInUsedHandle(HANDLE handle)
 
 static HANDLE_SUMMARY summarizeHandles()
 {
-    sem_wait(handleSemaphore);
+    sem_wait(countSemaphore);
     HANDLE_SUMMARY summary = {.used = usedCount, .free = freeCount};
+    sem_post(&countSemaphore);
     return summary; 
 }
 
@@ -295,9 +284,10 @@ static HANDLE fetchFreeHandle()
             systemHandles[handle].prev = systemHandles[handle].next = INVALID_HANDLE; 
         }
         sem_post(&freeSemaphore);
-        if (INVALID_HANDLE != handle) {
-            addOneUsed();  
-        }
+    }
+
+    if (INVALID_HANDLE != handle) {
+        addOneUsed();  
     }
 
     return handle; 
@@ -332,7 +322,6 @@ void assertState(int used, int free)
     assert(summary.used == used); 
     assert(summary.free == free);
 }
-
 
 void singleThreadDemo() {
     
@@ -431,17 +420,15 @@ void* threadMultipleHandlesStress(void* arg) {
     return NULL;
 }
 
-
 typedef void* (THREAD_FUNC)(void*); 
 
 int multipleThreadsDemo(THREAD_FUNC func) {
 #define THREAD_MAX 5 
     pthread_t threads[THREAD_MAX];
     int args[THREAD_MAX];
-    int result = 0;
     for (int i = 0; i < THREAD_MAX; ++i) {
         args[i] = i + 1; 
-        result = pthread_create(&threads[i], NULL, func, (void*)args[i]);
+        int result = pthread_create(&threads[i], NULL, func, (void*)args[i]);
         if (OK != result) {
             return -1; 
         }
