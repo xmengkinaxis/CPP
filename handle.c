@@ -43,6 +43,8 @@ or to allow its ownership be transferred to another thread
 4. Can allocate the handles randomly instead of sequentially, to make a thread harder 
     to guess or fabric a handle
 5. Can encode and decode the handle instead of using an integer directly
+6. If there is an independent thread, all handles can be initialized into the free list, 
+   and there is no linear search anymore 
 
 NOTE: 
 * Need to map a handle with the type HANDLE to a data with the type Data as its internal data structure
@@ -65,8 +67,9 @@ Tasks:
 7. (done) implement the create api
 8. (done) implement the delete api
 9. (done) implement the get api
-10. add multiple thread tests
-11. improve the free list
+10. (done) add multiple thread tests
+11. improve the free list: circular buffer and 
+     and when to switch from linear to free list
 */
 
 #include <stdio.h>
@@ -81,7 +84,7 @@ Tasks:
 
 // define it to 11 in order to test a multiple case: 
 // three threads, each requires 4 handles
-#define HANDLE_MAX 11 
+#define HANDLE_MAX 100 
 
 const int OK = 0; 
 const int NON_EXIT = -1; 
@@ -247,7 +250,7 @@ static bool isFreeMajor()
 {
     sem_wait(&countSemaphore);
     // return true if 75% handles are still free
-    bool mostFree = usedCount < (HANDLE_MAX >> 2); 
+    bool mostFree = usedCount <= (HANDLE_MAX >> 2); 
     sem_post(&countSemaphore);
     return mostFree; 
 }
@@ -381,42 +384,80 @@ void singleThreadDemo() {
     assertState(0, HANDLE_MAX); 
 }
 
-void* threadSingleHandle(void* arg) {
-    int id = (int) arg; 
-    printf("Thread arg: %d\n", id); 
-    // Todo
-    /*
-    HANDLE handle1 = handleCreate(1); 
-    handleDelete(1); 
-    */
-    return NULL;
-}
-
 void* threadMultipleHandlesInorder(void* arg) {
     int id = (int) arg; 
     printf("Thread arg: %d\n", id); 
-    // Todo
-    /*
-    HANDLE handle1 = handleCreate(1); 
-    HANDLE handle2 = handleCreate(2); 
-    handleDelete(1); 
-    handleDelete(2);
-    */
+    HANDLE handle1 = handleCreate(100); 
+    HANDLE handle2 = handleCreate(200); 
+    HANDLE handle3 = handleCreate(300);
+    assert(handleGetData(handle1).value == 100);
+    assert(handleGetData(handle2).value == 200);
+    assert(handleGetData(handle3).value == 300);
+    handleDelete(handle1); 
+    handleDelete(handle2);
+    handleDelete(handle3);
     return NULL;
 }
 
 void* threadMultipleHandlesDisorder(void* arg) {
     int id = (int) arg; 
     printf("Thread arg: %d\n", id); 
-    // Todo
-    /*
-    HANDLE handle1 = handleCreate(1); 
-    HANDLE handle2 = handleCreate(2); 
-    handleDelete(2);
-    handleDelete(1); 
-    */
+    HANDLE handle1 = handleCreate(101); 
+    HANDLE handle2 = handleCreate(201); 
+    HANDLE handle3 = handleCreate(301); 
+    assert(handleGetData(handle2).value == 201);
+    assert(handleGetData(handle1).value == 101);
+    assert(handleGetData(handle3).value == 301);
+    handleDelete(handle2); 
+    handleDelete(handle1);
+    handleDelete(handle3);
     return NULL;
 }
+
+void* threadMultipleHandlesReversed(void* arg) {
+    int id = (int) arg; 
+    printf("Thread arg: %d\n", id);
+    HANDLE handle1 = handleCreate(102); 
+    HANDLE handle2 = handleCreate(202); 
+    HANDLE handle3 = handleCreate(302); 
+    assert(handleGetData(handle3).value == 302);
+    assert(handleGetData(handle2).value == 202);
+    assert(handleGetData(handle1).value == 102);
+    handleDelete(handle3); 
+    handleDelete(handle2);
+    handleDelete(handle1);
+    return NULL;
+}
+
+void* threadMultipleHandlesStress(void* arg) {
+#define REQUEST_MAX 2 
+    int id = (int) arg; 
+    printf("Thread arg: %d\n", id);
+    HANDLE handles[REQUEST_MAX];
+    int values[REQUEST_MAX];    
+    for (int i = 0; i < REQUEST_MAX; ++i) {
+        handles[i] = handleCreate(100 + i); 
+        printf("Thread arg: %d creates handle %d\n", id, handles[i]);
+    }
+
+    srand(time(NULL)); 
+    for (int i = 0; i < REQUEST_MAX * 5; ++i) {
+        int id = rand() % REQUEST_MAX; 
+        assert(handleGetData(handles[id]).value == 100 + id);
+        printf("Thread arg: %d access handle %d\n", id, handles[id]);
+    }
+    
+    for (int count = REQUEST_MAX; 0 < count; ) {
+        int id = rand() % REQUEST_MAX; 
+        if (NULL == handles[id]) { continue; }
+        printf("Thread arg: %d delete handle %d from %d counts \n", id, handles[id], count);
+        handleDelete(handles[id]);
+        handles[id] = NULL;
+        --count; 
+    }
+    return NULL;
+}
+
 
 typedef void* (THREAD_FUNC)(void*); 
 
@@ -440,11 +481,18 @@ int multipleThreadsDemo(THREAD_FUNC func) {
 }
 
 int main() {
+    // assert it is empty again  
+    assertState(0, HANDLE_MAX); 
+
     singleThreadDemo(); 
 
-    multipleThreadsDemo(threadSingleHandle); 
     multipleThreadsDemo(threadMultipleHandlesInorder);
     multipleThreadsDemo(threadMultipleHandlesDisorder);
+    multipleThreadsDemo(threadMultipleHandlesReversed);
+    multipleThreadsDemo(threadMultipleHandlesStress);
+    
+    // assert it is empty again  
+    assertState(0, HANDLE_MAX); 
 
     printf("Hello, World!\n");
     return 0;
