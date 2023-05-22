@@ -1,6 +1,8 @@
+// https://leetcode.com/explore/interview/card/cheatsheets/720/resources/4723/
+// cheatsheet and code template
 #include <vector>
 #include <String> 
-#include <unorderd_map> 
+#include <unordered_map> 
 #include <stack>
 
 using namespace std; 
@@ -249,4 +251,74 @@ vector<int> fnTopK(vector<int>& arr, int k) {
 		heap.pop(); 
 	}
 	return ans; 
+}
+
+int binarySearch(vector<int>& arr, int target) {
+	int left = 0, right = arr.size() - 1; 
+	while (left <= right) {
+		int mid = left + (right - left) / 2; 
+		if (target == arr[mid])  {
+			return mid; 
+		} else if (target < arr[mid]) {
+			right = mid - 1; 
+		} else {
+			left = mid + 1; 
+		}
+	}
+	return left; 
+}
+
+int binaryLeftMost(vector<int>& arr, int target) {
+	int left = 0;
+	for (int right = arr.size(); left < right; )  {
+		auto mid = left + (right - left) / 2; 
+		if (arr[mid] >= target) {
+			right = mid; 
+		} else {
+			left = mid + 1; 
+		}
+	}
+	return left; 
+}
+
+int binaryRightMost(vector<int>& arr, int target) {
+	int left = 0;
+	for (int right = arr.size(); left < right; )  {
+		int mid = left + (right - left) / 2; 
+		if (arr[mid] > target) {
+			right = mid; 
+		} else {
+			left = mid + 1; 
+		}
+	}
+	return left; 
+}
+
+// ????
+int binaryMinimum(vector<int>& arr) {
+	int left = MINIMUM_POSSIBLE_ANSWER; 
+	int right = MAXIMUM_POSSIBLE_ANSWER; 
+	while (left <= right) {
+		auto mid = left + (right - left) / 2; 
+		if (check(mid)) {
+			right = mid - 1; 
+		} else {
+			left = mid + 1; 
+		}
+	}
+	return left; 
+}
+
+int binaryMaximum(vector<int>& arr) {
+	int left = MINIMUM_POSSIBLE_ANSWER; 
+	int right = MAXIMUM_POSSIBLE_ANSWER;
+	while (left <= right) {
+		auto mid = left + (right - left) / 2; 
+		if (check(mid)) {
+			right = mid - 1; 
+		} else {
+			left = mid + 1; 
+		}
+	}
+	return right; 
 }
