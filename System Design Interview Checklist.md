@@ -389,15 +389,15 @@ Cache Invalidation: keep the cache coherent with the source of data (e.g. databa
 strategy: cache and permanent story like disk or database, write only one or both; depend on the data and data access patterns (how data is written and read)  
 metrics: read-intensive vs write-intensive (write-write, write-reread); latency and throughput; consistency and data loss;   
 
-Cache aside: general purpose, work best for read-heavy workloads; usually write-around, use write-through or Time To Live(TTL) to invalidate cache in order to avoid the stale data; The application is responsible for reading and writing from the storage. The cache does not interact with storage directly. Application load the entry from database, add it to cache and then return it to user. Lazy loading. Only requested data is cached. 
-Read-through
-Write-through: data is written into both cache and database simultaneously. The application uses the cache as the main data store, reading and writing data to it, while the cache is responsible for reading and writing to the database synchronously. pros: fast retrieval, consistency between cache and storage, minimizes the risk of data loss; cons: higher latency for write operation; data written might never be read. 
-Write-around: data is written into the permanent storage only (bypassing the cache). pros: cache is not flooded with written operation which is not subsequently be re-read. con: higher latency for the recently written data, for cache-miss, so higher latency;  
-Write-back (write-behind): the data is written to cache alone; asynchronously write entry to the data store. pros: low-latency and high-throughput for write-intensive applications. con: risk of data loss; more complex to implement, for its asynchronously writing. 
+Cache aside: general purpose, work best for read-heavy workloads; usually write-around, use write-through or Time To Live(TTL) to invalidate cache in order to avoid the stale data; The application is responsible for reading and writing from the storage. The cache does not interact with storage directly. Application load the entry from database, add it to cache and then return it to user. Lazy loading. Only requested data is cached.   
+Read-through  
+Write-through (both): data is written into both cache and database simultaneously. The application uses the cache as the main data store, reading and writing data to it, while the cache is responsible for reading and writing to the database synchronously. pros: fast retrieval, consistency between cache and storage, minimizes the risk of data loss; cons: higher latency for write operation; data written might never be read.   
+Write-around (storage only): data is written into the permanent storage only (bypassing the cache). pros: cache is not flooded with written operation which is not subsequently be re-read. con: higher latency for the recently written data, for cache-miss, so higher latency;    
+Write-back (write-behind)(cache only): the data is written to cache alone; asynchronously write entry to the data store. pros: low-latency and high-throughput for write-intensive applications. con: risk of data loss; more complex to implement, for its asynchronously writing.   
 
 ## Scalability result ==> low-latency and fault-tolerant by replicate (deal with lower performance)
-Scalability methods—With the architecture, there are many techniques and methods which can be used in order to customize and improve the design of a system. 
-Some of the most widely used are: redundancy, partitioning, caching, indexing, load balancing, and queues.
+Scalability methods—With the architecture, there are many techniques and methods which can be used in order to customize and improve the design of a system.<br> 
+Some of the most widely used are: redundancy, partitioning, caching, indexing, load balancing, and queues.<br>
 
 ## Shard result==> high performance by destructing the load and high available, and latency-free
 
@@ -411,7 +411,7 @@ use HTTP long polling or webSocket
 (Normal/Periodical poll : have a delay on client , waste bandwidth, keep the server busy; client<-bandwidth->server)
 Push can give a lot of improvement in latencies, throughput, and performances
 
-News feed. 
+News feed.<br> 
 Pull: Pro: mobile does not waste data plan, con: not real-time/in-time, most requests will result in an empty response
 Push: need main a long poll request; Con: celebrity users who has millions of followers, the server pushes update too frequently
 Hybrid: the users who have a high number of followers to a pull-based model and only push data to those who have a few hundred/thousand follows; or the server pushes update to all the users not more than a certain frequency and letting users with a lot of updates to pull data regularly
@@ -444,14 +444,14 @@ Also provide a backup or spare functionality if needed in a crisis
 
 message queue to queue all requests, so that the system is highly available and open to updates while remaining the consistent at the same time
 
-Redundancy - describes the fact that you have more than one node/component/process in a system and it's pretty useful for handling failovers. In the case that one of your nodes fail, another node in the system can take over and carry on. Redundancy can be:
+Redundancy - describes the fact that you have more than one node/component/process in a system and it's pretty useful for handling failovers. In the case that one of your nodes fail, another node in the system can take over and carry on.<br> Redundancy can be:
 active - where all the traffic goes to all nodes at the same time
-passive - where one node receive traffic and in the case of failure, a switch will be made to another node.
+passive - where one node receive traffic and in the case of failure, a switch will be made to another node.<br>
 "Redundancy is the duplication of nodes, in case of some of them are failing"
 
-Replication - includes redundancy, but involves the copying of data from one node to another or the synchronization of state between nodes. An example of where replication is done is at the databases or MQs level that forms a cluster. Replication can be:
+Replication - includes redundancy, but involves the copying of data from one node to another or the synchronization of state between nodes. An example of where replication is done is at the databases or MQs level that forms a cluster.<br> Replication can be:
 active: each node receives each message in order to keep in sync with the rest of the nodes
-passive: this is the leader-follower model, where the leader receives all the requests and then forwards them to the followers.
+passive: this is the leader-follower model, where the leader receives all the requests and then forwards them to the followers.<br>
 "Replication is the synchronization of state between redundant nodes."
 
 Redundancy : Duplication of critical components (node, process) with the aim to achieve reliability. Redundancy helps avoid single-point failure. For instance, if we have two instances running and one of them fails then, then the system can switch over to another one.
@@ -465,12 +465,12 @@ Each server performs checkpointing periodically and dump a snapshot to all its d
 
 ## Asynchronism
 pre-render massive framework dynamic content into static HTML files and store to Amazon S3 or content delivery network. This would make website super fast(handle millions of request per sec) 
-A script would do this job and would be called by cronjob every hour. This was one way of doing asynchronism.
-If a user requests for a computation-intensive task, the front end of the website sends the job to the job queue and signals back to the user and lets the user browse the website meanwhile. 
-As soon as the frontend is signaled about “job is done”, the frontend notifies the user about it.
+A script would do this job and would be called by cronjob every hour. This was one way of doing asynchronism.<br>
+If a user requests for a computation-intensive task, the front end of the website sends the job to the job queue and signals back to the user and lets the user browse the website meanwhile.<br> 
+As soon as the frontend is signaled about “job is done”, the frontend notifies the user about it.<br>
 
 ## Extensibility 
-Our service should be designed to in a modular way with the expectation that new functionality will be added to it. 
+Our service should be designed to in a modular way with the expectation that new functionality will be added to it.<br> 
 
 Facebook System Design
 https://www.youtube.com/watch?v=hykjbT5Z0oE&t=1041s
