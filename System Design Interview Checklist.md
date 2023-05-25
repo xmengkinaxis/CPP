@@ -1,12 +1,12 @@
-#System Design Interviews checklist
+# System Design Interviews checklist
 
-#0. Time Allocation
+# 0. Time Allocation
 1. understand the problem and establish design core: ~10 minutes (3 - 10 m)
 2. Propose high-level design and get buy-in; -10 minutes (10 - 15 m)
 3. Design deep dive; 20 minutes (10 - 25 m)
 4. Wrap: 5 minutes (3 - 5 m)
 
-#NOTE: 
+# NOTE: 
 The key aspect of system design is to identify the problem area and trade off, and be able to justify a decision over another. 
 Get the skeleton in the place and then start optimizing (optimization is an evolutionary process) notch by notch;
 
@@ -14,13 +14,13 @@ Get the skeleton in the place and then start optimizing (optimization is an evol
 * Everything is a trade-off; Make points with justification
 * No single-point failure (to achieve highly reliable, no data lost)
 
-#1. Ask clarifying and high-level design Questions to scope the problem well
+# 1. Ask clarifying and high-level design Questions to scope the problem well
 what an interviewer is expecting from us, 
 	* to Gather requirements, and to scope the problem
 	* to outline use cases, to gather constraints, and to validate our assumptions
 Whenever you interact with a platform, think of the who, why, what, and how. Looking into designing the incentives for all kinds of users for them to interact with the system. 
 
-##1.1 Functional Requirements (Product Features + User Requirements)
+## 1.1 Functional Requirements (Product Features + User Requirements)
 What does the system do? 
 What is the goal?
 What are the inputs and outputs of the system?
@@ -32,7 +32,7 @@ How are they going to use it?
 What are the use cases? 
 What kind of operations does the system support?
 
-##1.2 Non-Functional Requirements (Product Properties + User Expectations) (PACELC + reliable + Scalability + Extensibility)
+## 1.2 Non-Functional Requirements (Product Properties + User Expectations) (PACELC + reliable + Scalability + Extensibility)
 CAP theory. CP or AP? PACELC (When Partition, Availability or Consistency, Else Latency or Consistency); High reliable and high scalable; 
 Reliability, Redundant, Stable, Security, Availability 100 up-time?, Simplicity vs Complexity, Maintainability, Consistency, or eventual consistency
 
@@ -74,17 +74,17 @@ To maximize system's performance: high bandwidth and high throughput.
 ### Serviceability or Manageability (simplicity): 
 is the simplicity and speed with which a a system can be repaired or maintained. The ease of diagnosing and understanding problems when they occur, ease of making updates or modifications, and how simple the system is to operate
 
-##1.3 Prioritize requirements
+## 1.3 Prioritize requirements
 Break it down, to the most important, minimal features for your system.
 
-##1.4 Design Considerations (no do, or assumption)
+## 1.4 Design Considerations (no do, or assumption)
 No user authentication; 
 get all or nothing, not a partial result; 
 fairness
 put some restriction to stop system abuse, e.g. limit the size of text or image or video
 assumption: surge in traffic
 
-#2. Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation.
+# 2. Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation.
 What are the constraints?
 
 Among which based on the read-heavy or write-heavy machine we can apply the 80–20 rule. 
@@ -95,7 +95,7 @@ If a system is write-heavy then we need to estimate the Storage requirements per
 // memory is the cache capacity in order to improve the performance, esp. for read-heavy
 // Estimation of the scale of the system, is helpful when we focus on scaling, partitioning, load balancing, and caching. 
 
-##2.1 Traffic in write/second, or read/second
+## 2.1 Traffic in write/second, or read/second
 total users; 
 DAU(Daily active users)
 active connections per minutes
@@ -107,7 +107,7 @@ Ratio: write : read ratio; generally 5 : 1
 
 How much will it grow each year?
 
-##2.2 Storage in TB or GB/year
+## 2.2 Storage in TB or GB/year
 Write: Write count * write size; e.g. 400M * 300B = 120GB/day
 	Total files/write; 
 	average file/write sizes; Limit on user input for each paste or a certain time (text amount, image size, user URL size) (not abuse)
@@ -118,19 +118,19 @@ Margin: to keep some margin, If never more than 70% or 80% of capacity; Assuming
 Replication: replication for fault tolerance; e.g. 250TB * 2 = 500TB;
 (500TB / 4T/server = 125 servers) (NOTE: too big for a single machine, so must be partitioned) (so is the cache)
 
-##2.3 Bandwidth in KB/s or MB/s
+## 2.3 Bandwidth in KB/s or MB/s
 Ingress (upload): write count per second/minute * write average size
 Egress (download, outgoing): read count per second/minute * write average size
 Bandwidth will decide how to manage traffic and balance load between servers. ??? 
 
-##2.4 Memory (cache) in GB or TB /day
+## 2.4 Memory (cache) in GB or TB /day
 80-20 rule: 20% of hot pastes generate 80% of traffic, so only cache these 20% of pastes
 20% of daily traffic and based on client's usage patterns, can adjust how many cache servers we need
 20% * read count / per day * write average size 
 
 Benefit: Low latency (real time)
 
-#3. System API design in CRUD (Create/paste/post, Read/get, Update/put, Delete)
+# 3. System API design in CRUD (Create/paste/post, Read/get, Update/put, Delete)
 The goal of the APIs is to make as much as clean & simple as possible to be simple to understand for everybody. A simple common way is making CRUDs.
 Establish the exact contract expected from the system and ensure if we haven't gotten any requirements wrong. 
 Remember to use always a key for secure authentication; throttle users based on their allocated quota.
@@ -147,13 +147,13 @@ Timestamp:
 
 Return: (JSON) a list of results matching the search query
 
-#4. Database Design
+# 4. Database Design
 Benefit: Defining the data model in the early part of the interview will clarify how data will flow between different system components. Later, it will guide for data partitioning and management. 
 Identify various system entities (primary objects), their relationship (static), how they will interact with each other (dynamic, create, extract, transform, load), and how these objects flow between different system components. 
 
 Which database system should we use? NoSQL like Cassandra or MySQL?
 
-##4.1 Database Schema or components/classes and their relationship/connection (static)
+## 4.1 Database Schema or components/classes and their relationship/connection (static)
 What to store? objects, and their relations
 Table, Relationship
 Primary Key
@@ -194,7 +194,7 @@ Indexing needs a primary key on the table with a unique value; Using one or more
 Ordered indexing (increasing or decreasing) or Hash-indexing
 In any index-based data, the partition is not allowed ???
 
-#5. High-Level Design — This is pretty much a template, you can put in front of interviewers.
+# 5. High-Level Design — This is pretty much a template, you can put in front of interviewers.
 Outline a high level design with all important components and connections, involved in the request flow from the client until the response is passed to the client. 
 Draw a block diagram with 5-6 core components of the system, which are enough to solve the actual problem from end to end.
 The candidate should identify various system entities, how they will interact with each other. how data would be flowing in the system???
@@ -214,7 +214,7 @@ Usually, a scalable system include (The Single Responsibility Principle advocate
 NOTE: 
 Application layer will process all incoming and outgoing requests. 
 
-#6. Low-Level Design - Design core components; detailed component design
+# 6. Low-Level Design - Design core components; detailed component design
 Dig deeper into details of two or three major/core components;
 Pick or ask for; The interviewers' feedback should always guide us to what specific parts need focus, elaborate on, and further discussion. 
 (self choose some core components which are critical in performance)
@@ -228,7 +228,7 @@ pull vs push
 reduce latency by prefetch/pre-calculate, caching, parallelization/Asynchronous loading
 Customer behavior can be predicted, and heavy customer requests can be pre-calculated and saved using customer proxy pre-cache.
 
-##6.1 Scale the design 
+## 6.1 Scale the design 
 purpose
 Identify, address, and mitigate bottlenecks and single point of failures using principles of scalable system design.
 1. Is there any single point of failure? a standby replica; Discuss as many bottlenecks as possible and different approaches to mitigate them
@@ -241,7 +241,7 @@ c. Partition (horizontally scale, Database sharding); How to partition to distri
 d. Replication - Define how the data will be replicated across servers
 e. Index the database/tables ???
 
-##6.2 Partition and Replication (core of a distributed system, to scale out the system)
+## 6.2 Partition and Replication (core of a distributed system, to scale out the system)
 To mitigate the single point of failure and bottleneck: 
 1. single point of failure: backup or failover (fault tolerance)
 2. bottleneck: improve load balancing and performance by creating duplicates/replication
@@ -300,16 +300,16 @@ How to map a particular piece of data to its node? How to move and minimize data
 Other consideration: evenly distribute the load, no hotspot
 
 
-#7. Optimization
+# 7. Optimization
 
-##7.1. Security and Permissions
+## 7.1. Security and Permissions
 a. Privacy ???  
 b. Security (certification and authentication)
 c. Throttle (API rate limiting) (against abusive behaviors, misbehavior, spikiness in traffic) 
 Rate Limiting is limiting the amount of operation that can be done in a limited amount of time. e.g. security ramification, performance ramification. It is a defensive measure for services, protect the system from flooding with the traffic, for denial of service (DOS)
 d. International Law (e.g. restriction on video contents)
 
-##7.2. Analytics - users behavior 
+## 7.2. Analytics - users behavior 
 Purpose: Get some insight on how users use the system 
 a. Collect information on user behaviors from where ???
 b. Analyze
@@ -318,7 +318,7 @@ d. Adjust based on the user's usage/login pattern (when and frequency)
 
 logging request and response ???
 
-##7.3 Performance monitor - system performance (telemetry)
+## 7.3 Performance monitor - system performance (telemetry)
 Purpose: Get an instant insight on how our system is doing (get an understanding of the performance of the service); address latency and throughput
 Is the visibility to system health, system performance, and general statics; gather meaningful matrix (metrics/counters) and have tools to monitor these matrix;
 a proper monitoring and logging system. 
@@ -331,9 +331,9 @@ How is the average latency?
 b. Alert when critical component fail or their performance degrade
 c. Determine if we need more load balancing (scaling), or caching, or replication, or further partitioning. 
 
-#Q&A
+# Q&A
 
-##1. How to scale web servers (reverse proxy)? -> Load Balancers & its algorithms
+## 1. How to scale web servers (reverse proxy)? -> Load Balancers & its algorithms
 LB helps to spread the traffic across a cluster of servers to improve overall responsiveness and availability of application, websites or databases, prevent a single point of failures, and keeps tracks of the status of all the resources; optimize resource usage (avoid overload and under-load of any machine); achieve maximum throughput; minimize response time
 To utilize full scalability and redundancy, try to balance the load at each layer of the system;
 faster, higher throughput, easier for administrators, predictive analytics to determine traffic bottlenecks, give actionable insights to automation and help drive business decisions.
@@ -359,7 +359,7 @@ a. performance bottleneck, if it does not have enough resources or it is not con
 b. increase the complexity (be stateless, session can be stored in a centralized data store)
 c, single point of failure
 
-##2. How to scale database? -> Caching or vertically and horizontally
+## 2. How to scale database? -> Caching or vertically and horizontally
 Cache the DB results adding an extra caching layer between the servers and the database 
 Cache will enable you to make vastly better use of the resources you already have as well as making otherwise unattainable product requirements feasible. 
 Can exist at all levels in architecture, but are often found at the level nearest to the front end, where they are implemented to return data quickly without taxing downstream levels. 
@@ -401,7 +401,7 @@ Some of the most widely used are: redundancy, partitioning, caching, indexing, l
 
 ## Shard result==> high performance by destructing the load and high available, and latency-free
 
-##3. How to prepare our assets to deliver faster across the world? -> CDNs
+## 3. How to prepare our assets to deliver faster across the world? -> CDNs
 
 ## real-time and low-latency require--> Replication of servers and server's location close to users (CDN) (PULL vs PUSH)
 real-time (VOIP, video, notification system and real-time feeds) : push (message queue), not pull(expensive in bandwidth and unnecessary load on Servers and DB, not scalable)
@@ -476,10 +476,10 @@ Facebook System Design
 https://www.youtube.com/watch?v=hykjbT5Z0oE&t=1041s
 
 ## Ranking
-a reference count, freshnessn, user location, language, personal history, demographics
+a reference count, freshness, user location, language, personal history, demographics
 
 
-## trade-off - 
+## trade-off 
 Explore competing solutions, speak to all their major tradeoffs, and make intelligent decisions about how to balance each of those tradeoffs
 
 Push vs Pull (or hybrid).e.g in notification, in CDN; (celebrity user) (online only); (not more than 10 from a single user to avoid spamming) in newsfeed 
