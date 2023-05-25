@@ -294,6 +294,30 @@ int binaryRightMost(vector<int>& arr, int target) {
 	return left; 
 }
 
+{
+	auto cmpLeftMost = [](auto lhs, auto rhs) -> bool {
+		return lhs >= rhs; 
+	};
+	auto cmpRightMost = [](auto lhs, auto rhs) -> bool {
+		return lhs > rhs; 
+	};
+	auto binarySearch = [&nums, target](auto cmp) -> int {
+		int left = 0, right = nums.size(); 
+		while (left < right) {
+			auto mid = left + (right - left) / 2; 
+			if (cmp(nums[mid], target)) {
+				right = mid; 
+			} else {
+				left = mid + 1; 
+			}
+		}
+		return left; // left finally becomes the first index which makes the lambda cmp true
+	};
+
+	auto first = binarySearch(cmpLeftMost); 
+	auto last = binarySearch(cmpRightMost) - 1; 
+}
+
 // ????
 int binaryMinimum(vector<int>& arr) {
 	int left = MINIMUM_POSSIBLE_ANSWER; 
@@ -385,7 +409,7 @@ TrieNode* buildTrie(vector<string> words) {
 // Input size VS time complexity
 n <= 10 : O(n^2 * n!) or O(4^n), backtrack or brute-force 
 n <= 20: O(2^n), backtrack or recursion 
-n <= 100: O(n^3), brute-__forceinline
+n <= 100: O(n^3), brute-force
 n <= 1,000: O(n * n)
 n <= 100,000: O(n * log n) or O(n): sort or heap; 
 hash map, two pointers, sliding windows, Monotonic stack, 
