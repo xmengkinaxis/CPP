@@ -385,9 +385,9 @@ Least Frequently Used (LFU)
 Random Replacement (RR)
 
 ### Cache strategy (Invalidation): 
-Cache Invalidation: keep the cache coherent with the source of data (e.g. database);
-strategy: cache and permanent story like disk or database, write only one or both; depend on the data and data access patterns (how data is written and read)
-metrics: read-intensive vs write-intensive (write-write, write-reread); latency and throughput; consistency and data loss; 
+Cache Invalidation: keep the cache coherent with the source of data (e.g. database);  
+strategy: cache and permanent story like disk or database, write only one or both; depend on the data and data access patterns (how data is written and read)  
+metrics: read-intensive vs write-intensive (write-write, write-reread); latency and throughput; consistency and data loss;   
 
 Cache aside: general purpose, work best for read-heavy workloads; usually write-around, use write-through or Time To Live(TTL) to invalidate cache in order to avoid the stale data; The application is responsible for reading and writing from the storage. The cache does not interact with storage directly. Application load the entry from database, add it to cache and then return it to user. Lazy loading. Only requested data is cached. 
 Read-through
