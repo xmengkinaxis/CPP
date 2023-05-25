@@ -322,3 +322,73 @@ int binaryMaximum(vector<int>& arr) {
 	}
 	return right; 
 }
+
+int backtrack(STATE curr, OTHERS) {
+	if (BASE_CASE) {
+		return 0; // modify the answer
+	}
+
+	int ans = 0; 
+	// like dfs, iterate all candidates
+	// the other difference is to modify the current state
+	// and to undo the modification
+	for (INTERATE_OVER_INPUT) {
+		// modify curr, the current state
+		ans += backtrack(curr, OTHERS); 
+		// undo the modification of the current state
+	}
+	return ans; 
+}
+
+struct TrieNode {
+	int data; 
+	unordered_map<char, TrieNode*> children; 
+	TrieNode(): data(0), children(unordered_map<char, TrieNode*>()) {}
+};
+
+TrieNode* buildTrie(vector<string> words) {
+	TrieNode* root = new TrieNode(); 
+	for (auto word : words) {
+		auto curr = root; 
+		for (auto c : word) {
+			if (curr->children.find(c) == curr->children.end()) {
+				curr->children[c] = new TrieNode(); 
+			}
+			curr = curr->children[c]; 
+			// perform something on the current TrieNode; 
+		}
+	}
+}
+
+struct TrieNode {
+	int data; 
+	unordered_map<char, TrieNode*> children; 
+	TrieNode() : data(0), children(unordered_map<char, TrieNode*>()) {}
+};
+
+TrieNode* buildTrie(vector<string> words) {
+	TrieNode* root = new TrieNode; 
+	for (auto word : words) {
+		auto curr = root; 
+		for (auto c : word) {
+			if (curr->children.find(c) == curr->children.end()) {
+				curr->children[c] = new TrieNode; 
+			}
+			curr = curr->children[c];
+			// do something here
+		}
+	}
+	return root; 
+}
+
+
+// Input size VS time complexity
+n <= 10 : O(n^2 * n!) or O(4^n), backtrack or brute-force 
+n <= 20: O(2^n), backtrack or recursion 
+n <= 100: O(n^3), brute-__forceinline
+n <= 1,000: O(n * n)
+n <= 100,000: O(n * log n) or O(n): sort or heap; 
+hash map, two pointers, sliding windows, Monotonic stack, 
+binary search, heap, or combination
+n <= 1,000,000: O(n) or O(n * logh n): hash map
+More: O(log n ) or O(1)
