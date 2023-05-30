@@ -48,10 +48,11 @@ int fnSlidingWindow(vector<int>& arr) {
 	int ans = 0; 
 	for (int left = 0, right = 0, curr = 0; right < arr.size(); ++right) {
 		// add arr[right] into curr; 
-		while (CoNDITION) {
+		while (CoNDITION && left <= right ) {
 			// remove arr[left] from curr; 
 			++left; 
 		}
+		// do something for this valid window
 	}
 	return ans; 
 }
@@ -175,16 +176,19 @@ int bfsTree(TreeNode* root) {
 
 unordered_set<int> seen; 
 int dfsGraph(vector<vector<int>>& graph) {
-	seen.insert(START_NODE); 
+	seen.insert(START_NODE); // must do insert before visiting it in order to avoid the dead loop
 	return dfsGraph(START_NODE, graph);
 }
 
 int dfsGraph(int node, vector<vector<int>>& graph) {
 	int ans = 0; 
 	// do logic for node here
-	for (int neighbor : graph[node]) {
-		if (seen.find(neighbor) = seen.end()) {
-			seen.insert(neighbor); 
+	for (int neighbor : graph[node]) { // might to validate if a neighbor is valid first		
+		if (seen.find(neighbor) = seen.end()) { // prerequisite of the atomic action: ensure the node is not visited before
+			// they are a pair of actions, inserting the node into seen and call dfs on this node.
+			// an atomic action: add into seen, and then dfs ths node
+			// AKA. the atomic action: want to visit (add into seen), and do visit (do dfs)
+			seen.insert(neighbor); // 
 			dfsGraph(neighbor, graph); 
 		}
 	}
