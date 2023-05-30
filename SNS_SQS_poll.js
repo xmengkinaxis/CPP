@@ -1,98 +1,90 @@
+/*
+try catch with retries with the exponential back-off. 
+
+0. by default, it is short polling. might no message available
+visibility timeout
+dead-letter queues 
+Amazon SQS message timers;  an initial invisibility period for a message added to a queue.
+
+1. network issues
+firewall restrictions, DNS resolution, network congestion(*)
+
+2. incorrect queue URLs, 
+double-click the queue URL, and ensure it is correct and points to the intended SQS queue; 
+
+3. insufficient permissions, 
+check IAM policies associated with the receiver's credential; 
+must have the permission to receive and delete the messages from the queues; 
+
+4. errors in the receiving code.
+get the error message and exception
+
+5. Enable logging 
+*/
+
 // Import AWS SDK
 const AWS = require('aws-sdk');
+const assert = require('assert');
+const LONGPOLL_SECONDS = 60; 
+const MAX_RETRIES = 10; 
 
-// Configure AWS SDK
-AWS.config.update({ region: 'YOUR_REGION' }); // Replace YOUR_REGION with your desired AWS region
+// Configure with the proper AWS region
+AWS.config.update({ region: 'YOUR_REGION' }); 
 
-// Create SNS and SQS instances
-const sns = new AWS.SNS();
-const sqs1 = new AWS.SQS();
-const sqs2 = new AWS.SQS();
+const originalMessage = 'Hello world';
 
 // Sender
 async function sender() {
   try {
-    const topicArn = 'YOUR_SNS_TOPIC_ARN'; // Replace YOUR_SNS_TOPIC_ARN with the ARN of your SNS topic
+    // Configure with the proper ARN of the SNS topic
+    const topicArn = 'SNS_TOPIC_ARN';
 
-    // Send packages to SNS
-    const message = 'Hello, package!'; // Replace with your package message
-    await sns.publish({ TopicArn: topicArn, Message: message }).promise();
-    console.log('Package sent to SNS.');
+    const sns = new AWS.SNS();
+    await sns.publish({ TopicArn: topicArn, Message: originalMessage }).promise();
+    console.log('message sent to SNS: ' + originalMessage);
   } catch (err) {
-    console.error('Error sending package:', err);
+    console.error('Error of sending package:', err);
   }
 }
 
 // Receivers
-async function receiver1() {
+async function receiver(sqsURL, maxRetry) {
   try {
-    const queueUrl1 = 'YOUR_SQS_QUEUE_URL_1'; // Replace YOUR_SQS_QUEUE_URL_1 with the URL of your first SQS queue
+    const sqs = new AWS.SQS();
 
-    // Poll SQS1 to receive packages
-    const { Messages } = await sqs1.receiveMessage({ QueueUrl: queueUrl1 }).promise();
+    // long-poll SQS to receive packages
+    const { Messages } = await sqs.receiveMessage({ QueueUrl: sqsURL, WaitTimeSeconds: LONGPOLL_SECONDS }).promise();
+    
     if (Messages && Messages.length > 0) {
       const message = Messages[0].Body;
-      console.log('Received package from SQS1:', message);
+      assert.strictEqual(originalMessage, message);
+      console.log('Received package from SQS:', message);
 
-      // Delete the message from SQS1
-      await sqs1.deleteMessage({ QueueUrl: queueUrl1, ReceiptHandle: Messages[0].ReceiptHandle }).promise();
+      await sqs.deleteMessage({ QueueUrl: sqsURL, ReceiptHandle: Messages[0].ReceiptHandle }).promise();
     } else {
-      console.log('No packages available in SQS1.');
+      console.log('No message available in SQS.');
     }
   } catch (err) {
-    console.error('Error receiving package from SQS1:', err);
+    console.error('Error receiving package from SQS:', err);
 
     // Implement retries with exponential backoff
-    if (shouldRetry(err)) {
-      const delay = calculateRetryDelay();
+    if (0 < maxRetries) {
+      const delay = calculateDelay(Math.abs(MAX_RETRIES - maxRetries));
       console.log(`Retrying after ${delay} ms...`);
       await delayMs(delay);
-      await receiver1(); // Retry the receiver function
+      await receiver(sqsURL, maxRetry--); // Retry the receiver function
     }
   }
 }
 
-async function receiver2() {
-  try {
-    const queueUrl2 = 'YOUR_SQS_QUEUE_URL_2'; // Replace YOUR_SQS_QUEUE_URL_2 with the URL of your second SQS queue
-
-    // Poll SQS2 to receive packages
-    const { Messages } = await sqs2.receiveMessage({ QueueUrl: queueUrl2 }).promise();
-    if (Messages && Messages.length > 0) {
-      const message = Messages[0].Body;
-      console.log('Received package from SQS2:', message);
-
-      // Delete the message from SQS2
-      await sqs2.deleteMessage({ QueueUrl: queueUrl2, ReceiptHandle: Messages[0].ReceiptHandle }).promise();
-    } else {
-      console.log('No packages available in SQS2.');
-    }
-  } catch (err) {
-    console.error('Error receiving package from SQS2:', err);
-
-    // Implement retries with exponential backoff
-    if (shouldRetry(err)) {
-      const delay = calculateRetryDelay();
-      console.log(`Retrying after ${delay} ms...`);
-      await delayMs(delay);
-      await receiver2(); // Retry the receiver function
-    }
-  }
-}
-
-// Retry condition
-function shouldRetry(err) {
-  // Add specific error conditions to check for retry
-  // For example, you can check for network errors or specific AWS SDK errors
-  // You can also set a maximum retry count and check if it has been reached
-  return true;
-}
-
-// Calculate retry delay
-function calculateRetryDelay() {
-  // Implement exponential backoff algorithm to calculate the delay
-  // You can increase the delay exponentially with each retry attempt
-  return 1000; // Replace with your own logic
+// Calculate the retry delay by using an exponential back-off algorithm 
+function calculateDelay(retryCount) {
+  const base = 1000; 
+  const max = 100000; 
+  const factor = 2; 
+  
+  const delay = Math.min(base * Math.pow(factor, retryCount), max); 
+  return delay; 
 }
 
 // Delay function
@@ -103,5 +95,12 @@ function delayMs(ms) {
 
 // Run sender and receivers
 sender();
-receiver1();
-receiver2();
+
+const URLs = ['SQS_QUEUE_URL_1', 'SQS_QUEUE_URL_2'];
+let maxRetries = [5, 5];
+
+for (let i = 0; i < URLs; ++i) {
+  const url = URLs[i]; 
+  let maxRetry = maxRetries[i];
+  receiver(url, maxRetry);
+}
