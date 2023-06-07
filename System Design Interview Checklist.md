@@ -334,66 +334,66 @@ c. Determine if we need more load balancing (scaling), or caching, or replicatio
 # Q&A
 
 ## 1. How to scale web servers (reverse proxy)? -> Load Balancers & its algorithms
-LB helps to spread the traffic across a cluster of servers to improve overall responsiveness and availability of application, websites or databases, prevent a single point of failures, and keeps tracks of the status of all the resources; optimize resource usage (avoid overload and under-load of any machine); achieve maximum throughput; minimize response time
-To utilize full scalability and redundancy, try to balance the load at each layer of the system;
+LB helps to spread the traffic across a cluster of servers to improve overall responsiveness and availability of application, websites or databases, prevent a single point of failures, and keeps tracks of the status of all the resources; optimize resource usage (avoid overload and under-load of any machine); achieve maximum throughput; minimize response time<br>
+To utilize full scalability and redundancy, try to balance the load at each layer of the system;<br>
 faster, higher throughput, easier for administrators, predictive analytics to determine traffic bottlenecks, give actionable insights to automation and help drive business decisions.
-LB helps scale horizontally across an ever-increasing number of servers.
+LB helps scale horizontally across an ever-increasing number of servers.<br>
 
-metrics: active Connections (session affinity or sticky session), Latency, Bandwidth(throughput); random (Round Robin or Hash) 
-algorithms: static [RR, weighted, IP hash], dynamic [LCM, LRM, LBM]
-Least connection Method, LCM (servers with fewest active connections)
-Least Response Time Method, LRM (servers with lowest average response time)
-Least Bandwidth Method, LBM (lowest MB/s traffic)
-Round Robin: does not take server load into consideration, RR; can overloaded
-Weighted Round Robin Method, WRR
-IP Hash (IP Address affinity)
-Random : Simple to implement and no overhead
-By request parameters
+metrics: active Connections (session affinity or sticky session), Latency, Bandwidth(throughput); random (Round Robin or Hash) <br>
+algorithms: static [RR, weighted, IP hash], dynamic [LCM, LRM, LBM]<br>
+* Least connection Method, LCM (servers with fewest active connections)<br>
+* Least Response Time Method, LRM (servers with lowest average response time)<br>
+* Least Bandwidth Method, LBM (lowest MB/s traffic)<br>
+* Round Robin: does not take server load into consideration, RR; can overloaded<br>
+* Weighted Round Robin Method, WRR<br>
+* IP Hash (IP Address affinity)<br>
+* Random : Simple to implement and no overhead<br>
+* By request parameters<br>
 
-implemented with hardware (expensive) or with software.e.g HAProxy (layer 4 or 7), NGINX
-Layer 4 - transport layer; source and destination IP, port
-Layer 7 - application layer; header, message, cookies
+implemented with hardware (expensive) or with software.e.g HAProxy (layer 4 or 7), NGINX<br>
+Layer 4 - transport layer; source and destination IP, port<br>
+Layer 7 - application layer; header, message, cookies<br>
 
-Con: 
-a. performance bottleneck, if it does not have enough resources or it is not configured properly
-b. increase the complexity (be stateless, session can be stored in a centralized data store)
-c, single point of failure
+Con: <br>
+a. performance bottleneck, if it does not have enough resources or it is not configured properly<br>
+b. increase the complexity (be stateless, session can be stored in a centralized data store)<br>
+c, single point of failure<br>
 
 ## 2. How to scale database? -> Caching or vertically and horizontally
-Cache the DB results adding an extra caching layer between the servers and the database 
-Cache will enable you to make vastly better use of the resources you already have as well as making otherwise unattainable product requirements feasible. 
-Can exist at all levels in architecture, but are often found at the level nearest to the front end, where they are implemented to return data quickly without taxing downstream levels. 
-Disadvantages: main consistency between caches and the source of truth (database) through cache invalidation which is difficult; need to make application changes
+Cache the DB results adding an extra caching layer between the servers and the database <br>
+Cache will enable you to make vastly better use of the resources you already have as well as making otherwise unattainable product requirements feasible. <br>
+Can exist at all levels in architecture, but are often found at the level nearest to the front end, where they are implemented to return data quickly without taxing downstream levels. <br>
+Disadvantages: main consistency between caches and the source of truth (database) through cache invalidation which is difficult; need to make application changes<br>
 
-CDN (Content Delivery Network) are a kind of cache that comes into play for sites serving large amounts of static media. Can replicate content in multiple places, based on user's geographic location and the original of the webpage; security improvement, increase in content availability and redundancy, better load times, low bandwidth cost.  
-type: Push and Pull, referring the data streaming upload and download???
+CDN (Content Delivery Network) are a kind of cache that comes into play for sites serving large amounts of static media. Can replicate content in multiple places, based on user's geographic location and the original of the webpage; security improvement, increase in content availability and redundancy, better load times, low bandwidth cost.  <br>
+type: Push and Pull, referring the data streaming upload and download???<br>
 
-Caching works well with static data by saving time and increasing speed, but not well with mutable or dynamic , for need to make sure that the cached data is in sync
-What should be cached? long-running queries on databases; high-latency network requests (for external APIs), computation-intensive processing; 
+Caching works well with static data by saving time and increasing speed, but not well with mutable or dynamic , for need to make sure that the cached data is in sync<br>
+What should be cached? long-running queries on databases; high-latency network requests (for external APIs), computation-intensive processing; <br>
 
 A cache is a key-value store that reside between applications and data storage; 
 Redis is persistent while memcache scales well.
 
 
 ### Cache eviction policies:
-Policies: Order (first vs last), Recently (time: least vs most), Frequency (least), Random;
-First In First Out (FIFO)
-Last In First Out (LIFO)
-Least Recently Used (LRU)
-Most Recently Used (MRU)
-Least Frequently Used (LFU)
-Random Replacement (RR)
+Policies: Order (first vs last), Recently (time: least vs most), Frequency (least), Random;<br>
+First In First Out (FIFO)<br>
+Last In First Out (LIFO)<br>
+Least Recently Used (LRU)<br>
+Most Recently Used (MRU)<br>
+Least Frequently Used (LFU)<br>
+Random Replacement (RR)<br>
 
 ### Cache strategy (Invalidation): 
-Cache Invalidation: keep the cache coherent with the source of data (e.g. database);  
-strategy: cache and permanent story like disk or database, write only one or both; depend on the data and data access patterns (how data is written and read)  
-metrics: read-intensive vs write-intensive (write-write, write-reread); latency and throughput; consistency and data loss;   
+Cache Invalidation: keep the cache coherent with the source of data (e.g. database);  <br>
+strategy: cache and permanent story like disk or database, write only one or both; depend on the data and data access patterns (how data is written and read)  <br>
+metrics: read-intensive vs write-intensive (write-write, write-reread); latency and throughput; consistency and data loss;<br>   
 
-Cache aside: general purpose, work best for read-heavy workloads; usually write-around, use write-through or Time To Live(TTL) to invalidate cache in order to avoid the stale data; The application is responsible for reading and writing from the storage. The cache does not interact with storage directly. Application load the entry from database, add it to cache and then return it to user. Lazy loading. Only requested data is cached.   
-Read-through  
-Write-through (both): data is written into both cache and database simultaneously. The application uses the cache as the main data store, reading and writing data to it, while the cache is responsible for reading and writing to the database synchronously. pros: fast retrieval, consistency between cache and storage, minimizes the risk of data loss; cons: higher latency for write operation; data written might never be read.   
-Write-around (storage only): data is written into the permanent storage only (bypassing the cache). pros: cache is not flooded with written operation which is not subsequently be re-read. con: higher latency for the recently written data, for cache-miss, so higher latency;    
-Write-back (write-behind)(cache only): the data is written to cache alone; asynchronously write entry to the data store. pros: low-latency and high-throughput for write-intensive applications. con: risk of data loss; more complex to implement, for its asynchronously writing.   
+Cache aside: general purpose, work best for read-heavy workloads; usually write-around, use write-through or Time To Live(TTL) to invalidate cache in order to avoid the stale data; The application is responsible for reading and writing from the storage. The cache does not interact with storage directly. Application load the entry from database, add it to cache and then return it to user. Lazy loading. Only requested data is cached.<br>   
+Read-through  <br>
+Write-through (both): data is written into both cache and database simultaneously. The application uses the cache as the main data store, reading and writing data to it, while the cache is responsible for reading and writing to the database synchronously. pros: fast retrieval, consistency between cache and storage, minimizes the risk of data loss; cons: higher latency for write operation; data written might never be read.   <br>
+Write-around (storage only): data is written into the permanent storage only (bypassing the cache). pros: cache is not flooded with written operation which is not subsequently be re-read. con: higher latency for the recently written data, for cache-miss, so higher latency; <br>   
+Write-back (write-behind)(cache only): the data is written to cache alone; asynchronously write entry to the data store. pros: low-latency and high-throughput for write-intensive applications. con: risk of data loss; more complex to implement, for its asynchronously writing.  <br> 
 
 ## Scalability result ==> low-latency and fault-tolerant by replicate (deal with lower performance)
 Scalability methods—With the architecture, there are many techniques and methods which can be used in order to customize and improve the design of a system.<br> 
@@ -405,16 +405,16 @@ Some of the most widely used are: redundancy, partitioning, caching, indexing, l
 
 ## real-time and low-latency require--> Replication of servers and server's location close to users (CDN) (PULL vs PUSH)
 real-time (VOIP, video, notification system and real-time feeds) : push (message queue), not pull(expensive in bandwidth and unnecessary load on Servers and DB, not scalable)
-The process of pushing a post to all the followers is called fanout. The push fanout is called fanout-on-write, while the pull fanout is called fanout-on-load. A combination of 'push to notify and 'pull for serving' 
+The process of pushing a post to all the followers is called fanout. The push fanout is called fanout-on-write, while the pull fanout is called fanout-on-load. A combination of 'push to notify and 'pull for serving' <br>
 
-use HTTP long polling or webSocket
-(Normal/Periodical poll : have a delay on client , waste bandwidth, keep the server busy; client<-bandwidth->server)
-Push can give a lot of improvement in latencies, throughput, and performances
+use HTTP long polling or webSocket<br>
+(Normal/Periodical poll : have a delay on client , waste bandwidth, keep the server busy; client<-bandwidth->server)<br>
+Push can give a lot of improvement in latencies, throughput, and performances<br>
 
 News feed.<br> 
-Pull: Pro: mobile does not waste data plan, con: not real-time/in-time, most requests will result in an empty response
-Push: need main a long poll request; Con: celebrity users who has millions of followers, the server pushes update too frequently
-Hybrid: the users who have a high number of followers to a pull-based model and only push data to those who have a few hundred/thousand follows; or the server pushes update to all the users not more than a certain frequency and letting users with a lot of updates to pull data regularly
+Pull: Pro: mobile does not waste data plan, con: not real-time/in-time, most requests will result in an empty response<br>
+Push: need main a long poll request; Con: celebrity users who has millions of followers, the server pushes update too frequently<br>
+Hybrid: the users who have a high number of followers to a pull-based model and only push data to those who have a few hundred/thousand follows; or the server pushes update to all the users not more than a certain frequency and letting users with a lot of updates to pull data regularly<br>
 
 ### cache result==> low latency, high throughput and high available (if db server is down for a while)
 caching will enable you to make vastly better use of the resources you already have; 
@@ -445,16 +445,16 @@ Also provide a backup or spare functionality if needed in a crisis
 message queue to queue all requests, so that the system is highly available and open to updates while remaining the consistent at the same time
 
 Redundancy - describes the fact that you have more than one node/component/process in a system and it's pretty useful for handling failovers. In the case that one of your nodes fail, another node in the system can take over and carry on.<br> Redundancy can be:
-active - where all the traffic goes to all nodes at the same time
+active - where all the traffic goes to all nodes at the same time<br>
 passive - where one node receive traffic and in the case of failure, a switch will be made to another node.<br>
-"Redundancy is the duplication of nodes, in case of some of them are failing"
+"Redundancy is the duplication of nodes, in case of some of them are failing"<br>
 
 Replication - includes redundancy, but involves the copying of data from one node to another or the synchronization of state between nodes. An example of where replication is done is at the databases or MQs level that forms a cluster.<br> Replication can be:
-active: each node receives each message in order to keep in sync with the rest of the nodes
+active: each node receives each message in order to keep in sync with the rest of the nodes<br>
 passive: this is the leader-follower model, where the leader receives all the requests and then forwards them to the followers.<br>
-"Replication is the synchronization of state between redundant nodes."
+"Replication is the synchronization of state between redundant nodes."<br>
 
-Redundancy : Duplication of critical components (node, process) with the aim to achieve reliability. Redundancy helps avoid single-point failure. For instance, if we have two instances running and one of them fails then, then the system can switch over to another one.
+Redundancy : Duplication of critical components (node, process) with the aim to achieve reliability. Redundancy helps avoid single-point failure. For instance, if we have two instances running and one of them fails then, then the system can switch over to another one.<br>
 
 Replication : Sharing information to ensure consistency between redundant resources.
 
@@ -482,35 +482,35 @@ a reference count, freshness, user location, language, personal history, demogra
 ## trade-off 
 Explore competing solutions, speak to all their major tradeoffs, and make intelligent decisions about how to balance each of those tradeoffs
 
-Push vs Pull (or hybrid).e.g in notification, in CDN; (celebrity user) (online only); (not more than 10 from a single user to avoid spamming) in newsfeed 
-Pull CDN: first client request is slower. Time-To-Live
-Push CDN: full response to upload content to the servers and rewriting URLs to point to the servers
-	Traffic: heavy traffic works well with Pull CDN.  less traffic works well with Push CDN; 
-	Configuration: Pull CDN is easier to configure than Push CDN: 
-	Content Update: Sites with higher no of frequent updates work well with PUll CDN
+* Push vs Pull (or hybrid).e.g in notification, in CDN; (celebrity user) (online only); (not more than 10 from a single user to avoid spamming) in newsfeed 
+* Pull CDN: first client request is slower. Time-To-Live
+* Push CDN: full response to upload content to the servers and rewriting URLs to point to the servers
+	* Traffic: heavy traffic works well with Pull CDN.  less traffic works well with Push CDN; 
+	* Configuration: Pull CDN is easier to configure than Push CDN: 
+	* Content Update: Sites with higher no of frequent updates work well with PUll CDN
 
-Partition 
-	based on user ID or Tweet/Status ID or Hybrid or based on creation time or combination of tweet id and creation time
-		User ID; can do transaction; con: hotspot/high latency, unbalanced/uneven/non-uniform distribution, unavailability of all of the user's data;  
-		Tweet ID; dedicate two separate database instances (with a load balancer), one even-numbered IDs and the other odd-numbered, to generate auto-incrementing IDs; con: no able to do batch operation; 
-		Tweet Creation Time
-		Combination of Tweet ID and its Creation Time (Encode the creation time into Tweet Id, e.g. Epoch Second || auto incrementing sequence)				
-	range-based or hash based 
-Database: RDBM SQL vs NoSQL
-CAP Availability vs Consistency; choose based on business requirements in case of network partition
+* Partition 
+	* based on user ID or Tweet/Status ID or Hybrid or based on creation time or combination of tweet id and creation time
+		* User ID; can do transaction; con: hotspot/high latency, unbalanced/uneven/non-uniform distribution, unavailability of all of the user's data;  
+		* Tweet ID; dedicate two separate database instances (with a load balancer), one even-numbered IDs and the other odd-numbered, to generate auto-incrementing IDs; con: no able to do batch operation; 
+		* Tweet Creation Time
+		* Combination of Tweet ID and its Creation Time (Encode the creation time into Tweet Id, e.g. Epoch Second || auto incrementing sequence)				
+	* range-based or hash based 
+* Database: RDBM SQL vs NoSQL
+* CAP Availability vs Consistency; choose based on business requirements in case of network partition
 
 
 
 ## NOTE: 
-Lead the conversation; 
-Defend your design; 
-Do NOT over-design or under-design; 
+Lead the conversation; <br>
+Defend your design; <br>
+Do NOT over-design or under-design; <br>
 
-Distributed cache: Redis
-Search Index : Elastic
-Message queue : Kafka
-Databases NoSql : HBase
-Databases Relational: MySql
+Distributed cache: Redis<br>
+Search Index : Elastic<br>
+Message queue : Kafka<br>
+Databases NoSql : HBase<br>
+Databases Relational: MySql<br>
 
 ## Interview tool
 Facebook offered me three choices - Google Drawings,
