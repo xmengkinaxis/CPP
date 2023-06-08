@@ -339,8 +339,31 @@ To utilize full scalability and redundancy, try to balance the load at each laye
 faster, higher throughput, easier for administrators, predictive analytics to determine traffic bottlenecks, give actionable insights to automation and help drive business decisions.
 LB helps scale horizontally across an ever-increasing number of servers.<br>
 
-metrics: active Connections (session affinity or sticky session), Latency, Bandwidth(throughput); random (Round Robin or Hash) <br>
-algorithms: static [RR, weighted, IP hash], dynamic [LCM, LRM, LBM]<br>
+metrics: 
+* active Connections (session affinity or sticky session) <br> 
+* Latency <br>
+* Bandwidth(throughput) <br>
+* random (Round Robin or Hash) <br>
+
+algorithm categories: 
+* static vs dynamic
+	* static (simple, based on the server's configuration) [RR, weighted, IP hash] <br>
+	* dynamic (complex, but better; consider the current state and healthy of the servers) [LCM, LRM, LBM]<br>
+* stateful vs stateless
+	* stateful: complex; maintain the state of the sessions established between clients and hosting servers; share the state information among load balancers <br>
+	* stateless: faster and lightweight; use consistent hashing <br>
+* implementation 
+	* hardware (expensive): can handle concurrent users; poor availability; high cost and less flexible <br> 
+	* software.e.g HAProxy (layer 4 or 7), NGINX; flexibility, programmability, and cost-effectiveness; predictive analysis <br>
+* layers:
+	* Layer 4 - transport layer (TCP/UDP); faster; source and destination IP, port; maintain connection/session<br>
+	* Layer 7 - application layer; make application-aware forwarding decisions based on HTTP headers, URLs, message, cookies and other application-specific data like user ID; can take responsibilities like limiting user, HTTP routing, and header rewriting<br>
+* multiple tiers
+	* tier - 0 or 1: based on IP, use RR and Weighted RR
+	* tier - 2: layer 4 LB; maintain connections/sessions; consistent hashing; 
+	* tier - 3: layer 7 LB; enable scalability and provide high availability; offload TLS/SSL
+
+algorithms: 
 * Least connection Method, LCM (servers with fewest active connections)<br>
 * Least Response Time Method, LRM (servers with lowest average response time)<br>
 * Least Bandwidth Method, LBM (lowest MB/s traffic)<br>
@@ -348,11 +371,9 @@ algorithms: static [RR, weighted, IP hash], dynamic [LCM, LRM, LBM]<br>
 * Weighted Round Robin Method, WRR<br>
 * IP Hash (IP Address affinity)<br>
 * Random : Simple to implement and no overhead<br>
-* By request parameters<br>
+* By HTTP Header or URL <br>
+* By request parameters of the query string<br>
 
-implemented with hardware (expensive) or with software.e.g HAProxy (layer 4 or 7), NGINX<br>
-Layer 4 - transport layer; source and destination IP, port<br>
-Layer 7 - application layer; header, message, cookies<br>
 
 Con: <br>
 a. performance bottleneck, if it does not have enough resources or it is not configured properly<br>
