@@ -248,10 +248,20 @@ To mitigate the single point of failure and bottleneck:
 The new problem introduced by replication:
 1. consistency
 
-Replication: the duplication of critical components or functions of a system, in the form of a backup or fail-safe (for fault tolerance) or to improve actual system performance (for load balancing); make multiple copies of data and store them on different servers. sharing information must ensure consistency between redundant resources. remove the single points of failures and provide backups in a crisis. It improves the availability, durability, reliability of data across the system. It can achieve load balance and fault tolerance. e.g. Primary and secondary, primary-replica relationship
+Replication: the duplication of critical components or functions of a system, in the form of a backup or fail-safe (for fault tolerance) or to improve actual system performance (for load balancing); make multiple copies of data and store them on different servers. sharing information must ensure consistency between redundant resources. remove the single points of failures and provide backups in a crisis. It improves the availability, durability, reliability of data across the system. It can achieve load balance and fault tolerance. e.g. Primary and secondary, primary-replica relationship <br>
+refers to keeping multiple copies of the data at various nodes(preferably geographically distributed) to achieve availability, scalability, and performance; the concepts of replication and partitioning go together; comes with the complexities, due to frequent changes, consistencies, concurrent writes, and fault tolerances<br>
 1. Keeping data geographically closer to the consumers of data
 2. Tolerate failure in case some parts of the system fail.
 3. Scale the number of machines that can serve read queries.
+
+Replication types (need a trade-off between data consistency and availability) (dimension #1)
+* Synchronous: success after the primary node receive the acknowledgment from all secondary nodes; pro: all secondary nodes are update to date; con: high latency if a secondary crashed without any acknowledge
+* Asynchronous: report success after primary node updating itself; pro: the primary can continue its work even if all secondary node are down; con: written data might be lost if the primary node is down
+
+Data replication models (dimension #2)
+* Single leader or primary-secondary replication; appropriate for read-heavy and read resilient, but not for write-heavy; primary is the bottleneck and the single point of failure; 
+* Multi-leader replication; conflict when concurrent writes on the same data on the leaders; avoid conflicts, last-write-wins, or custom logic to handle conflicts
+* Peer-to-peer or leaderless replication; quorums to solve the write-write inconsistency; 
 
 Partitioning (Horizontal or Vertical): the technique to break a big Database into many smaller parts, and the process of distributing/splitting up a database/table across a set of servers. So that each database can only manage a subset of the data. It is to improve the manageability, performance, scalability, availability (fault tolerance), and load balancing of an application; access only a smaller fraction of data to run a query faster as there is less data to scan; reduce the overall response time
 Partitioning of relational data usually refers to decomposing your tables either row-wise (horizontally) or column-wise (vertically).
@@ -263,10 +273,10 @@ Pro: less read and write traffic, less replication, and more cache hit. Allow wr
 
 Method: 
 1. Horizontal partitioning (range based partitioning, Data Sharding) put different rows into different tables: Pros: statically in a predictable manner; Cons: unbalanced servers or hotspots, higher latencies, and unavailability)
-e.g. Key-based (Hash) sharding; Range-based Sharding; Directory-Based Sharding (Dynamic Sharding)(by using a lookup table if the number is fixed) 
-1.1 Hash-based Partitioning -> overloaded partition -> Consistent Hashing; Pros:evenly and randomly distribution, minimize hotspot, speed up the rebalancing process after adding or removing nodes, easier for clusters with heterogeneous machines; Cons: need to ask all and then aggregate the results
-1.2 Range, list, hash partitioning; and combined partitioning (partition, and sub-partition); (partition based on the maximum capacity of the server); Pro: static and a predictable manner; Con: unbalanced
-1.3 Directory Based Partitioning: a loosely coupled approach; the lookup/dictionary server that holds the mappings between each tuple key to its DB server. Pros: changing without an impact on the application
+e.g. Key-based (Hash) sharding; Range-based Sharding; Directory-Based Sharding (Dynamic Sharding)(by using a lookup table if the number is fixed) <br>
+	1. Hash-based Partitioning -> overloaded partition -> Consistent Hashing; Pros:evenly and randomly distribution, minimize hotspot, speed up the rebalancing process after adding or removing nodes, easier for clusters with heterogeneous machines; Cons: need to ask all and then aggregate the results
+	2. Range, list, hash partitioning; and combined partitioning (partition, and sub-partition); (partition based on the maximum capacity of the server); Pro: static and a predictable manner; Con: unbalanced
+	3. Directory Based Partitioning: a loosely coupled approach; the lookup/dictionary server that holds the mappings between each tuple key to its DB server. Pros: changing without an impact on the application
 
 Criteria: (hash, range, RR, composite)
 a. Key or Hash-based partitioning; hash some key attributes of the storing entities to the partition number; consistent hashing to create a uniform distribution/allocation
@@ -274,26 +284,26 @@ b. List partitioning; each partition is assigned a list of (key) values (sometim
 c. Round-robin partitioning
 d. Composite partitioning; any combination of the above partitioning schemes to devise a new one
 
-Rebalancing Reasons:
-a. the distribution is not uniform (not evenly distributed)[overloaded]
-b. a lot of load on a partition (hotspot)[overheated]
-Method: 
-a. Create more DB partitions; 
-b. Rebalance existing partitions
+Rebalancing Reasons: <br>
+a. the distribution is not uniform (not evenly distributed)[overloaded] <br>
+b. a lot of load on a partition (hotspot)[overheated] <br>
+Method: <br>
+a. Create more DB partitions; <br>
+b. Rebalance existing partitions <br>
 
-2. Vertical partitioning: divide data to store tables (divide table to store its columns) related to a specific feature/need in their own servers: Pro: straightforward to implement and low impact on application; Con: additional growth->further partition, joining two tables in two separate Db can cause performance and consistency issues; 
-Federation (functional partitioning) splits up databases by function, resulting in less read and write traffic to each database and therefore less replication lag; the database is smaller, easier to fit in memory and cache; write in parallel, increasing throughput.
-Con: Update application logic to determine which database to read and write; join is more complex; more hardware and additional complexity. 
+2. Vertical partitioning: manually partition; divide data to store tables (divide table to store its columns) related to a specific feature/need in their own servers: Pro: straightforward to implement and low impact on application; Con: additional growth->further partition, joining two tables in two separate Db can cause performance and consistency issues;  <br>
+Federation (functional partitioning) splits up databases by function, resulting in less read and write traffic to each database and therefore less replication lag; the database is smaller, easier to fit in memory and cache; write in parallel, increasing throughput. <br>
+Con: Update application logic to determine which database to read and write; join is more complex; more hardware and additional complexity.  <br>
 
-Problem: on a partitioned database, there are some extra constraints on the operations that can be performed, esp. operations that across multiple tables or multiple rows in the same table, but on different servers
-a. join and denormalization(data inconsistency): perform a cross-partition query on a partitioned database is not feasible;
-b. Referential integrity (application have to enforce this); enforcing data integrity constraints such as foreign keys in a partitioned database can be extremely difficult; Database does not support; application that require referential integrity on partitioned database often have to enforce it in application code; 
-c. Rebalancing: data distribution is not uniform (uneven, unbalanced, overloaded/underloaded); a lot of load on a partition (hotspot); 
+Problem: on a partitioned database, there are some extra constraints on the operations that can be performed, esp. operations that across multiple tables or multiple rows in the same table, but on different servers <br>
+a. join and denormalization(data inconsistency): perform a cross-partition query on a partitioned database is not feasible; <br>
+b. Referential integrity (application have to enforce this); enforcing data integrity constraints such as foreign keys in a partitioned database can be extremely difficult; Database does not support; application that require referential integrity on partitioned database often have to enforce it in application code; <br> 
+c. Rebalancing: data distribution is not uniform (uneven, unbalanced, overloaded/underloaded); a lot of load on a partition (hotspot); <br> 
 
-A large number of logical partitions to accommodate future data growth, vs a few physical database server. Such database server can have multiple database instances running on it. Use a configuration file to map the logical partitions to database server. So that can move partitions around easily. 
-For better performance and scalability, we can keep more shard than these just required. 
-Co-resident partitioning(on the same machine) is to reduce the size of individual indexes and reduce the amount of I/O (input/output) when updating records;
-Remote partitioning is to increase the bandwidth of access to the data by having more RAM, avoiding disk access, have more network interface and disk I/O channels available. 
+A large number of logical partitions to accommodate future data growth, vs a few physical database server. Such database server can have multiple database instances running on it. Use a configuration file to map the logical partitions to database server. So that can move partitions around easily.  <br>
+For better performance and scalability, we can keep more shard than these just required.  <br>
+Co-resident partitioning(on the same machine) is to reduce the size of individual indexes and reduce the amount of I/O (input/output) when updating records; <br>
+Remote partitioning is to increase the bandwidth of access to the data by having more RAM, avoiding disk access, have more network interface and disk I/O channels available.  <br>
 
 How to map a particular piece of data to its node? How to move and minimize data movement when adding or removing nodes? => consistent Hash. 
 
@@ -319,17 +329,18 @@ d. Adjust based on the user's usage/login pattern (when and frequency)
 logging request and response ???
 
 ## 7.3 Performance monitor - system performance (telemetry)
-Purpose: Get an instant insight on how our system is doing (get an understanding of the performance of the service); address latency and throughput
+Performance: low latency (for single request) and high throughput (most/overall requests) for the clients; <br>
+Purpose: Get an instant insight on how our system is doing (get an understanding of the performance of the service); address latency and throughput; 
 Is the visibility to system health, system performance, and general statics; gather meaningful matrix (metrics/counters) and have tools to monitor these matrix;
 a proper monitoring and logging system. 
 
-a. Collect data constantly - which component do so?
+* Collect data constantly - which component do so?
 How many are the actual daily active users? user locations, date and time of their access
 When is the daily peak?
 How is the average latency?
 
-b. Alert when critical component fail or their performance degrade
-c. Determine if we need more load balancing (scaling), or caching, or replication, or further partitioning. 
+* Alert when critical component fail or their performance degrade
+* Determine if we need more load balancing (scaling), or caching, or replication, or further partitioning. 
 
 # Q&A
 
@@ -410,11 +421,11 @@ Cache Invalidation: keep the cache coherent with the source of data (e.g. databa
 strategy: cache and permanent story like disk or database, write only one or both; depend on the data and data access patterns (how data is written and read)  <br>
 metrics: read-intensive vs write-intensive (write-write, write-reread); latency and throughput; consistency and data loss;<br>   
 
-Cache aside: general purpose, work best for read-heavy workloads; usually write-around, use write-through or Time To Live(TTL) to invalidate cache in order to avoid the stale data; The application is responsible for reading and writing from the storage. The cache does not interact with storage directly. Application load the entry from database, add it to cache and then return it to user. Lazy loading. Only requested data is cached.<br>   
-Read-through  <br>
-Write-through (both): data is written into both cache and database simultaneously. The application uses the cache as the main data store, reading and writing data to it, while the cache is responsible for reading and writing to the database synchronously. pros: fast retrieval, consistency between cache and storage, minimizes the risk of data loss; cons: higher latency for write operation; data written might never be read.   <br>
-Write-around (storage only): data is written into the permanent storage only (bypassing the cache). pros: cache is not flooded with written operation which is not subsequently be re-read. con: higher latency for the recently written data, for cache-miss, so higher latency; <br>   
-Write-back (write-behind)(cache only): the data is written to cache alone; asynchronously write entry to the data store. pros: low-latency and high-throughput for write-intensive applications. con: risk of data loss; more complex to implement, for its asynchronously writing.  <br> 
+* Cache aside: general purpose, work best for read-heavy workloads; usually write-around, use write-through or Time To Live(TTL) to invalidate cache in order to avoid the stale data; The application is responsible for reading and writing from the storage. The cache does not interact with storage directly. Application load the entry from database, add it to cache and then return it to user. Lazy loading. Only requested data is cached.<br>   
+* Read-through  <br>
+* Write-through (both): data is written into both cache and database simultaneously. The application uses the cache as the main data store, reading and writing data to it, while the cache is responsible for reading and writing to the database synchronously. pros: fast retrieval, consistency between cache and storage, minimizes the risk of data loss; cons: higher latency for write operation; data written might never be read.   <br>
+* Write-around (storage only): data is written into the permanent storage only (bypassing the cache). pros: cache is not flooded with written operation which is not subsequently be re-read. con: higher latency for the recently written data, for cache-miss, so higher latency; <br>   
+* Write-back (write-behind)(cache only): the data is written to cache alone; asynchronously write entry to the data store. pros: low-latency and high-throughput for write-intensive applications. con: risk of data loss; more complex to implement, for its asynchronously writing.  <br> 
 
 ## Scalability result ==> low-latency and fault-tolerant by replicate (deal with lower performance)
 Scalability methods—With the architecture, there are many techniques and methods which can be used in order to customize and improve the design of a system.<br> 
