@@ -313,7 +313,7 @@ static void returnFreeHandle(HANDLE handle)
 }
 
 /******************************************************************************
-* Usage examples and tests
+* Usage examples and tests for handles
 ******************************************************************************/
 
 void assertState(int used, int free)
@@ -440,7 +440,7 @@ int multipleThreadsDemo(THREAD_FUNC func) {
     return OK; 
 }
 
-int main() {
+int handleTest() {
     initializeSystemHandles();
 
     // assert it is empty again  
@@ -454,8 +454,259 @@ int main() {
     multipleThreadsDemo(threadMultipleHandlesStress);
     
     // assert it is empty again  
-    assertState(0, HANDLE_MAX); 
+    assertState(0, HANDLE_MAX);
+    
+    return 0;
+}
 
+
+/******************************************************************************
+Timers
+
+REQUIREMENT
+use this (handle) framework to manage timers – so the use cases are going to be 
+    creating/destroying timers, updating existing timers and firing timers.  
+
+The twist is that as an OS we need to fire timers by _value_ not by descriptor 
+so you’ll need to come up with a solution that 
+    allows the normal name/value key mapping ????
+    but also allows for effective searching by value as an OS needs to fire the ‘next’ timer as time moves forward
+
+ASSUMPTION
+    the granularity of timer is 1 second; 
+******************************************************************************/
+
+#include <time.h>
+#include <unistd.h>
+
+typedef void* (TIMER_CALLBACK_FUNC)(int); 
+
+typedef struct timer_type {
+    struct timer_type *prev, *next; 
+    TIMER_CALLBACK_FUNC *callBackFunc; 
+    time_t expiration; 
+    int duration; 
+    bool isPeriodic; 
+} TIMER_TYPE; 
+
+typedef struct timer_queue_type {
+    TIMER_TYPE *head, *tail; 
+} TIMER_QUEUE_TYPE;
+
+void timer_default_handler(int timerId) {
+    printf("Timer #%d expired\n", timerId);
+}
+
+#define TIMER_VECTOR_MAX 10
+TIMER_QUEUE_TYPE timerVector[TIMER_VECTOR_MAX]; 
+
+// declaration for timer functions
+void initAllTimerQueues();
+TIMER_TYPE* timerCreate(int duration, TIMER_CALLBACK_FUNC *callBackFunc, bool isPeriodic); 
+TIMER_CALLBACK_FUNC *timerSetCallBack(TIMER_TYPE *timer, TIMER_CALLBACK_FUNC *callBackFunc);
+void timerSetDuration(TIMER_TYPE *timer, int duration); 
+void timerSetPeriodic(TIMER_TYPE *timer, bool isPeriodic);  
+bool timerIsExpired(TIMER_TYPE *timer); 
+bool timerIsPeriodic(TIMER_TYPE *timer); 
+int timerGetTime(TIMER_TYPE *timer);
+int timerGetDuration(TIMER_TYPE *timer);
+void timerDelete(TIMER_TYPE *timer); 
+void timerStart(TIMER_TYPE *timer); 
+void timerStop(TIMER_TYPE *timer); 
+void timerReset(TIMER_TYPE *timer);
+
+void timerFire(); 
+
+// declaration for timer internal functions
+static void initTimerQueue(TIMER_QUEUE_TYPE* queue);
+static void timerEnqueue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer);
+static TIMER_TYPE *timerDequeue(TIMER_QUEUE_TYPE *queue);
+
+void initAllTimerQueues()
+{
+    for (int i = 0; i < TIMER_VECTOR_MAX; ++i) {
+        initTimerQueue(&timerVector[i]); 
+    }
+}
+
+static void timerAssertInactive(TIMER_TYPE *timer) {
+    assert(NULL != timer);
+    assert(NULL == timer->prev);
+    assert(NULL == timer->next);
+}
+
+TIMER_TYPE* timerCreate(int duration, TIMER_CALLBACK_FUNC* callBackFunc, bool isPeriodic) {
+    TIMER_TYPE *timer = malloc(sizeof(TIMER_TYPE)); 
+    assert(NULL != timer);
+    timer->prev = timer->next = NULL;
+    timerAssertInactive(timer); 
+
+    timer->callBackFunc = callBackFunc;
+    assert(NULL != timer->callBackFunc);
+    timer->expiration = 0; // set in timerStart
+    timer->isPeriodic = isPeriodic; 
+    timer->duration = duration; 
+    assert(0 < timer->duration); 
+
+    return timer; 
+}
+
+TIMER_CALLBACK_FUNC *timerSetCallBack(TIMER_TYPE *timer, TIMER_CALLBACK_FUNC *callBackFunc)
+{
+    timerAssertInactive(timer); 
+    assert(NULL != callBackFunc);
+    timer->callBackFunc = callBackFunc;
+}
+
+void timerSetDuration(TIMER_TYPE *timer, int duration)
+{
+    timerAssertInactive(timer); 
+    assert(0 < duration);
+    timer->duration = duration; 
+}
+
+void timerSetPeriodic(TIMER_TYPE *timer, bool isPeriodic)
+{
+    timerAssertInactive(timer); 
+    timer->isPeriodic = isPeriodic; 
+}
+  
+bool timerIsExpired(TIMER_TYPE *timer)
+{
+    assert(NULL != timer); 
+    return timer->expiration == 0;
+}
+
+bool timerIsPeriodic(TIMER_TYPE *timer)
+{
+    assert(NULL != timer); 
+    return timer->isPeriodic;
+}
+
+int timerGetTime(TIMER_TYPE *timer)
+{
+    assert(NULL != timer); 
+    return timer->expiration;
+}
+
+int timerGetDuration(TIMER_TYPE *timer)
+{
+    assert(NULL != timer); 
+    return timer->duration;
+}
+
+void timerDelete(TIMER_TYPE *timer)
+{
+    timerAssertInactive(timer); 
+    free(timer); 
+}
+
+void timerStart(TIMER_TYPE *timer)
+{
+    timerAssertInactive(timer);
+    timer->expiration = time(NULL) + timer->duration; 
+    // TODO
+    // find the proper queue
+    // enqueue
+}
+
+void timerStop(TIMER_TYPE *timer)
+{
+    // TODO
+    // find the proper queue
+    // dequeue
+    timerAssertInactive(timer); 
+}
+
+void timerReset(TIMER_TYPE *timer)
+{
+    timerStop(timer);
+    timerAssertInactive(timer); 
+    timer->expiration = time(NULL) + timer->expiration; 
+    timerStart(timer); 
+}
+
+void timerFire()
+{
+    while(true) {
+        sleep(1); 
+        for (int i = 0; i < TIMER_VECTOR_MAX; ++i) {
+            // TODO
+            //
+        }
+    }
+}
+
+
+static void initTimerQueue(TIMER_QUEUE_TYPE* queue) {
+    assert(NULL != queue); 
+    queue->head = queue->tail = NULL; 
+}
+
+static void timerEnqueue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
+    if (!queue || !timer) {
+        return; 
+    } else if (!queue->head && !queue->tail) {
+        queue->head = queue->tail = timer; 
+    } else {
+        TIMER_TYPE *prev = queue->head; 
+        for (TIMER_TYPE *curr = prev->next; curr && curr->expiration <= timer->expiration; curr = curr->next) {
+            prev = curr; 
+        }
+        timer->next = prev->next; 
+        timer->prev = prev;
+        prev->next->prev = timer; 
+        prev->next = timer; 
+        if (prev == queue->tail) {
+            queue->tail = timer; 
+        }
+    }
+}
+
+static TIMER_TYPE *timerDequeue(TIMER_QUEUE_TYPE *queue) {
+    if (!queue) {
+        return NULL; 
+    } else {
+        TIMER_TYPE *timer = queue->head; 
+        if (queue->head == queue->tail) {
+            queue->head = queue->tail = NULL;
+        } else {
+            queue->head = queue->head->next; 
+            queue->head->prev = NULL;
+        }
+        return timer;  
+    } 
+}
+
+
+
+/******************************************************************************
+* Usage examples and tests for timers
+******************************************************************************/
+void oneTimerDemo() {
+    TIMER_TYPE *timer = timerCreate(1000, timer_default_handler, false); 
+    timerStart(timer); 
+    int remains = timerGetTime(timer); 
+    timerStop(timer); 
+    timerSetCallBack(timer, timer_default_handler); 
+    timerSetPeriodic(timer, true); 
+    assert(timerIsPeriodic(timer)); 
+    timerSetDuration(timer, 2000); 
+    assert(!timerIsPeriodic(timer)); 
+    assert(!timerIsExpired(timer)); 
+    timerStart(timer); 
+    //wait
+    assert(timerIsExpired(timer)); 
+}
+
+void timerTest() {
+    oneTimerDemo(); 
+} 
+
+int main() {
+    handleTest(); 
+    timerTest(); 
+    
     printf("Hello, World!\n");
     return 0;
 }
