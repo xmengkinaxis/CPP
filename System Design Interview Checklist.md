@@ -21,22 +21,22 @@ what an interviewer is expecting from us,
 Whenever you interact with a platform, think of the who, why, what, and how. Looking into designing the incentives for all kinds of users for them to interact with the system. 
 
 ## 1.1 Functional Requirements (Product Features + User Requirements)
-What does the system do? 
-What is the goal?
-What are the inputs and outputs of the system?
-// What is the criticality of the system?
+What does the system do? <br>
+What is the goal? <br>
+What are the inputs and outputs of the system? <br>
+// What is the criticality of the system? <br>
 
-Who is going to use it? How many kinds of users are there? The categories of people. E.g.Creator, Viewer, and Advertiser. 
-Why? Their incentives to use the system. We develop the whats (incentives/procedures) and the whys (why someone would interact with that kind of content).
-How are they going to use it? 
-What are the use cases? 
-What kind of operations does the system support?
+Who is going to use it? How many kinds of users are there? The categories of people. E.g.Creator, Viewer, and Advertiser.  <br>
+Why? Their incentives to use the system. We develop the whats (incentives/procedures) and the whys (why someone would interact with that kind of content). <br>
+How are they going to use it?  <br>
+What are the use cases? <br>
+What kind of operations does the system support? <br>
 
 ## 1.2 Non-Functional Requirements (Product Properties + User Expectations) (PACELC + reliable + Scalability + Extensibility)
-CAP theory. CP or AP? PACELC (When Partition, Availability or Consistency, Else Latency or Consistency); High reliable and high scalable; 
-Reliability, Redundant, Stable, Security, Availability 100 up-time?, Simplicity vs Complexity, Maintainability, Consistency, or eventual consistency
+CAP theory. CP or AP? PACELC (When Partition, Availability or Consistency, Else Latency or Consistency); High reliable and high scalable;  <br>
+Reliability, Redundant, Stable, Security, Availability 100 up-time?, Simplicity vs Complexity, Maintainability, Consistency, or eventual consistency <br>
 
-Need enough resources to handle the increasing load; the system must be simple so that it is easy to scale at any point in time; performance should always be increased with scalability. 
+Need enough resources to handle the increasing load; the system must be simple so that it is easy to scale at any point in time; performance should always be increased with scalability. <br> 
 
 ### Availability: 
 the percentage of the time that a system remains operational to perform its required function in a specific period under normal conditions; if a system is reliable, it is available. However, if it is available, it is not necessarily reliable.  
@@ -78,11 +78,11 @@ is the simplicity and speed with which a a system can be repaired or maintained.
 Break it down, to the most important, minimal features for your system.
 
 ## 1.4 Design Considerations (no do, or assumption)
-No user authentication; 
-get all or nothing, not a partial result; 
-fairness
-put some restriction to stop system abuse, e.g. limit the size of text or image or video
-assumption: surge in traffic
+No user authentication or authorization; both are already completed <br>
+get all or nothing, not a partial result;  <br>
+fairness <br>
+put some restriction to stop system abuse, e.g. limit the size of text or image or video <br>
+assumption: surge in traffic <br>
 
 # 2. Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation.
 What are the constraints?
