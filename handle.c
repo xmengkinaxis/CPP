@@ -643,22 +643,30 @@ static void initTimerQueue(TIMER_QUEUE_TYPE* queue) {
     queue->head = queue->tail = NULL; 
 }
 
+// ensure the timers in the queue are sorted based on thier expirations in the ascending order
 static void timerEnqueue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
     if (!queue || !timer) {
         return; 
     } else if (!queue->head && !queue->tail) {
         queue->head = queue->tail = timer; 
     } else {
-        TIMER_TYPE *prev = queue->head; 
-        for (TIMER_TYPE *curr = prev->next; curr && curr->expiration <= timer->expiration; curr = curr->next) {
+        TIMER_TYPE *prev = NULL; 
+        for (TIMER_TYPE *curr = queue->head; curr && curr->expiration <= timer->expiration; curr = curr->next) {
             prev = curr; 
         }
-        timer->next = prev->next; 
-        timer->prev = prev;
-        prev->next->prev = timer; 
-        prev->next = timer; 
-        if (prev == queue->tail) {
-            queue->tail = timer; 
+        if (!prev) {
+            timer->next = queue->head;             
+            queue->head = timer; 
+        } else {
+            timer->next = prev->next; 
+            timer->prev = prev;
+            if (prev->next) {
+                prev->next->prev = timer; 
+                prev->next = timer; 
+            } else {
+                assert(prev == queue->tail);
+                queue->tail = timer; 
+            }
         }
     }
 }
