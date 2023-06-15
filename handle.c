@@ -481,8 +481,11 @@ ASSUMPTION
 
 typedef void (TIMER_CALLBACK_FUNC)(int); 
 
+struct timer_queue_type;
+
 typedef struct timer_type {
     struct timer_type *prev, *next; 
+    struct timer_queue_type *queue; 
     TIMER_CALLBACK_FUNC *callBackFunc; 
     time_t expiration; 
     int duration; 
@@ -490,7 +493,7 @@ typedef struct timer_type {
 } TIMER_TYPE; 
 
 typedef struct timer_queue_type {
-    TIMER_TYPE *head, *tail; 
+    TIMER_TYPE *head; 
     sem_t semaphore; 
 } TIMER_QUEUE_TYPE;
 
@@ -534,12 +537,13 @@ static void timerAssertInactive(TIMER_TYPE *timer) {
     assert(NULL != timer);
     assert(NULL == timer->prev);
     assert(NULL == timer->next);
+    assert(NULL == timer->queue);
 }
 
 TIMER_TYPE* timerCreate(int duration, TIMER_CALLBACK_FUNC* callBackFunc, bool isPeriodic) {
     TIMER_TYPE *timer = malloc(sizeof(TIMER_TYPE)); 
     assert(NULL != timer);
-    timer->prev = timer->next = NULL;
+    timer->prev = timer->next = timer->queue = NULL;
     timerAssertInactive(timer); 
 
     timer->callBackFunc = callBackFunc;
@@ -617,9 +621,14 @@ void timerStart(TIMER_TYPE *timer)
 
 void timerStop(TIMER_TYPE *timer)
 {
-    // TODO
-    // find the proper queue
-    TIMER_QUEUE_TYPE * queue = NULL; 
+    assert(timer);
+    
+    TIMER_QUEUE_TYPE * queue = timer->queue; 
+    if (!timer->queue) { 
+        timerAssertInactive(timer);
+        return; 
+    }
+
     // dequeue
     sem_wait(queue->semaphore);
     timerDequeue(queue, timer); 
@@ -629,6 +638,7 @@ void timerStop(TIMER_TYPE *timer)
 
 void timerReset(TIMER_TYPE *timer)
 {
+    // TODO
     timerStop(timer);
     timerAssertInactive(timer); 
     timer->expiration = time(NULL) + timer->expiration; 
@@ -646,61 +656,56 @@ void timerFire()
     }
 }
 
-
 static void initTimerQueue(TIMER_QUEUE_TYPE* queue) {
     assert(NULL != queue); 
-    queue->head = queue->tail = NULL; 
+    queue->head = NULL; 
 }
 
 // ensure the timers in the queue are sorted based on their expirations in the ascending order
 static void timerEnqueue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
     assert(queue && timer); 
-    if (!queue->head && !queue->tail) {
-        queue->head = queue->tail = timer; 
-    } else {
-        TIMER_TYPE *prev = NULL; 
-        for (TIMER_TYPE *curr = queue->head; curr && curr->expiration <= timer->expiration; curr = curr->next) {
-            prev = curr; 
-        }
-        if (!prev) {
-            timer->next = queue->head;
-            queue->head->prev = timer; 
-            queue->head = timer; 
-        } else {
-            timer->next = prev->next; 
-            timer->prev = prev;
-            if (prev->next) {
-                prev->next->prev = timer; 
-                prev->next = timer; 
-            } else {
-                assert(prev == queue->tail);
-                queue->tail = timer; 
-            }
-        }
+    assert(!timer->prev && !timer->next && !timer->queue);
+    
+    TIMER_TYPE *prev = NULL; 
+    for (TIMER_TYPE *curr = queue->head; curr && curr->expiration <= timer->expiration; curr = curr->next) {
+        prev = curr; 
     }
-    assert(!queue->head->prev && !queue->tail->next);
+    if (!prev) {
+        // add as the new front
+        timer->next = queue->head;
+        queue->head->prev = timer; 
+        queue->head = timer; 
+    } else {
+        // add in the middle
+        timer->next = prev->next; 
+        timer->prev = prev;
+        if (prev->next) {
+            prev->next->prev = timer; 
+            prev->next = timer; 
+        } 
+    }
+    timer->queue = queue;
+    assert(timer->prev || timer->next);
+    assert(queue->head);
 }
 
 static void timerDequeue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
-    assert(!queue || !timer);     
-    if (queue->head == timer && queue->tail == timer) {
-        queue->head = queue->tail = NULL;
+    assert(!queue || !timer);
+    assert(queue->head); 
+    assert(timer->prev || timer->next); 
+
+    if (timer->prev) {
+        timer->prev->next = timer->next; 
     } else {
-        if (timer->prev) {
-            timer->prev->next = timer->next; 
-        }
-        if (timer->next) {
-            timer->next->prev = timer->prev; 
-        }
-        if (queue->head == timer) {
-            queue->head = timer->next;
-        }
-        if (queue->tail == timer) {
-            queue->tail = timer->prev; 
-        }
-        assert(!queue->head->prev && !queue->tail->next);
+        assert(queue->head == timer);
+        queue->head = timer->next;
     }
-    timer->prev = timer->next = NULL; 
+    if (timer->next) {
+        timer->next->prev = timer->prev; 
+    }
+        
+    timer->prev = timer->next = timer->queue = NULL; 
+    assert(!queue->head || !queue->head->prev);
 }
 
 
