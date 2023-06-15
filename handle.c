@@ -534,20 +534,26 @@ void initAllTimerQueues()
 }
 
 static void timerAssertInactive(TIMER_TYPE *timer) {
-    assert(NULL != timer);
-    assert(NULL == timer->prev);
-    assert(NULL == timer->next);
-    assert(NULL == timer->queue);
+    assert(timer);
+    assert(!timer->prev && !timer->next);
+    assert(!timer->queue);
+}
+
+static void timerAssertActive(TIMER_TYPE *timer) {
+    assert(timer);
+    assert(timer->prev || timer->next);
+    assert(timer->queue);
 }
 
 TIMER_TYPE* timerCreate(int duration, TIMER_CALLBACK_FUNC* callBackFunc, bool isPeriodic) {
     TIMER_TYPE *timer = malloc(sizeof(TIMER_TYPE)); 
-    assert(NULL != timer);
-    timer->prev = timer->next = timer->queue = NULL;
+    assert(timer);
+    timer->prev = timer->next = NULL;
+    timer->queue = NULL;
     timerAssertInactive(timer); 
 
     timer->callBackFunc = callBackFunc;
-    assert(NULL != timer->callBackFunc);
+    assert(timer->callBackFunc);
     timer->expiration = 0; // set in timerStart
     timer->isPeriodic = isPeriodic; 
     timer->duration = duration; 
@@ -559,7 +565,7 @@ TIMER_TYPE* timerCreate(int duration, TIMER_CALLBACK_FUNC* callBackFunc, bool is
 TIMER_CALLBACK_FUNC *timerSetCallBack(TIMER_TYPE *timer, TIMER_CALLBACK_FUNC *callBackFunc)
 {
     timerAssertInactive(timer); 
-    assert(NULL != callBackFunc);
+    assert(callBackFunc);
     timer->callBackFunc = callBackFunc;
 }
 
@@ -578,25 +584,25 @@ void timerSetPeriodic(TIMER_TYPE *timer, bool isPeriodic)
   
 bool timerIsExpired(TIMER_TYPE *timer)
 {
-    assert(NULL != timer); 
+    assert(timer); 
     return timer->expiration == 0;
 }
 
 bool timerIsPeriodic(TIMER_TYPE *timer)
 {
-    assert(NULL != timer); 
+    assert(timer); 
     return timer->isPeriodic;
 }
 
 int timerGetTime(TIMER_TYPE *timer)
 {
-    assert(NULL != timer); 
+    assert(timer); 
     return timer->expiration;
 }
 
 int timerGetDuration(TIMER_TYPE *timer)
 {
-    assert(NULL != timer); 
+    assert(timer); 
     return timer->duration;
 }
 
@@ -625,23 +631,21 @@ void timerStop(TIMER_TYPE *timer)
     
     TIMER_QUEUE_TYPE * queue = timer->queue; 
     if (!timer->queue) { 
-        timerAssertInactive(timer);
-        return; 
+        // dequeue
+        sem_wait(queue->semaphore);
+        timerDequeue(queue, timer); 
+        sem_post(queue->semaphore);
     }
 
-    // dequeue
-    sem_wait(queue->semaphore);
-    timerDequeue(queue, timer); 
-    sem_post(queue->semaphore);
     timerAssertInactive(timer); 
 }
 
 void timerReset(TIMER_TYPE *timer)
 {
-    // TODO
+    assert(timer);
     timerStop(timer);
     timerAssertInactive(timer); 
-    timer->expiration = time(NULL) + timer->expiration; 
+    timer->expiration = time(NULL) + timer->duration; 
     timerStart(timer); 
 }
 
@@ -657,7 +661,7 @@ void timerFire()
 }
 
 static void initTimerQueue(TIMER_QUEUE_TYPE* queue) {
-    assert(NULL != queue); 
+    assert(queue); 
     queue->head = NULL; 
 }
 
