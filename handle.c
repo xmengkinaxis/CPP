@@ -420,7 +420,7 @@ void* threadMultipleHandlesStress(void* arg) {
     return NULL;
 }
 
-typedef void* (THREAD_FUNC)(void*); 
+typedef void (THREAD_FUNC)(void*); 
 
 int multipleThreadsDemo(THREAD_FUNC func) {
 #define THREAD_MAX 6 
@@ -479,7 +479,7 @@ ASSUMPTION
 #include <time.h>
 #include <unistd.h>
 
-typedef void* (TIMER_CALLBACK_FUNC)(int); 
+typedef void (TIMER_CALLBACK_FUNC)(int); 
 
 typedef struct timer_type {
     struct timer_type *prev, *next; 
@@ -491,6 +491,7 @@ typedef struct timer_type {
 
 typedef struct timer_queue_type {
     TIMER_TYPE *head, *tail; 
+    sem_t semaphore; 
 } TIMER_QUEUE_TYPE;
 
 void timer_default_handler(int timerId) {
@@ -520,7 +521,7 @@ void timerFire();
 // declaration for timer internal functions
 static void initTimerQueue(TIMER_QUEUE_TYPE* queue);
 static void timerEnqueue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer);
-static TIMER_TYPE *timerDequeue(TIMER_QUEUE_TYPE *queue);
+static void timerDequeue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer);
 
 void initAllTimerQueues()
 {
@@ -607,14 +608,22 @@ void timerStart(TIMER_TYPE *timer)
     timer->expiration = time(NULL) + timer->duration; 
     // TODO
     // find the proper queue
+    TIMER_QUEUE_TYPE * queue = NULL; 
     // enqueue
+    sem_wait(queue->semaphore);
+    timerEnqueue(queue, timer); 
+    sem_post(queue->semaphore);
 }
 
 void timerStop(TIMER_TYPE *timer)
 {
     // TODO
     // find the proper queue
+    TIMER_QUEUE_TYPE * queue = NULL; 
     // dequeue
+    sem_wait(queue->semaphore);
+    timerDequeue(queue, timer); 
+    sem_post(queue->semaphore);
     timerAssertInactive(timer); 
 }
 
@@ -629,7 +638,7 @@ void timerReset(TIMER_TYPE *timer)
 void timerFire()
 {
     while(true) {
-        sleep(1); 
+        sleep(1); // assume the resolution of the system time is one second
         for (int i = 0; i < TIMER_VECTOR_MAX; ++i) {
             // TODO
             //
@@ -643,11 +652,10 @@ static void initTimerQueue(TIMER_QUEUE_TYPE* queue) {
     queue->head = queue->tail = NULL; 
 }
 
-// ensure the timers in the queue are sorted based on thier expirations in the ascending order
+// ensure the timers in the queue are sorted based on their expirations in the ascending order
 static void timerEnqueue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
-    if (!queue || !timer) {
-        return; 
-    } else if (!queue->head && !queue->tail) {
+    assert(queue && timer); 
+    if (!queue->head && !queue->tail) {
         queue->head = queue->tail = timer; 
     } else {
         TIMER_TYPE *prev = NULL; 
@@ -655,7 +663,8 @@ static void timerEnqueue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
             prev = curr; 
         }
         if (!prev) {
-            timer->next = queue->head;             
+            timer->next = queue->head;
+            queue->head->prev = timer; 
             queue->head = timer; 
         } else {
             timer->next = prev->next; 
@@ -669,21 +678,29 @@ static void timerEnqueue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
             }
         }
     }
+    assert(!queue->head->prev && !queue->tail->next);
 }
 
-static TIMER_TYPE *timerDequeue(TIMER_QUEUE_TYPE *queue) {
-    if (!queue) {
-        return NULL; 
+static void timerDequeue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
+    assert(!queue || !timer);     
+    if (queue->head == timer && queue->tail == timer) {
+        queue->head = queue->tail = NULL;
     } else {
-        TIMER_TYPE *timer = queue->head; 
-        if (queue->head == queue->tail) {
-            queue->head = queue->tail = NULL;
-        } else {
-            queue->head = queue->head->next; 
-            queue->head->prev = NULL;
+        if (timer->prev) {
+            timer->prev->next = timer->next; 
         }
-        return timer;  
-    } 
+        if (timer->next) {
+            timer->next->prev = timer->prev; 
+        }
+        if (queue->head == timer) {
+            queue->head = timer->next;
+        }
+        if (queue->tail == timer) {
+            queue->tail = timer->prev; 
+        }
+        assert(!queue->head->prev && !queue->tail->next);
+    }
+    timer->prev = timer->next = NULL; 
 }
 
 
@@ -692,6 +709,8 @@ static TIMER_TYPE *timerDequeue(TIMER_QUEUE_TYPE *queue) {
 * Usage examples and tests for timers
 ******************************************************************************/
 void oneTimerDemo() {
+    return; 
+
     TIMER_TYPE *timer = timerCreate(1000, timer_default_handler, false); 
     timerStart(timer); 
     int remains = timerGetTime(timer); 
