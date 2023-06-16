@@ -525,10 +525,11 @@ typedef struct timer_queue_type {
     TIMER_TYPE *head; 
     sem_t semaphore; 
     int scan; 
+    int magnitude; 
 } TIMER_QUEUE_TYPE;
 
-void timer_default_handler(int timerId) {
-    printf("Timer #%d expired\n", timerId);
+void timer_default_handler(int duration) {
+    printf("Timer expired after %d seconds\n", duration);
 }
 
 #define MAGNITUDE 10
@@ -556,15 +557,15 @@ void timerReset(TIMER_TYPE *timer);
 void timerFire(); 
 
 // declaration for timer internal functions
-static void initTimerQueue(TIMER_QUEUE_TYPE* queue);
+static void initTimerQueue(TIMER_QUEUE_TYPE* queue, int magnitude);
 static void timerEnqueue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer);
 static void timerDequeue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer);
 static TIMER_QUEUE_TYPE *timerGetTargetQueue(TIMER_TYPE *timer); 
 
 void initAllTimerQueues()
 {
-    for (int i = 0; i < TIMER_VECTOR_MAX; ++i) {
-        initTimerQueue(&timerVector[i]); 
+    for (int i = 0, magnitude = 1; i < TIMER_VECTOR_MAX; ++i, magnitude *= MAGNITUDE) {
+        initTimerQueue(&timerVector[i], magnitude); 
     }
 }
 
@@ -674,27 +675,103 @@ void timerReset(TIMER_TYPE *timer)
     timerStart(timer); 
 }
 
+
+static void timerUpdateExpirations(TIMER_QUEUE_TYPE *sourceQueue, TIMER_QUEUE_TYPE *targetQueue); 
+static void timerMigrateQueue(TIMER_QUEUE_TYPE *sourceQueue, TIMER_QUEUE_TYPE *targetQueue); 
+static void timerFireQueue(TIMER_QUEUE_TYPE *queue); 
+
 void timerFire()
 {
     TIMER_QUEUE_TYPE tempQueue; 
+    TIMER_QUEUE_TYPE fireQueue; 
 
     while(true) {
         sleep(1); // assume the resolution of the system time is one second
+
+        assert(!fireQueue.head);
         // update the timers' expiration and move down along the vector 
-        for (int i = TIMER_VECTOR_MAX - 1; 0 <= i;  --i) {
-            // TODO
-            // 1 update expirations; 
-            // 2 add it into tempQueue if lower than this level 
-            // 3 insert all timers from tempQueue to the next level
+        for (int i = 0; i < TIMER_VECTOR_MAX; i++) {
+            assert(!tempQueue.head); // ensure it is empty
+
+            TIMER_QUEUE_TYPE *sourceQueue = &timerVector[i];
+            TIMER_QUEUE_TYPE *moveQueue = 0 == i ? &fireQueue : &tempQueue;
+            // update expirations of all timers in the queue, and 
+            // add it into tempQueue if the expiration is less than 
+            // than the magnitude of this level 
+            // or into fireQueue to fire later
+            timerUpdateExpirations(sourceQueue, moveQueue); 
+            if (0 < i) {
+                // migrate all timers from tempQueue to the lower level
+                timerMigrateQueue(moveQueue, &timerVector[i - 1]); 
+            }
+
+            // continue scanning the next level queue only when 
+            // the count of scanning the current queue reaches MAGNITUDE
+            sourceQueue->scan++; 
+            if (sourceQueue->scan < MAGNITUDE) {
+                break; 
+            } else {
+                sourceQueue->scan = 0; 
+            }
         }
-        // TODO 
-        // fire the timers in the tempQueue one by one; 
+        timerFireQueue(&fireQueue); 
     }
 }
 
-static void initTimerQueue(TIMER_QUEUE_TYPE* queue) {
+
+static void timerUpdateExpirations(TIMER_QUEUE_TYPE *sourceQueue, TIMER_QUEUE_TYPE *targetQueue)
+{
+    assert(sourceQueue && targetQueue); 
+    assert(!targetQueue->head);
+    for (TIMER_TYPE *timer = sourceQueue->head, *next = NULL; timer; timer = next) {
+        next = timer->next; 
+        assert(timer->expiration >= sourceQueue->magnitude); 
+        timer->expiration -= sourceQueue->magnitude; 
+        if (timer->expiration < sourceQueue->magnitude) {
+            timerDequeue(sourceQueue, timer); 
+            timerEnqueue(targetQueue, timer);
+        }
+    }
+}
+
+static void timerMigrateQueue(TIMER_QUEUE_TYPE *sourceQueue, TIMER_QUEUE_TYPE *targetQueue)
+{
+    assert(sourceQueue && targetQueue); 
+    assert(!targetQueue->head);
+    for (TIMER_TYPE *timer = sourceQueue->head, *next = NULL; timer; timer = next) {
+        next = timer->next;
+        timerDequeue(sourceQueue, timer); 
+        timerEnqueue(targetQueue, timer);
+    }
+    assert(!sourceQueue->head);
+}
+
+static void timerFireQueue(TIMER_QUEUE_TYPE *queue)
+{
     assert(queue); 
+    // fire each timer in the queue
+    for (TIMER_TYPE *timer = queue->head; timer; timer = timer->next) {
+        TIMER_CALLBACK_FUNC * func = timer->callBackFunc; 
+        int duration = timer->duration; 
+        func(duration); 
+    }
+    // clean the queue and put the periodic timer back 
+    for (TIMER_TYPE *timer = queue->head, *next = NULL; timer; timer = next) {
+        next = timer->next; 
+        if (timer->isPeriodic) {
+            timerReset(timer); 
+        } else {
+            timerStop(timer); 
+        }
+    }
+}
+
+static void initTimerQueue(TIMER_QUEUE_TYPE* queue, int magnitude) {
+    assert(queue); 
+    assert(magnitude);
     queue->head = NULL; 
+    queue->scan = 0; 
+    queue->magnitude = magnitude; 
 }
 
 // ensure the timers in the queue are sorted based on their expirations in the ascending order
