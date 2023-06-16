@@ -469,14 +469,39 @@ use this (handle) framework to manage timers – so the use cases are going to b
 
 The twist is that as an OS we need to fire timers by _value_ not by descriptor 
 so you’ll need to come up with a solution that 
-    allows the normal name/value key mapping ????
-    but also allows for effective searching by value as an OS needs to fire the ‘next’ timer as time moves forward
+    a. allows the normal name/value key mapping ????
+    b. but also allows for effective searching by value as an OS needs to fire the ‘next’ timer as time moves forward
+
+QUESTIONS 
+1. the requirement a "name/value key mapping" is unclear;
+    Does it mean each timer is created with a name and searched by name?
+    Why needs such a mapping? How to use it?
+2. an email is sent to Huawei recruiter about it, but there is no rely.
+3. the requirement a is NOT implemented. 
 
 ASSUMPTION
     the granularity of timer is 1 second; 
 
+IMPLEMENTATION
+1. The time resolution is 1 second in this time subsytem
+2. All timers are organized in an array of queues
+3. Each queue hold all the timers whose expirations are in a certain range
+4. The order of magnitudes of timer's expiration is creased by 10 between the queue in the array
+5. In the current implementation, the ranges for queues are
+    queue #0: < 10; 0 - 9 seconds;
+    queue #1: < 100; 1 minute 40 seconds; 
+    queue #2: < 1,000; 16 minutes 40 seconds; 
+    queue #3: < 10,000; 2 hours 46 minutes 40 seconds; 
+    queue #4: < 100,000; 
+    queue #5: < 1000,000;  
+6. 
+
 FURTHER IMPROVEMENT
-User more level timer vectors to scale with more timers
+1. User more level timer vectors to scale with more timers
+2. the CPU core count can be used as a dimension in the timer vectors, 
+    so that there is a thread of firing the timers on each core and that
+    the timeout timers could be fired concurrently and in time
+3. 
 
 ******************************************************************************/
 
@@ -499,15 +524,18 @@ typedef struct timer_type {
 typedef struct timer_queue_type {
     TIMER_TYPE *head; 
     sem_t semaphore; 
+    int scan; 
 } TIMER_QUEUE_TYPE;
 
 void timer_default_handler(int timerId) {
     printf("Timer #%d expired\n", timerId);
 }
 
+#define MAGNITUDE 10
 
 // the timers are organized into an array according to their expirations
-#define TIMER_VECTOR_MAX 10
+// according to the different order of magnitudes
+#define TIMER_VECTOR_MAX 7
 TIMER_QUEUE_TYPE timerVector[TIMER_VECTOR_MAX]; 
 
 // declaration for timer functions
@@ -531,6 +559,7 @@ void timerFire();
 static void initTimerQueue(TIMER_QUEUE_TYPE* queue);
 static void timerEnqueue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer);
 static void timerDequeue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer);
+static TIMER_QUEUE_TYPE *timerGetTargetQueue(TIMER_TYPE *timer); 
 
 void initAllTimerQueues()
 {
@@ -621,28 +650,18 @@ void timerDelete(TIMER_TYPE *timer)
 void timerStart(TIMER_TYPE *timer)
 {
     timerAssertInactive(timer);
-    timer->expiration = time(NULL) + timer->duration; 
-    // TODO
-    // find the proper queue
-    TIMER_QUEUE_TYPE * queue = NULL; 
-    // enqueue
-    sem_wait(queue->semaphore);
+    timer->expiration = timer->duration; 
+    TIMER_QUEUE_TYPE *queue = timerGetTargetQueue(timer); 
     timerEnqueue(queue, timer); 
-    sem_post(queue->semaphore);
 }
 
 void timerStop(TIMER_TYPE *timer)
 {
-    assert(timer);
-    
-    TIMER_QUEUE_TYPE * queue = timer->queue; 
+    assert(timer);    
+    TIMER_QUEUE_TYPE *queue = timer->queue; 
     if (!timer->queue) { 
-        // dequeue
-        sem_wait(queue->semaphore);
         timerDequeue(queue, timer); 
-        sem_post(queue->semaphore);
     }
-
     timerAssertInactive(timer); 
 }
 
@@ -651,7 +670,7 @@ void timerReset(TIMER_TYPE *timer)
     assert(timer);
     timerStop(timer);
     timerAssertInactive(timer); 
-    timer->expiration = time(NULL) + timer->duration; 
+    timer->expiration = timer->duration; 
     timerStart(timer); 
 }
 
@@ -683,6 +702,8 @@ static void timerEnqueue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
     assert(queue && timer); 
     assert(!timer->prev && !timer->next && !timer->queue);
     
+    sem_wait(queue->semaphore);
+    
     TIMER_TYPE *prev = NULL; 
     for (TIMER_TYPE *curr = queue->head; curr && curr->expiration <= timer->expiration; curr = curr->next) {
         prev = curr; 
@@ -702,6 +723,9 @@ static void timerEnqueue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
         } 
     }
     timer->queue = queue;
+
+    sem_post(queue->semaphore);
+
     assert(timer->prev || timer->next);
     assert(queue->head);
 }
@@ -709,7 +733,9 @@ static void timerEnqueue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
 static void timerDequeue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
     assert(!queue || !timer);
     assert(queue->head); 
-    assert(timer->prev || timer->next); 
+    assert(timer->prev || timer->next);
+    
+    sem_wait(queue->semaphore);
 
     if (timer->prev) {
         timer->prev->next = timer->next; 
@@ -719,13 +745,27 @@ static void timerDequeue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
     }
     if (timer->next) {
         timer->next->prev = timer->prev; 
-    }
-        
-    timer->prev = timer->next = timer->queue = NULL; 
+    }        
+    timer->prev = timer->next = NULL; 
+    timer->queue = NULL; 
+
+    sem_post(queue->semaphore);
+
     assert(!queue->head || !queue->head->prev);
 }
 
-
+// find the target queue according to the timer duration
+static TIMER_QUEUE_TYPE *timerGetTargetQueue(TIMER_TYPE *timer)
+{
+    timerAssertInactive(timer);
+    int count = 0; 
+    for (int duration = timer->duration; duration; duration /= MAGNITUDE) {
+        count++;
+    }
+    int id = count >= TIMER_VECTOR_MAX ? TIMER_VECTOR_MAX - 1 : count - 1; 
+    assert(0 <= id && id < TIMER_VECTOR_MAX);
+    return &timerVector[id]; 
+}
 
 /******************************************************************************
 * Usage examples and tests for timers
