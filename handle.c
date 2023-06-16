@@ -485,8 +485,9 @@ ASSUMPTION
 IMPLEMENTATION
 1. The time resolution is 1 second in this time subsytem
 2. All timers are organized in an array of queues
-3. Each queue hold all the timers whose expirations are in a certain range
-4. The order of magnitudes of timer's expiration is creased by 10 between the queue in the array
+3. Each queue hold all the timers which will expire in a certain range from now on and which 
+    are sorted according to their expirations
+4. The order of magnitudes of timer duration is creased by 10 between the queue in the array
 5. In the current implementation, the ranges for queues are
     queue #0: < 10; 0 - 9 seconds;
     queue #1: < 100; 1 minute 40 seconds; 
@@ -494,14 +495,23 @@ IMPLEMENTATION
     queue #3: < 10,000; 2 hours 46 minutes 40 seconds; 
     queue #4: < 100,000; 
     queue #5: < 1000,000;  
-6. 
+6. Anytime, the queue #0 holds all timers which are going to expired in 10 seconds, 
+    the queue #1 contains all timers which are going to expired between 10 and 100 seconds; 
+7. During each scan, the timers might be moved from high to low in the queues according 
+    their remained time to expired
 
 FURTHER IMPROVEMENT
 1. User more level timer vectors to scale with more timers
 2. the CPU core count can be used as a dimension in the timer vectors, 
     so that there is a thread of firing the timers on each core and that
     the timeout timers could be fired concurrently and in time
-3. 
+3. Could use heap or tree to hold the timers and sort them according to their expiration, 
+    so that it would be easy to get the very timer which is going to expired very soon
+
+TODO
+1. create and run examples of using a timers; 
+2. create and run examples of using multiple timers; 
+3. create and use timer through handle
 
 ******************************************************************************/
 
