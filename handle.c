@@ -474,6 +474,10 @@ so you’ll need to come up with a solution that
 
 ASSUMPTION
     the granularity of timer is 1 second; 
+
+FURTHER IMPROVEMENT
+User more level timer vectors to scale with more timers
+
 ******************************************************************************/
 
 #include <time.h>
@@ -501,6 +505,8 @@ void timer_default_handler(int timerId) {
     printf("Timer #%d expired\n", timerId);
 }
 
+
+// the timers are organized into an array according to their expirations
 #define TIMER_VECTOR_MAX 10
 TIMER_QUEUE_TYPE timerVector[TIMER_VECTOR_MAX]; 
 
@@ -651,12 +657,19 @@ void timerReset(TIMER_TYPE *timer)
 
 void timerFire()
 {
+    TIMER_QUEUE_TYPE tempQueue; 
+
     while(true) {
         sleep(1); // assume the resolution of the system time is one second
-        for (int i = 0; i < TIMER_VECTOR_MAX; ++i) {
+        // update the timers' expiration and move down along the vector 
+        for (int i = TIMER_VECTOR_MAX - 1; 0 <= i;  --i) {
             // TODO
-            //
+            // 1 update expirations; 
+            // 2 add it into tempQueue if lower than this level 
+            // 3 insert all timers from tempQueue to the next level
         }
+        // TODO 
+        // fire the timers in the tempQueue one by one; 
     }
 }
 
