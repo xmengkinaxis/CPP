@@ -651,7 +651,7 @@ void timerDelete(TIMER_TYPE *timer)
 void timerStart(TIMER_TYPE *timer)
 {
     timerAssertInactive(timer);
-    timer->expiration = timer->duration; 
+    timer->expiration = time(NULL) + timer->duration; 
     TIMER_QUEUE_TYPE *queue = timerGetTargetQueue(timer); 
     timerEnqueue(queue, timer); 
 }
@@ -671,12 +671,12 @@ void timerReset(TIMER_TYPE *timer)
     assert(timer);
     timerStop(timer);
     timerAssertInactive(timer); 
-    timer->expiration = timer->duration; 
+    timer->expiration = time(NULL) + timer->duration; 
     timerStart(timer); 
 }
 
 
-static void timerUpdateExpirations(TIMER_QUEUE_TYPE *sourceQueue, TIMER_QUEUE_TYPE *targetQueue); 
+static void timerUpdateExpirations(TIMER_QUEUE_TYPE *sourceQueue, TIMER_QUEUE_TYPE *targetQueue, time_t current); 
 static void timerMigrateQueue(TIMER_QUEUE_TYPE *sourceQueue, TIMER_QUEUE_TYPE *targetQueue); 
 static void timerFireQueue(TIMER_QUEUE_TYPE *queue); 
 
@@ -690,6 +690,7 @@ void timerFire()
 
         assert(!fireQueue.head);
         // update the timers' expiration and move down along the vector 
+        time_t current = time(NULL); 
         for (int i = 0; i < TIMER_VECTOR_MAX; i++) {
             assert(!tempQueue.head); // ensure it is empty
 
@@ -699,7 +700,7 @@ void timerFire()
             // add it into tempQueue if the expiration is less than 
             // than the magnitude of this level 
             // or into fireQueue to fire later
-            timerUpdateExpirations(sourceQueue, moveQueue); 
+            timerUpdateExpirations(sourceQueue, moveQueue, current); 
             if (0 < i) {
                 // migrate all timers from tempQueue to the lower level
                 timerMigrateQueue(moveQueue, &timerVector[i - 1]); 
@@ -719,15 +720,15 @@ void timerFire()
 }
 
 
-static void timerUpdateExpirations(TIMER_QUEUE_TYPE *sourceQueue, TIMER_QUEUE_TYPE *targetQueue)
+static void timerUpdateExpirations(TIMER_QUEUE_TYPE *sourceQueue, TIMER_QUEUE_TYPE *targetQueue, time_t current)
 {
     assert(sourceQueue && targetQueue); 
     assert(!targetQueue->head);
     for (TIMER_TYPE *timer = sourceQueue->head, *next = NULL; timer; timer = next) {
         next = timer->next; 
-        assert(timer->expiration >= sourceQueue->magnitude); 
+        assert(timer->expiration - current >= sourceQueue->magnitude); 
         timer->expiration -= sourceQueue->magnitude; 
-        if (timer->expiration < sourceQueue->magnitude) {
+        if (timer->expiration - current < sourceQueue->magnitude) {
             timerDequeue(sourceQueue, timer); 
             timerEnqueue(targetQueue, timer);
         }
