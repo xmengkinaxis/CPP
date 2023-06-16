@@ -441,8 +441,6 @@ int multipleThreadsDemo(THREAD_FUNC func) {
 }
 
 int handleTest() {
-    initializeSystemHandles();
-
     // assert it is empty again  
     assertState(0, HANDLE_MAX); 
 
@@ -518,7 +516,7 @@ TODO
 #include <time.h>
 #include <unistd.h>
 
-typedef void (TIMER_CALLBACK_FUNC)(int); 
+typedef void (TIMER_CALLBACK_FUNC)(int, int); 
 
 struct timer_queue_type;
 
@@ -538,8 +536,8 @@ typedef struct timer_queue_type {
     int magnitude; 
 } TIMER_QUEUE_TYPE;
 
-void timer_default_handler(int duration) {
-    printf("Timer expired after %d seconds\n", duration);
+void timer_default_handler(time_t expiration, int duration) {
+    printf("Timer expired at %s after %d seconds\n", ctime(expiration), duration);
 }
 
 #define MAGNITUDE 10
@@ -631,7 +629,7 @@ void timerSetPeriodic(TIMER_TYPE *timer, bool isPeriodic)
 bool timerIsExpired(TIMER_TYPE *timer)
 {
     assert(timer); 
-    return timer->expiration == 0;
+    return timer->expiration <= time(NULL);
 }
 
 bool timerIsPeriodic(TIMER_TYPE *timer)
@@ -670,7 +668,7 @@ void timerStop(TIMER_TYPE *timer)
 {
     assert(timer);    
     TIMER_QUEUE_TYPE *queue = timer->queue; 
-    if (!timer->queue) { 
+    if (timer->queue) { 
         timerDequeue(queue, timer); 
     }
     timerAssertInactive(timer); 
@@ -686,7 +684,7 @@ void timerReset(TIMER_TYPE *timer)
 }
 
 
-static void timerUpdateExpirations(TIMER_QUEUE_TYPE *sourceQueue, TIMER_QUEUE_TYPE *targetQueue, time_t current); 
+static void timerScanExpirations(TIMER_QUEUE_TYPE *sourceQueue, TIMER_QUEUE_TYPE *targetQueue, time_t current); 
 static void timerMigrateQueue(TIMER_QUEUE_TYPE *sourceQueue, TIMER_QUEUE_TYPE *targetQueue); 
 static void timerFireQueue(TIMER_QUEUE_TYPE *queue); 
 
@@ -699,18 +697,18 @@ void timerFire()
         sleep(1); // assume the resolution of the system time is one second
 
         assert(!fireQueue.head);
-        // update the timers' expiration and move down along the vector 
+        // scan the timers' expiration and move down along the vector 
         time_t current = time(NULL); 
         for (int i = 0; i < TIMER_VECTOR_MAX; i++) {
             assert(!tempQueue.head); // ensure it is empty
 
             TIMER_QUEUE_TYPE *sourceQueue = &timerVector[i];
             TIMER_QUEUE_TYPE *moveQueue = 0 == i ? &fireQueue : &tempQueue;
-            // update expirations of all timers in the queue, and 
+            // scan expirations of all timers in the queue, and 
             // add it into tempQueue if the expiration is less than 
             // than the magnitude of this level 
             // or into fireQueue to fire later
-            timerUpdateExpirations(sourceQueue, moveQueue, current); 
+            timerScanExpirations(sourceQueue, moveQueue, current); 
             if (0 < i) {
                 // migrate all timers from tempQueue to the lower level
                 timerMigrateQueue(moveQueue, &timerVector[i - 1]); 
@@ -730,14 +728,12 @@ void timerFire()
 }
 
 
-static void timerUpdateExpirations(TIMER_QUEUE_TYPE *sourceQueue, TIMER_QUEUE_TYPE *targetQueue, time_t current)
+static void timerScanExpirations(TIMER_QUEUE_TYPE *sourceQueue, TIMER_QUEUE_TYPE *targetQueue, time_t current)
 {
     assert(sourceQueue && targetQueue); 
     assert(!targetQueue->head);
     for (TIMER_TYPE *timer = sourceQueue->head, *next = NULL; timer; timer = next) {
         next = timer->next; 
-        assert(timer->expiration - current >= sourceQueue->magnitude); 
-        timer->expiration -= sourceQueue->magnitude; 
         if (timer->expiration - current < sourceQueue->magnitude) {
             timerDequeue(sourceQueue, timer); 
             timerEnqueue(targetQueue, timer);
@@ -763,8 +759,7 @@ static void timerFireQueue(TIMER_QUEUE_TYPE *queue)
     // fire each timer in the queue
     for (TIMER_TYPE *timer = queue->head; timer; timer = timer->next) {
         TIMER_CALLBACK_FUNC * func = timer->callBackFunc; 
-        int duration = timer->duration; 
-        func(duration); 
+        func(timer->expiration, timer->duration); 
     }
     // clean the queue and put the periodic timer back 
     for (TIMER_TYPE *timer = queue->head, *next = NULL; timer; timer = next) {
@@ -799,7 +794,6 @@ static void timerEnqueue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
     if (!prev) {
         // add as the new front
         timer->next = queue->head;
-        queue->head->prev = timer; 
         queue->head = timer; 
     } else {
         // add in the middle
@@ -814,14 +808,14 @@ static void timerEnqueue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
 
     sem_post(queue->semaphore);
 
-    assert(timer->prev || timer->next);
+    assert(timer->queue);
     assert(queue->head);
 }
 
 static void timerDequeue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
-    assert(!queue || !timer);
+    assert(queue && timer);
     assert(queue->head); 
-    assert(timer->prev || timer->next);
+    assert(queue == timer->queue);
     
     sem_wait(queue->semaphore);
 
@@ -859,20 +853,19 @@ static TIMER_QUEUE_TYPE *timerGetTargetQueue(TIMER_TYPE *timer)
 * Usage examples and tests for timers
 ******************************************************************************/
 void oneTimerDemo() {
-    return; 
-
-    TIMER_TYPE *timer = timerCreate(1000, timer_default_handler, false); 
+    TIMER_TYPE *timer = timerCreate(15, timer_default_handler, false); 
     timerStart(timer); 
     int remains = timerGetTime(timer); 
     timerStop(timer); 
     timerSetCallBack(timer, timer_default_handler); 
     timerSetPeriodic(timer, true); 
     assert(timerIsPeriodic(timer)); 
-    timerSetDuration(timer, 2000); 
+    timerSetDuration(timer, 30); 
+    timerSetPeriodic(timer, false); 
     assert(!timerIsPeriodic(timer)); 
-    assert(!timerIsExpired(timer)); 
     timerStart(timer); 
-    //wait
+    assert(!timerIsExpired(timer)); 
+    sleep(300);
     assert(timerIsExpired(timer)); 
 }
 
@@ -880,8 +873,23 @@ void timerTest() {
     oneTimerDemo(); 
 } 
 
-int main() {
-    handleTest(); 
+int startThreadTimerFire() {
+    pthread_t fireThread; 
+    int result = pthread_create(&fireThread, NULL, timerFire, NULL); 
+    if (OK != result) {
+        return -1; 
+    }
+    pthread_detach(fireThread);
+}
+
+int main() {    
+    // initializeSystemHandles();
+    
+    // handleTest(); 
+
+    initAllTimerQueues();
+    startThreadTimerFire(); 
+    
     timerTest(); 
     
     printf("Hello, World!\n");
