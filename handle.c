@@ -186,6 +186,9 @@ void initializeSystemHandles()
     }
     assert(INVALID_HANDLE == systemHandles[head].prev);
     assert(INVALID_HANDLE == systemHandles[tail].next);
+
+    sem_init(&countSemaphore, 0, 1); 
+    sem_init(&freeSemaphore, 0, 1);
 }
 
 static HANDLE fetchFreeHandle();
@@ -243,7 +246,7 @@ static bool isInUsedHandle(HANDLE handle)
 
 static HANDLE_SUMMARY summarizeHandles()
 {
-    sem_wait(countSemaphore);
+    sem_wait(&countSemaphore);
     HANDLE_SUMMARY summary = {.used = usedCount, .free = freeCount};
     sem_post(&countSemaphore);
     return summary; 
@@ -420,7 +423,7 @@ void* threadMultipleHandlesStress(void* arg) {
     return NULL;
 }
 
-typedef void (THREAD_FUNC)(void*); 
+typedef void* (THREAD_FUNC)(void*); 
 
 int multipleThreadsDemo(THREAD_FUNC func) {
 #define THREAD_MAX 6 
@@ -513,17 +516,18 @@ TODO
 
 ******************************************************************************/
 
-#include <time.h>
 #include <unistd.h>
+#include <time.h>
 
-typedef void (TIMER_CALLBACK_FUNC)(int, int); 
+typedef void (*TIMER_CALLBACK_FUNC)(void*, int);
+
 
 struct timer_queue_type;
 
 typedef struct timer_type {
     struct timer_type *prev, *next; 
     struct timer_queue_type *queue; 
-    TIMER_CALLBACK_FUNC *callBackFunc; 
+    TIMER_CALLBACK_FUNC callBackFunc; 
     time_t expiration; 
     int duration; 
     bool isPeriodic; 
@@ -536,7 +540,7 @@ typedef struct timer_queue_type {
     int magnitude; 
 } TIMER_QUEUE_TYPE;
 
-void timer_default_handler(time_t expiration, int duration) {
+void timer_default_handler(void* expiration, int duration) {
     printf("Timer expired at %s after %d seconds\n", ctime(expiration), duration);
 }
 
@@ -549,8 +553,8 @@ TIMER_QUEUE_TYPE timerVector[TIMER_VECTOR_MAX];
 
 // declaration for timer functions
 void initAllTimerQueues();
-TIMER_TYPE* timerCreate(int duration, TIMER_CALLBACK_FUNC *callBackFunc, bool isPeriodic); 
-TIMER_CALLBACK_FUNC *timerSetCallBack(TIMER_TYPE *timer, TIMER_CALLBACK_FUNC *callBackFunc);
+TIMER_TYPE* timerCreate(int duration, TIMER_CALLBACK_FUNC callBackFunc, bool isPeriodic); 
+TIMER_CALLBACK_FUNC *timerSetCallBack(TIMER_TYPE *timer, TIMER_CALLBACK_FUNC callBackFunc);
 void timerSetDuration(TIMER_TYPE *timer, int duration); 
 void timerSetPeriodic(TIMER_TYPE *timer, bool isPeriodic);  
 bool timerIsExpired(TIMER_TYPE *timer); 
@@ -562,10 +566,10 @@ void timerStart(TIMER_TYPE *timer);
 void timerStop(TIMER_TYPE *timer); 
 void timerReset(TIMER_TYPE *timer);
 
-void timerFire(); 
+void* timerFire(void *arg); 
 
 // declaration for timer internal functions
-static void initTimerQueue(TIMER_QUEUE_TYPE* queue, int magnitude);
+static int initTimerQueue(TIMER_QUEUE_TYPE* queue, int magnitude);
 static void timerEnqueue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer);
 static void timerDequeue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer);
 static TIMER_QUEUE_TYPE *timerGetTargetQueue(TIMER_TYPE *timer); 
@@ -589,7 +593,7 @@ static void timerAssertActive(TIMER_TYPE *timer) {
     assert(timer->queue);
 }
 
-TIMER_TYPE* timerCreate(int duration, TIMER_CALLBACK_FUNC* callBackFunc, bool isPeriodic) {
+TIMER_TYPE* timerCreate(int duration, TIMER_CALLBACK_FUNC callBackFunc, bool isPeriodic) {
     TIMER_TYPE *timer = malloc(sizeof(TIMER_TYPE)); 
     assert(timer);
     timer->prev = timer->next = NULL;
@@ -606,7 +610,7 @@ TIMER_TYPE* timerCreate(int duration, TIMER_CALLBACK_FUNC* callBackFunc, bool is
     return timer; 
 }
 
-TIMER_CALLBACK_FUNC *timerSetCallBack(TIMER_TYPE *timer, TIMER_CALLBACK_FUNC *callBackFunc)
+TIMER_CALLBACK_FUNC *timerSetCallBack(TIMER_TYPE *timer, TIMER_CALLBACK_FUNC callBackFunc)
 {
     timerAssertInactive(timer); 
     assert(callBackFunc);
@@ -688,10 +692,12 @@ static void timerScanExpirations(TIMER_QUEUE_TYPE *sourceQueue, TIMER_QUEUE_TYPE
 static void timerMigrateQueue(TIMER_QUEUE_TYPE *sourceQueue, TIMER_QUEUE_TYPE *targetQueue); 
 static void timerFireQueue(TIMER_QUEUE_TYPE *queue); 
 
-void timerFire()
+static TIMER_QUEUE_TYPE tempQueue; 
+static TIMER_QUEUE_TYPE fireQueue; 
+void* timerFire(void *arg)
 {
-    TIMER_QUEUE_TYPE tempQueue; 
-    TIMER_QUEUE_TYPE fireQueue; 
+    initTimerQueue(&tempQueue, 1); 
+    initTimerQueue(&fireQueue, 1);
 
     while(true) {
         sleep(1); // assume the resolution of the system time is one second
@@ -725,6 +731,7 @@ void timerFire()
         }
         timerFireQueue(&fireQueue); 
     }
+    return NULL; 
 }
 
 
@@ -758,8 +765,8 @@ static void timerFireQueue(TIMER_QUEUE_TYPE *queue)
     assert(queue); 
     // fire each timer in the queue
     for (TIMER_TYPE *timer = queue->head; timer; timer = timer->next) {
-        TIMER_CALLBACK_FUNC * func = timer->callBackFunc; 
-        func(timer->expiration, timer->duration); 
+        TIMER_CALLBACK_FUNC func = timer->callBackFunc; 
+        func(&timer->expiration, timer->duration); 
     }
     // clean the queue and put the periodic timer back 
     for (TIMER_TYPE *timer = queue->head, *next = NULL; timer; timer = next) {
@@ -772,12 +779,17 @@ static void timerFireQueue(TIMER_QUEUE_TYPE *queue)
     }
 }
 
-static void initTimerQueue(TIMER_QUEUE_TYPE* queue, int magnitude) {
+static int initTimerQueue(TIMER_QUEUE_TYPE* queue, int magnitude) {
     assert(queue); 
     assert(magnitude);
     queue->head = NULL; 
+    int result = sem_init(&(queue->semaphore), 0, 1);
+    if (result != 0) {
+        return -1; 
+    }
     queue->scan = 0; 
     queue->magnitude = magnitude; 
+    return OK; 
 }
 
 // ensure the timers in the queue are sorted based on their expirations in the ascending order
@@ -785,7 +797,7 @@ static void timerEnqueue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
     assert(queue && timer); 
     assert(!timer->prev && !timer->next && !timer->queue);
     
-    sem_wait(queue->semaphore);
+    sem_wait(&(queue->semaphore));
     
     TIMER_TYPE *prev = NULL; 
     for (TIMER_TYPE *curr = queue->head; curr && curr->expiration <= timer->expiration; curr = curr->next) {
@@ -806,7 +818,7 @@ static void timerEnqueue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
     }
     timer->queue = queue;
 
-    sem_post(queue->semaphore);
+    sem_post(&(queue->semaphore));
 
     assert(timer->queue);
     assert(queue->head);
@@ -817,7 +829,7 @@ static void timerDequeue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
     assert(queue->head); 
     assert(queue == timer->queue);
     
-    sem_wait(queue->semaphore);
+    sem_wait(&(queue->semaphore));
 
     if (timer->prev) {
         timer->prev->next = timer->next; 
@@ -831,7 +843,7 @@ static void timerDequeue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
     timer->prev = timer->next = NULL; 
     timer->queue = NULL; 
 
-    sem_post(queue->semaphore);
+    sem_post(&(queue->semaphore));
 
     assert(!queue->head || !queue->head->prev);
 }
@@ -865,7 +877,7 @@ void oneTimerDemo() {
     assert(!timerIsPeriodic(timer)); 
     timerStart(timer); 
     assert(!timerIsExpired(timer)); 
-    sleep(300);
+    sleep(60);
     assert(timerIsExpired(timer)); 
 }
 
