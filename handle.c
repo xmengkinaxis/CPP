@@ -326,7 +326,7 @@ void assertState(int used, int free)
     assert(summary.free == free);
 }
 
-void singleThreadDemo() {
+void singleThreadHandleDemo() {
     
     // assert the statistic is empty now 
     assertState(0, HANDLE_MAX);
@@ -351,7 +351,7 @@ void singleThreadDemo() {
 
 void* threadMultipleHandlesForward(void* arg) {
     intptr_t id = (intptr_t) arg; 
-    printf("Thread arg: %d\n", id); 
+    printf("Thread arg: %d creates handles\n", id); 
     HANDLE handle1 = handleCreate(100); 
     HANDLE handle2 = handleCreate(200); 
     HANDLE handle3 = handleCreate(300);
@@ -447,7 +447,7 @@ int handleTest() {
     // assert it is empty again  
     assertState(0, HANDLE_MAX); 
 
-    singleThreadDemo(); 
+    singleThreadHandleDemo(); 
 
     multipleThreadsDemo(threadMultipleHandlesForward);
     multipleThreadsDemo(threadMultipleHandlesRandom);
@@ -484,6 +484,8 @@ ASSUMPTION
     the granularity of timer is 1 second; 
 
 IMPLEMENTATION
+0. There are two types of timers implemented: the normal timer and the periodic timer; 
+    the normal timer expires only one, while the periodic timer repeats expiring, until it is stopped
 1. The time resolution is 1 second in this time subsytem
 2. All timers are organized in an array of queues
 3. Each queue hold all the timers which will expire in a certain range from now on and which 
@@ -510,7 +512,7 @@ FURTHER IMPROVEMENT
     so that it would be easy to get the very timer which is going to expired very soon
 
 TODO
-1. create and run examples of using a timers; 
+done 1. create and run examples of using a timers; 
 2. create and run examples of using multiple timers; 
 3. create and use timer through handle
 
@@ -541,7 +543,7 @@ typedef struct timer_queue_type {
 } TIMER_QUEUE_TYPE;
 
 void timer_default_handler(void* expiration, int duration) {
-    printf("Timer expired at %s after %d seconds\n", ctime(expiration), duration);
+    printf("Timer expired after %d seconds at %s", duration, ctime(expiration));
 }
 
 #define MAGNITUDE 10
@@ -583,6 +585,9 @@ void initAllTimerQueues()
 
 static void timerAssertInactive(TIMER_TYPE *timer) {
     assert(timer);
+    if (timer->prev || timer->next) {
+        printf("something wrong here");
+    }
     assert(!timer->prev && !timer->next);
     assert(!timer->queue);
 }
@@ -596,6 +601,7 @@ static void timerAssertActive(TIMER_TYPE *timer) {
 TIMER_TYPE* timerCreate(int duration, TIMER_CALLBACK_FUNC callBackFunc, bool isPeriodic) {
     TIMER_TYPE *timer = malloc(sizeof(TIMER_TYPE)); 
     assert(timer);
+
     timer->prev = timer->next = NULL;
     timer->queue = NULL;
     timerAssertInactive(timer); 
@@ -663,8 +669,8 @@ void timerDelete(TIMER_TYPE *timer)
 void timerStart(TIMER_TYPE *timer)
 {
     timerAssertInactive(timer);
-    timer->expiration = time(NULL) + timer->duration; 
     TIMER_QUEUE_TYPE *queue = timerGetTargetQueue(timer); 
+    timer->expiration = time(NULL) + timer->duration; 
     timerEnqueue(queue, timer); 
 }
 
@@ -715,7 +721,7 @@ void* timerFire(void *arg)
             // than the magnitude of this level 
             // or into fireQueue to fire later
             timerScanExpirations(sourceQueue, moveQueue, current); 
-            if (0 < i) {
+            if (0 < i && moveQueue->head) {
                 // migrate all timers from tempQueue to the lower level
                 timerMigrateQueue(moveQueue, &timerVector[i - 1]); 
             }
@@ -751,7 +757,7 @@ static void timerScanExpirations(TIMER_QUEUE_TYPE *sourceQueue, TIMER_QUEUE_TYPE
 static void timerMigrateQueue(TIMER_QUEUE_TYPE *sourceQueue, TIMER_QUEUE_TYPE *targetQueue)
 {
     assert(sourceQueue && targetQueue); 
-    assert(!targetQueue->head);
+    assert(sourceQueue->head);
     for (TIMER_TYPE *timer = sourceQueue->head, *next = NULL; timer; timer = next) {
         next = timer->next;
         timerDequeue(sourceQueue, timer); 
@@ -781,7 +787,7 @@ static void timerFireQueue(TIMER_QUEUE_TYPE *queue)
 
 static int initTimerQueue(TIMER_QUEUE_TYPE* queue, int magnitude) {
     assert(queue); 
-    assert(magnitude);
+    assert(0 < magnitude);
     queue->head = NULL; 
     int result = sem_init(&(queue->semaphore), 0, 1);
     if (result != 0) {
@@ -794,8 +800,8 @@ static int initTimerQueue(TIMER_QUEUE_TYPE* queue, int magnitude) {
 
 // ensure the timers in the queue are sorted based on their expirations in the ascending order
 static void timerEnqueue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
-    assert(queue && timer); 
-    assert(!timer->prev && !timer->next && !timer->queue);
+    assert(queue); 
+    timerAssertInactive(timer);
     
     sem_wait(&(queue->semaphore));
     
@@ -808,13 +814,13 @@ static void timerEnqueue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
         timer->next = queue->head;
         queue->head = timer; 
     } else {
-        // add in the middle
+        // add in the middle after prev
         timer->next = prev->next; 
         timer->prev = prev;
         if (prev->next) {
             prev->next->prev = timer; 
-            prev->next = timer; 
         } 
+        prev->next = timer; 
     }
     timer->queue = queue;
 
@@ -864,8 +870,9 @@ static TIMER_QUEUE_TYPE *timerGetTargetQueue(TIMER_TYPE *timer)
 /******************************************************************************
 * Usage examples and tests for timers
 ******************************************************************************/
-void oneTimerDemo() {
-    TIMER_TYPE *timer = timerCreate(15, timer_default_handler, false); 
+void durationTimerDemo(int duration ) {
+    printf("test the normal timer with duration: %d\n", duration);
+    TIMER_TYPE *timer = timerCreate(duration, timer_default_handler, false); 
     timerStart(timer); 
     int remains = timerGetTime(timer); 
     timerStop(timer); 
@@ -877,12 +884,50 @@ void oneTimerDemo() {
     assert(!timerIsPeriodic(timer)); 
     timerStart(timer); 
     assert(!timerIsExpired(timer)); 
-    sleep(60);
+    sleep(duration * 4);
     assert(timerIsExpired(timer)); 
 }
 
-void timerTest() {
-    oneTimerDemo(); 
+void periodicTimerDemo(int duration) {
+    printf("test the periodic timer with duration: %d\n", duration);
+    TIMER_TYPE *timer = timerCreate(duration, timer_default_handler, true); 
+    assert(timerIsPeriodic(timer));  
+    timerStart(timer); 
+    assert(!timerIsExpired(timer)); 
+    sleep(duration * 8);
+    timerStop(timer); 
+}
+
+void* threadMultipleTimer(void *arg) {
+#define CREATE_MAX 5
+    intptr_t id = (intptr_t) arg; 
+    printf("Thread arg: %d creates timers\n", id); 
+    int maxDuration = id * MAGNITUDE; 
+    TIMER_TYPE *timers[CREATE_MAX];
+    for (int i = 0; i < CREATE_MAX; ++i){
+        int duration = rand() % maxDuration + 1; 
+        bool isPeriodic = (MAGNITUDE < duration) && (duration & 3); 
+        timers[i] = timerCreate(duration, timer_default_handler, isPeriodic); 
+        timerStart(timers[i]); 
+    }
+    sleep(maxDuration * 8); 
+    for (int i = 0; i < CREATE_MAX; ++i){
+        timerStop(timers[i]); 
+    }
+}
+
+void singleThreadTimerDemo() {    
+#define CASE_MAX 4
+    int durations[CASE_MAX] = {8, 18, 30, 101};
+    for (int i = 0; i < CASE_MAX; ++i) {
+        durationTimerDemo(durations[i]); 
+        periodicTimerDemo(durations[i]); 
+    }
+}
+
+void pureTimerTest() {
+    multipleThreadsDemo(threadMultipleTimer);
+    singleThreadTimerDemo(); 
 } 
 
 int startThreadTimerFire() {
@@ -902,7 +947,7 @@ int main() {
     initAllTimerQueues();
     startThreadTimerFire(); 
     
-    timerTest(); 
+    pureTimerTest(); 
     
     printf("Hello, World!\n");
     return 0;
