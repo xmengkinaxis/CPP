@@ -70,6 +70,7 @@ FURTHER IMPROVEMENT
 #include <time.h>
 #include <semaphore.h>
 #include <pthread.h>
+#include <unistd.h>
 
 // the limit for handles in the system
 #define HANDLE_MAX 100 
@@ -80,10 +81,31 @@ const int OK = 0;
 const int NON_EXIT = -1; 
 const int INVALID_HANDLE = -1; 
 
+typedef void (*TIMER_CALLBACK_FUNC)(void*, int);
+
+struct timer_queue_type;
+
+typedef struct timer_type {
+    struct timer_type *prev, *next; 
+    struct timer_queue_type *queue; 
+    TIMER_CALLBACK_FUNC callBackFunc; 
+    time_t expiration; 
+    int duration; 
+    bool isPeriodic; 
+} TIMER_TYPE; 
+
+typedef struct timer_queue_type {
+    TIMER_TYPE *head; 
+    sem_t semaphore; 
+    int scan; 
+    int magnitude; 
+} TIMER_QUEUE_TYPE;
+
 // a complex data structure/object in the OS
 typedef struct Data {
     // Can define something here
     int value; 
+    TIMER_TYPE *timer; 
     /* e.g.
     uint64_t id; 
     HANDLE myHandle; 
@@ -105,16 +127,28 @@ typedef struct HandleSummary {
 // declaration for internal functions
 static HANDLE createHandleForData(int input); 
 static DATA fetchDataFromHandle(HANDLE handle);
+static TIMER_TYPE *fetchTimerFromHandle(HANDLE handle);
 static int deleteHandleAndData(HANDLE handle);
 static bool isInUsedHandle(HANDLE handle);
 static HANDLE_SUMMARY summarizeHandles(); 
 
+TIMER_TYPE* timerCreate(int duration, TIMER_CALLBACK_FUNC callBackFunc, bool isPeriodic); 
+void timerStart(TIMER_TYPE *timer); 
+void timerStop(TIMER_TYPE *timer); 
+static HANDLE createHandleForTimer(int duration, TIMER_CALLBACK_FUNC callBackFunc, bool isPeriodic);
+
 // declaration of APIs for clients: 
 HANDLE handleCreate(int input); 
 DATA handleGetData(HANDLE handle);
+TIMER_TYPE *handleGetTimer(HANDLE handle);
 int handleDelete(HANDLE handle);
 bool handleIsValid(HANDLE handle); 
 HANDLE_SUMMARY handleSummarize(); 
+
+
+HANDLE handleTimerCreate(int duration, TIMER_CALLBACK_FUNC callBackFunc, bool isPeriodic);
+void handleTimerStart(HANDLE timerHandle);
+void handleTimerStop(HANDLE timerHandle);
 
 // implementation of APIs for clients
 HANDLE handleCreate(int input) {
@@ -123,11 +157,38 @@ HANDLE handleCreate(int input) {
     return handle; 
 }
 
+HANDLE handleTimerCreate(int duration, TIMER_CALLBACK_FUNC callBackFunc, bool isPeriodic) {
+    HANDLE handle = createHandleForTimer(duration, callBackFunc, isPeriodic); 
+    assert(handleIsValid(handle)); 
+    return handle; 
+}
+
+
+void handleTimerStart(HANDLE timerHandle)
+{
+    TIMER_TYPE *timer = handleGetTimer(timerHandle);
+    timerStart(timer); 
+}
+
+void handleTimerStop(HANDLE timerHandle)
+{
+    TIMER_TYPE *timer = handleGetTimer(timerHandle);
+    timerStop(timer);
+}
+
+
 DATA handleGetData(HANDLE handle) 
 {
     assert(handleIsValid(handle));
     DATA data = fetchDataFromHandle(handle); 
     return data; 
+}
+
+TIMER_TYPE *handleGetTimer(HANDLE handle)
+{
+    assert(handleIsValid(handle));
+    TIMER_TYPE *timer = fetchTimerFromHandle(handle); 
+    return timer; 
 }
 
 int handleDelete(HANDLE handle) {
@@ -203,6 +264,7 @@ static HANDLE createHandleForData(int input)
     // create a data
     DATA *data = (DATA *) malloc(sizeof(DATA)); 
     data->value = input; 
+    data->timer = NULL;
 
     // associate the handle with the data
     systemHandles[handle].data = data; 
@@ -210,12 +272,40 @@ static HANDLE createHandleForData(int input)
     return handle; 
 } 
 
+static HANDLE createHandleForTimer(int duration, TIMER_CALLBACK_FUNC callBackFunc, bool isPeriodic) 
+{ 
+    // fetch a free handle
+    HANDLE handle = fetchFreeHandle();
+    if (INVALID_HANDLE == handle) {
+        return INVALID_HANDLE; 
+    }
+
+    // create a data for a timer
+    DATA *data = (DATA *) malloc(sizeof(DATA)); 
+    TIMER_TYPE *timer = timerCreate(duration, callBackFunc, isPeriodic);
+    data->timer = timer; 
+    data->value = 0; 
+
+    // associate the handle with the data
+    systemHandles[handle].data = data; 
+
+    return handle; 
+}
+
 static DATA fetchDataFromHandle(HANDLE handle)
 {
     if (!isInUsedHandle(handle)) {
         return dummyData; 
     }
     return *(systemHandles[handle].data);
+}
+
+static TIMER_TYPE *fetchTimerFromHandle(HANDLE handle)
+{
+    if (!isInUsedHandle(handle)) {
+        return NULL; 
+    }
+    return systemHandles[handle].data->timer;
 }
 
 static void returnFreeHandle(HANDLE handle);
@@ -511,36 +601,7 @@ FURTHER IMPROVEMENT
 3. Could use heap or tree to hold the timers and sort them according to their expiration, 
     so that it would be easy to get the very timer which is going to expired very soon
 
-TODO
-done 1. create and run examples of using a timers; 
-2. create and run examples of using multiple timers; 
-3. create and use timer through handle
-
 ******************************************************************************/
-
-#include <unistd.h>
-#include <time.h>
-
-typedef void (*TIMER_CALLBACK_FUNC)(void*, int);
-
-
-struct timer_queue_type;
-
-typedef struct timer_type {
-    struct timer_type *prev, *next; 
-    struct timer_queue_type *queue; 
-    TIMER_CALLBACK_FUNC callBackFunc; 
-    time_t expiration; 
-    int duration; 
-    bool isPeriodic; 
-} TIMER_TYPE; 
-
-typedef struct timer_queue_type {
-    TIMER_TYPE *head; 
-    sem_t semaphore; 
-    int scan; 
-    int magnitude; 
-} TIMER_QUEUE_TYPE;
 
 void timer_default_handler(void* expiration, int duration) {
     printf("Timer expired after %d seconds at %s", duration, ctime(expiration));
@@ -798,12 +859,30 @@ static int initTimerQueue(TIMER_QUEUE_TYPE* queue, int magnitude) {
     return OK; 
 }
 
+void timerAssertQueue(TIMER_QUEUE_TYPE *queue) {
+    assert(queue); 
+    TIMER_TYPE *prev = NULL; 
+    for (TIMER_TYPE *curr = queue->head; curr; curr = curr->next) {
+        if (curr->queue != queue || curr->prev != prev) {
+            printf("something wrong here");
+        }
+        assert(curr->queue == queue); 
+        assert(curr->prev == prev); 
+        prev = curr; 
+    }
+    if (prev && !prev->next) {
+        printf("something wrong here");
+    }
+    assert(!prev || !prev->next);
+}
+
 // ensure the timers in the queue are sorted based on their expirations in the ascending order
 static void timerEnqueue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
     assert(queue); 
     timerAssertInactive(timer);
     
     sem_wait(&(queue->semaphore));
+    timerAssertQueue(queue);
     
     TIMER_TYPE *prev = NULL; 
     for (TIMER_TYPE *curr = queue->head; curr && curr->expiration <= timer->expiration; curr = curr->next) {
@@ -824,6 +903,7 @@ static void timerEnqueue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
     }
     timer->queue = queue;
 
+    timerAssertQueue(queue);
     sem_post(&(queue->semaphore));
 
     assert(timer->queue);
@@ -836,10 +916,14 @@ static void timerDequeue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
     assert(queue == timer->queue);
     
     sem_wait(&(queue->semaphore));
+    timerAssertQueue(queue);
 
     if (timer->prev) {
         timer->prev->next = timer->next; 
     } else {
+        if (queue->head != timer) {
+            printf("something wrong here.");
+        }
         assert(queue->head == timer);
         queue->head = timer->next;
     }
@@ -849,6 +933,7 @@ static void timerDequeue(TIMER_QUEUE_TYPE *queue, TIMER_TYPE *timer) {
     timer->prev = timer->next = NULL; 
     timer->queue = NULL; 
 
+    timerAssertQueue(queue);
     sem_post(&(queue->semaphore));
 
     assert(!queue->head || !queue->head->prev);
@@ -939,15 +1024,25 @@ int startThreadTimerFire() {
     pthread_detach(fireThread);
 }
 
+void handleTimerDemo() {
+    int duration = 8; 
+    HANDLE timerHandle = handleTimerCreate(duration, timer_default_handler, false);
+    handleTimerStart(timerHandle); 
+    sleep(duration * 4);
+    handleTimerStop(timerHandle); 
+}
+
 int main() {    
-    // initializeSystemHandles();
-    
-    // handleTest(); 
+    initializeSystemHandles();
 
     initAllTimerQueues();
     startThreadTimerFire(); 
     
+    handleTest(); 
+    
     pureTimerTest(); 
+
+    handleTimerDemo(); 
     
     printf("Hello, World!\n");
     return 0;
