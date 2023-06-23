@@ -85,114 +85,115 @@ put some restriction to stop system abuse, e.g. limit the size of text or image 
 assumption: surge in traffic <br>
 
 # 2. Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation.
-What are the constraints?
+The estimation will be helpful later when focusing on scaling, partitioning, load balancing, and caching <br>
+What are the constraints? <br>
 
-Among which based on the read-heavy or write-heavy machine we can apply the 80–20 rule. 
-if this is a read-heavy, estimate read throughput.
-If a system is write-heavy then we need to estimate the Storage requirements per day, per year, and for 5–10 years.
+Among which based on the read-heavy or write-heavy machine we can apply the 80–20 rule.  <br>
+if this is a read-heavy, estimate read throughput. <br>
+If a system is write-heavy then we need to estimate the Storage requirements per day, per year, and for 5–10 years. <br>
 
-// traffic is the user request from users to servers, storage is the user data or user-request data on disk, bandwidth is traffic from servers to users.
-// memory is the cache capacity in order to improve the performance, esp. for read-heavy
-// Estimation of the scale of the system, is helpful when we focus on scaling, partitioning, load balancing, and caching. 
+// traffic is the user request from users to servers, storage is the user data or user-request data on disk, bandwidth is traffic from servers to users. <br>
+// memory is the cache capacity in order to improve the performance, esp. for read-heavy <br>
+// Estimation of the scale of the system, is helpful when we focus on scaling, partitioning, load balancing, and caching.  <br>
 
 ## 2.1 Traffic in write/second, or read/second
-total users; 
-DAU(Daily active users)
-active connections per minutes
+total users;  <br>
+DAU(Daily active users) <br>
+active connections per minutes <br>
 
-How many requests per second/day do we expect?
-Type: (read, write, search); fast reads, fast writes, or both?
-Count: write and Read count in million per day
-Ratio: write : read ratio; generally 5 : 1
+How many requests per second/day do we expect? <br>
+Type: (read, write, search); fast reads, fast writes, or both? <br>
+Count: write and Read count in million per day <br>
+Ratio: write : read ratio; generally 5 : 1 <br>
 
 How much will it grow each year?
 
 ## 2.2 Storage in TB or GB/year
-Write: Write count * write size; e.g. 400M * 300B = 120GB/day
-	Total files/write; 
-	average file/write sizes; Limit on user input for each paste or a certain time (text amount, image size, user URL size) (not abuse)
-Metadata: user information, metadata about these writes
+Write: Write count * write size; e.g. 400M * 300B = 120GB/day <br>
+	Total files/write;  <br>
+	average file/write sizes; Limit on user input for each paste or a certain time (text amount, image size, user URL size) (not abuse) <br>
+Metadata: user information, metadata about these writes <br>
 
-Growth: Estimate in 5 or 10 years; Growth rate? e.g. 120GB * 365 days * 5 years = 200TB
-Margin: to keep some margin, If never more than 70% or 80% of capacity; Assuming a 70% capacity model (we don't want to go above 70% of the total capacity of our storage system); 200TB / 80% = 250TB
-Replication: replication for fault tolerance; e.g. 250TB * 2 = 500TB;
-(500TB / 4T/server = 125 servers) (NOTE: too big for a single machine, so must be partitioned) (so is the cache)
+Growth: Estimate in 5 or 10 years; Growth rate? e.g. 120GB * 365 days * 5 years = 200TB <br>
+Margin: to keep some margin, If never more than 70% or 80% of capacity; Assuming a 70% capacity model (we don't want to go above 70% of the total capacity of our storage system); 200TB / 80% = 250TB <br>
+Replication: replication for fault tolerance; e.g. 250TB * 2 = 500TB; <br>
+(500TB / 4T/server = 125 servers) (NOTE: too big for a single machine, so must be partitioned) (so is the cache) <br>
 
 ## 2.3 Bandwidth in KB/s or MB/s
-Ingress (upload): write count per second/minute * write average size
-Egress (download, outgoing): read count per second/minute * write average size
-Bandwidth will decide how to manage traffic and balance load between servers. ??? 
+Ingress (upload): write count per second/minute * write average size <br>
+Egress (download, outgoing): read count per second/minute * write average size <br>
+Bandwidth will decide how to manage traffic and balance load between servers. ???  <br>
 
 ## 2.4 Memory (cache) in GB or TB /day
-80-20 rule: 20% of hot pastes generate 80% of traffic, so only cache these 20% of pastes
-20% of daily traffic and based on client's usage patterns, can adjust how many cache servers we need
-20% * read count / per day * write average size 
+80-20 rule: 20% of hot pastes generate 80% of traffic, so only cache these 20% of pastes <br>
+20% of daily traffic and based on client's usage patterns, can adjust how many cache servers we need <br>
+20% * read count / per day * write average size  <br>
 
 Benefit: Low latency (real time)
 
 # 3. System API design in CRUD (Create/paste/post, Read/get, Update/put, Delete)
-The goal of the APIs is to make as much as clean & simple as possible to be simple to understand for everybody. A simple common way is making CRUDs.
-Establish the exact contract expected from the system and ensure if we haven't gotten any requirements wrong. 
-Remember to use always a key for secure authentication; throttle users based on their allocated quota.
-Another consideration is to decide if our application will be Client Driver or Server Driver.
-Another consideration how do we want to split our requests ???
-SOAP or REST API
+The goal of the APIs is to make as much as clean & simple as possible to be simple to understand for everybody. A simple common way is making CRUDs. <br>
+Establish the exact contract expected from the system and ensure if we haven't gotten any requirements wrong.  <br>
+Remember to use always a key for secure authentication; throttle users based on their allocated quota. <br>
+Another consideration is to decide if our application will be Client Driver or Server Driver. <br>
+Another consideration how do we want to split our requests ??? <br>
+SOAP or REST API <br>
 
-api_dev_key : the API developer key of a registered account. throttle users based on their allocated quota
-Search Query: 
-Maximum Results to Return: 
-sort(number) Optional sort mode: 0 - latest first, 1 - best matched, 2 - most liked
-page_token(string) specify a page in the result set that should be returned
-Timestamp: 
+api_dev_key : the API developer key of a registered account. throttle users based on their allocated quota <br>
+Search Query:  <br>
+Maximum Results to Return:  <br>
+sort(number) Optional sort mode: 0 - latest first, 1 - best matched, 2 - most liked <br>
+page_token(string) specify a page in the result set that should be returned <br>
+Timestamp:  <br>
 
 Return: (JSON) a list of results matching the search query
 
-# 4. Database Design
-Benefit: Defining the data model in the early part of the interview will clarify how data will flow between different system components. Later, it will guide for data partitioning and management. 
-Identify various system entities (primary objects), their relationship (static), how they will interact with each other (dynamic, create, extract, transform, load), and how these objects flow between different system components. 
+# 4. Database Design (Define Data Model)
+Benefit: Defining the data model in the early part of the interview will clarify how data will flow between different system components. Later, it will guide for data partitioning and management.  <br>
+Identify various system **entities** (primary objects), their **relationship** (static), how they will **interact** with each other (dynamic, create, extract, transform, load), and how these objects **flow** between different system components.  <br>
 
 Which database system should we use? NoSQL like Cassandra or MySQL?
 
 ## 4.1 Database Schema or components/classes and their relationship/connection (static)
-What to store? objects, and their relations
-Table, Relationship
-Primary Key
-Foreign Key 
+What to store? objects, and their relations <br>
+Table, Relationship <br>
+Primary Key <br>
+Foreign Key  <br>
 
-Consideration for objects
-1. Does store billions of records (objects)?
-2. for each object, Is the object small (less than 1KB) or medium (a few MB, separated to object storage)?
-3. What is the relationship between records?
+Consideration for objects <br>
+1. Does store billions of records (objects)? <br>
+2. for each object, Is the object small (less than 1KB) or medium (a few MB, separated to object storage)? <br>
+3. What is the relationship between records? <br>
 
-Storage: 
-Storage layer = Metadata storage + Object storage; such a division of data will allow us to scale them individually
-Metadata storage: like users, pastes, etc. can use Relational DB like MySQL, or distributed key-value DB like Dynamo or Cassandra
-Object Storage: like a text paste, an image, etc; use object storage like Amazon S3, or HDFS. 
+Storage:  <br>
+Storage layer = Metadata storage + Object storage; such a division of data will allow us to scale them individually <br>
+Metadata storage: like users, pastes, etc. can use Relational DB like MySQL, or distributed key-value DB like Dynamo or Cassandra <br>
+Object Storage: like a text paste, an image, etc; use object storage like Amazon S3, or HDFS.  <br>
 
-Common objects (e.g.)
-User: id (primary key, int), name (varchar 20), email (varchar 32), CreationDate (datetime, 4 byte?), LastLogin (datetime), Birthday (datetime)
-Description (512 or 256), phone (12), path(256, path to the object storage)
-item: CreationData, ExpirationDate, type (int), Description (varchar 512), Category: (smallint), UserId(int, creator), contents(varchar 256), Path(varchar 256)
-location: latitude, longitude (int - 4 bytes, or 8 bytes)
-num of likes/dislikes (int), num of comments, num of shares, num of views
-Rating(how many stars a place gets out of ten)
-Photo: PhotoID(int), UserID(int), PhotoPath(varchar 256), Photo Latitude & Longitude (int), User Latitude & Longitude (int), CreationDate(datetime)
+Common objects (e.g.) <br>
+User: id (primary key, int), name (varchar 20), email (varchar 32), CreationDate (datetime, 4 byte?), LastLogin (datetime), Birthday (datetime) <br>
+Description (512 or 256), phone (12), path(256, path to the object storage) <br>
+item: CreationData, ExpirationDate, type (int), Description (varchar 512), Category: (smallint), UserId(int, creator), contents(varchar 256), Path(varchar 256) <br>
+location: latitude, longitude (int - 4 bytes, or 8 bytes) <br>
+num of likes/dislikes (int), num of comments, num of shares, num of views <br>
+Rating(how many stars a place gets out of ten) <br>
+Photo: PhotoID(int), UserID(int), PhotoPath(varchar 256), Photo Latitude & Longitude (int), User Latitude & Longitude (int), CreationDate(datetime) <br>
 
-tags: 
-category: (1 byte)
-default_language: 
+tags:  <br>
+category: (1 byte) <br>
+default_language:  <br>
 
-latest (CreationDate), popular (likes, comments, shares), relevant (used in ranking)  
+latest (CreationDate), popular (likes, comments, shares), relevant (used in ranking)   <br>
 
-On which field(s) to build some index?
-Pro: database performance =>  indexes to improve the performance of search queries, esp. when dataset is huge
-Con: Dramatically speed up data retrieval, but slow down the write (insert, update, and delete) performance.
+On which field(s) to build some index? <br>
+Pro: database performance =>  indexes to improve the performance of search queries, esp. when dataset is huge <br>
+Con: Dramatically speed up data retrieval, but slow down the write (insert, update, and delete) performance. <br>
 
-the goal of creating an index on a particular table in a database is to make it faster to search through the table and find the row or rows that we want. 
-must carefully consider how users will access the data. 
-Indexing needs a primary key on the table with a unique value; Using one or more columns
-Ordered indexing (increasing or decreasing) or Hash-indexing
-In any index-based data, the partition is not allowed ???
+the goal of creating an index on a particular table in a database is to make it faster to search through the table and find the row or rows that we want.  <br>
+must carefully consider how users will access the data.  <br>
+Indexing needs a primary key on the table with a unique value; Using one or more columns <br>
+Ordered indexing (increasing or decreasing) or Hash-indexing <br>
+In any index-based data, the partition is not allowed ??? <br>
 
 # 5. High-Level Design — This is pretty much a template, you can put in front of interviewers.
 Outline a high level design with all important components and connections, involved in the request flow from the client until the response is passed to the client. 
