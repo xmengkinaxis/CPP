@@ -1,4 +1,5 @@
 # System Design Interviews checklist
+
 - [System Design Interviews checklist](#system-design-interviews-checklist)
 - [0. Time Allocation](#0-time-allocation)
 - [NOTE:](#note)
@@ -19,7 +20,7 @@
 	- [2.2 Storage in TB or GB/year](#22-storage-in-tb-or-gbyear)
 	- [2.3 Bandwidth in KB/s or MB/s](#23-bandwidth-in-kbs-or-mbs)
 	- [2.4 Memory (cache) in GB or TB /day](#24-memory-cache-in-gb-or-tb-day)
-- [3. System API design in CRUD (Create/paste/post, Read/get, Update/put, Delete)](#3-system-api-design-in-crud-createpastepost-readget-updateput-delete)
+- [3. System API design in CRUD (Create/paste/post, Read/get, Update/put, Delete) + Search](#3-system-api-design-in-crud-createpastepost-readget-updateput-delete--search)
 - [4. Database Design (Define Data Model)](#4-database-design-define-data-model)
 	- [4.1 Database Schema or components/classes and their relationship/connection (static)](#41-database-schema-or-componentsclasses-and-their-relationshipconnection-static)
 - [5. High-Level Design — This is pretty much a template, you can put in front of interviewers.](#5-high-level-design--this-is-pretty-much-a-template-you-can-put-in-front-of-interviewers)
@@ -184,7 +185,7 @@ Bandwidth will decide how to manage traffic and balance load between servers. ??
 
 Benefit: Low latency (real time)
 
-# 3. System API design in CRUD (Create/paste/post, Read/get, Update/put, Delete)
+# 3. System API design in CRUD (Create/paste/post, Read/get, Update/put, Delete) + Search
 The goal of the APIs is to make as much as clean & simple as possible to be simple to understand for everybody. A simple common way is making CRUDs. <br>
 Establish the exact contract expected from the system and ensure if we haven't gotten any requirements wrong.  <br>
 Remember to use always a key for secure authentication; throttle users based on their allocated quota. <br>
@@ -569,11 +570,11 @@ a reference count, freshness, user location, language, personal history, demogra
 Explore competing solutions, speak to all their major tradeoffs, and make intelligent decisions about how to balance each of those tradeoffs
 
 * Push vs Pull (or hybrid).e.g in notification, in CDN; (celebrity user) (online only); (not more than 10 from a single user to avoid spamming) in newsfeed 
-* Pull CDN: first client request is slower. Time-To-Live
-* Push CDN: full response to upload content to the servers and rewriting URLs to point to the servers
+* Pull CDN: first client request is slower. Time-To-Live; suitable for serving dynamic content; favored for frequently changing content and a high traffic load; low storage consumption
+* Push CDN: full response to upload content to the servers and rewriting URLs to point to the servers; appropriate for static content delivery; need more replicas than pull CDN
 	* Traffic: heavy traffic works well with Pull CDN.  less traffic works well with Push CDN; 
 	* Configuration: Pull CDN is easier to configure than Push CDN: 
-	* Content Update: Sites with higher no of frequent updates work well with PUll CDN
+	* Content Update: Sites with higher no of frequent updates work well with Pull CDN
 
 * Partition 
 	* based on user ID or Tweet/Status ID or Hybrid or based on creation time or combination of tweet id and creation time
