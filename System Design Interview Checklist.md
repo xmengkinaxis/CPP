@@ -373,11 +373,13 @@ Other consideration: evenly distribute the load, no hotspot
 # 7. Optimization
 
 ## 7.1. Security and Permissions
-a. Privacy ???  
-b. Security (certification and authentication)
-c. Throttle (API rate limiting) (against abusive behaviors, misbehavior, spikiness in traffic) 
-Rate Limiting is limiting the amount of operation that can be done in a limited amount of time. e.g. security ramification, performance ramification. It is a defensive measure for services, protect the system from flooding with the traffic, for denial of service (DOS)
-d. International Law (e.g. restriction on video contents)
+1. Privacy ???  
+2. Security (certification and authentication)
+3. Throttle (API rate limiting) (against abusive behaviors, misbehavior, spikiness in traffic) 
+	* Rate Limiting is limiting the amount of operation that can be done in a limited amount of time. e.g. security ramification, performance ramification. 
+	* It is a defensive measure for services, protect the system from flooding with the traffic, for denial of service (DOS)
+	* types: Hard throttling (hard limit, discard when exceed), Soft throttling (can exceed by a certain percentage), Elastic or dynamic throttling (can cross the predefined limit if the system has excess resources available)
+4. International Law (e.g. restriction on video contents)
 
 ## 7.2. Analytics - users behavior 
 Purpose: Get some insight on how users use the system 
