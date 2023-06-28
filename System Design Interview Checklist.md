@@ -52,6 +52,7 @@
 	- [Interview tool](#interview-tool)
 	- [Questions:](#questions)
 
+
 <!-- TOC -->
 
 # 0. Time Allocation
@@ -94,13 +95,13 @@ Reliability, Redundant, Stable, Security, Availability 100 up-time?, Simplicity 
 Need enough resources to handle the increasing load; the system must be simple so that it is easy to scale at any point in time; performance should always be increased with scalability. <br> 
 
 ### Availability: 
-the percentage of the time that a system remains operational to perform its required function in a specific period under normal conditions; if a system is reliable, it is available. However, if it is available, it is not necessarily reliable.  <br>
-Every request received by a non-failing node in the system must result in a response. Refers to the system's ability to remain accessible even if one or more nodes in the system to go down. 
-Measured in a number of 9s, three 9s - 99.9%, four 9s - 99.99% <br>
-Availability = Uptime ÷ (Uptime + downtime);  <br>
-Mean Time Between Failures (MTBF): total uptime / # of failures. This is the average time between failures.  <br>
-Mean Time to Repair (MTTR): total downtime / # of failures. This is the average time taken to recover from a failure. <br>
-Availability can be achieved through CDN (Cache), redundancy (replica), load balancing (distribute the requests only to the active healthy nodes) <br>
+* the percentage of the time that a system remains operational to perform its required function in a specific period under normal conditions; if a system is reliable, it is available. However, if it is available, it is not necessarily reliable.  <br>
+* Every request received by a non-failing node in the system must result in a response. Refers to the system's ability to remain accessible even if one or more nodes in the system to go down. 
+* Measured in a number of 9s, three 9s - 99.9%, four 9s - 99.99% <br>
+* Availability = Uptime ÷ (Uptime + downtime);  <br>
+* **Mean Time Between Failures (MTBF)**: total uptime / # of failures. This is the average time between failures.  <br>
+* **Mean Time to Repair (MTTR)**: total downtime / # of failures. This is the average time taken to recover from a failure. <br>
+* Availability can be achieved through CDN (Cache), redundancy (replica), load balancing (distribute the requests only to the active healthy nodes) <br>
 
 ### Consistency: 
 All nodes see the same data at the same time, no matter users read/write from/to any node. Equivalent to having a single up-to-date copy of the data. is the agreement between multiple nodes in a distributed system to achieve a certain value.
@@ -138,7 +139,7 @@ Break it down, to the most important, minimal features for your system.
 No user authentication or authorization; both are already completed <br>
 get all or nothing, not a partial result;  <br>
 fairness <br>
-put some restriction to stop system abuse, e.g. limit the size of text or image or video, or add a rate limiter (prevent abuse behavior, provide a fair and reasonable use of the resource's capacity when sharing among many users) <br>
+put some restriction to stop system abuse, e.g. limit the size of text or image or video, or add a rate limiter (prevent abuse behavior, provide a fair and reasonable use of the resource's capacity when sharing among many users, control the cost of operations and avoid excess costs) <br>
 assumption: surge in traffic <br>
 
 # 2. Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation.
