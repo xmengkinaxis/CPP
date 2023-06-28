@@ -118,10 +118,11 @@ Bandwidth is the maximum data that can be transferred on the different networks.
 Request Per Second;
 
 ### Scalability: 
-a distributed system can continuously evolve in order to support the growing amount of work; Horizontal (scaling out) vs Vertical Scaling (scaling up) <br>
-increase resources and performance with increasing load and traffic over the existing system without affecting the complexity and performance; need enough resources to handle the increasing load, for it would be increased at any point in time; should be simple and easy to scale; performance should always be increased with scalability <br>
-A system can be called scalable if adding more resources in the system results in performance increases. Performance is directly proportional to resources added. <br>
-Scalability can be achieved through CDN (Cache which bring the content closer to user and remove the requirement of high bandwith), reading replicas <br> 
+* a distributed system can continuously evolve in order to support the growing amount of work; 
+* increase resources and performance with increasing load and traffic over the existing system without affecting the complexity and performance; need enough resources to handle the increasing load, for it would be increased at any point in time; should be simple and easy to scale; performance should always be increased with scalability <br>
+* A system can be called scalable if adding more resources in the system results in performance increases. Performance is directly proportional to resources added. <br>
+* Horizontal (scaling out) vs Vertical Scaling (scaling up) <br>
+* Scalability can be achieved through CDN (Cache which bring the content closer to user and remove the requirement of high bandwith), reading replicas <br> 
 
 ### Reliability: 
 keep delivering its service even when on or several of its software or hardware components fail; achieve this through redundancy of both the software component and data, (and hardware); achieve such resilience with a cost in order to eliminate every single point of failure; <-> vulnerable, data lost; (resilient, no single point of failure) (authentication)
