@@ -110,12 +110,12 @@ Weak consistency: no guarantee that all nodes have the same data at any time.
 Eventual consistency: ensure data of each node of the database get consistent eventually; offers low latency at the risk of returning stale data.
 
 ### Efficiency (Latency and throughput): 
-Two standard measures of its efficiency are the response time(or latency) that denotes the delay to obtain the first item and the throughput (or bandwidth) with denotes the number of items delivered in a given time unit. (Metrics: Latency/Response Time, throughput/Bandwidth)
-Response Time: the time difference between request and response
-Latency: how long a system takes to transmit data from one point to another point in the system;
-Throughput is the amount of work done by the system in a given particular time. 
-Bandwidth is the maximum data that can be transferred on the different networks.
-Request Per Second;
+* Two standard measures of its efficiency are **the response time(or latency)** that denotes the delay to obtain the first item and **the throughput (or bandwidth)** with denotes the number of items delivered in a given time unit. (Metrics: Latency/Response Time, throughput/Bandwidth)
+* **Response Time**: the time difference between request and response
+* **Latency**: how long a system takes to transmit data from one point to another point in the system;
+* **Throughput** is the amount of work done by the system in a given particular time. 
+* **Bandwidth** is the maximum data that can be transferred on the different networks.
+* Request Per Second;
 
 ### Scalability: 
 * a distributed system can continuously evolve in order to support the growing amount of work; 
