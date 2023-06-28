@@ -48,7 +48,7 @@
 	- [Extensibility](#extensibility)
 	- [Ranking](#ranking)
 	- [trade-off](#trade-off)
-	- [NOTE:](#note-1)
+	- [Popular services:](#popular-services)
 	- [Interview tool](#interview-tool)
 	- [Questions:](#questions)
 
@@ -65,7 +65,8 @@ The key aspect of system design is to identify the problem area and trade off, a
 Get the skeleton in the place and then start optimizing (optimization is an evolutionary process) notch by notch;
 
 * Lead and drive an Open-ended conversation as doing a demo or presentation;
-* Everything is a trade-off; Make points with justification
+* Everything is a trade-off; Make points with justification; Defend your design;
+* Do NOT over-design or under-design;
 * No single-point failure (to achieve highly reliable, no data lost)
 
 # 1. Ask clarifying and high-level design Questions to scope the problem well
@@ -119,7 +120,7 @@ Request Per Second;
 a distributed system can continuously evolve in order to support the growing amount of work; Horizontal (scaling out) vs Vertical Scaling (scaling up) <br>
 increase resources and performance with increasing load and traffic over the existing system without affecting the complexity and performance; need enough resources to handle the increasing load, for it would be increased at any point in time; should be simple and easy to scale; performance should always be increased with scalability <br>
 A system can be called scalable if adding more resources in the system results in performance increases. Performance is directly proportional to resources added. <br>
-Scalability can be achieved through CDN (Cache which bring the content closer to user and remove the requirement of high bandwith), reading replicas, 
+Scalability can be achieved through CDN (Cache which bring the content closer to user and remove the requirement of high bandwith), reading replicas <br> 
 
 ### Reliability: 
 keep delivering its service even when on or several of its software or hardware components fail; achieve this through redundancy of both the software component and data, (and hardware); achieve such resilience with a cost in order to eliminate every single point of failure; <-> vulnerable, data lost; (resilient, no single point of failure) (authentication)
@@ -137,7 +138,7 @@ Break it down, to the most important, minimal features for your system.
 No user authentication or authorization; both are already completed <br>
 get all or nothing, not a partial result;  <br>
 fairness <br>
-put some restriction to stop system abuse, e.g. limit the size of text or image or video <br>
+put some restriction to stop system abuse, e.g. limit the size of text or image or video, or add a rate limiter (prevent abuse behavior, provide a fair and reasonable use of the resource's capacity when sharing among many users) <br>
 assumption: surge in traffic <br>
 
 # 2. Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation.
@@ -590,11 +591,7 @@ Explore competing solutions, speak to all their major tradeoffs, and make intell
 
 
 
-## NOTE: 
-Lead the conversation; <br>
-Defend your design; <br>
-Do NOT over-design or under-design; <br>
-
+## Popular services: 
 Distributed cache: Redis<br>
 Search Index : Elastic<br>
 Message queue : Kafka<br>
