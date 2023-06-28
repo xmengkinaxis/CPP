@@ -93,12 +93,13 @@ Reliability, Redundant, Stable, Security, Availability 100 up-time?, Simplicity 
 Need enough resources to handle the increasing load; the system must be simple so that it is easy to scale at any point in time; performance should always be increased with scalability. <br> 
 
 ### Availability: 
-the percentage of the time that a system remains operational to perform its required function in a specific period under normal conditions; if a system is reliable, it is available. However, if it is available, it is not necessarily reliable.  
+the percentage of the time that a system remains operational to perform its required function in a specific period under normal conditions; if a system is reliable, it is available. However, if it is available, it is not necessarily reliable.  <br>
 Every request received by a non-failing node in the system must result in a response. Refers to the system's ability to remain accessible even if one or more nodes in the system to go down. 
-Measured in a number of 9s, three 9s - 99.9%, four 9s - 99.99%
-Availability = Uptime ÷ (Uptime + downtime); 
-Mean Time Between Failures (MTBF): total uptime / # of failures. This is the average time between failures. 
-Mean Time to Repair (MTTR): total downtime / # of failures. This is the average time taken to recover from a failure.
+Measured in a number of 9s, three 9s - 99.9%, four 9s - 99.99% <br>
+Availability = Uptime ÷ (Uptime + downtime);  <br>
+Mean Time Between Failures (MTBF): total uptime / # of failures. This is the average time between failures.  <br>
+Mean Time to Repair (MTTR): total downtime / # of failures. This is the average time taken to recover from a failure. <br>
+Availability can be achieved through CDN (Cache), redundancy (replica), load balancing (distribute the requests only to the active healthy nodes) <br>
 
 ### Consistency: 
 All nodes see the same data at the same time, no matter users read/write from/to any node. Equivalent to having a single up-to-date copy of the data. is the agreement between multiple nodes in a distributed system to achieve a certain value.
@@ -115,9 +116,10 @@ Bandwidth is the maximum data that can be transferred on the different networks.
 Request Per Second;
 
 ### Scalability: 
-a distributed system can continuously evolve in order to support the growing amount of work; Horizontal (scaling out) vs Vertical Scaling (scaling up)
-increase resources and performance with increasing load and traffic over the existing system without affecting the complexity and performance; need enough resources to handle the increasing load, for it would be increased at any point in time; should be simple and easy to scale; performance should always be increased with scalability
-A system can be called scalable if adding more resources in the system results in performance increases. Performance is directly proportional to resources added. 
+a distributed system can continuously evolve in order to support the growing amount of work; Horizontal (scaling out) vs Vertical Scaling (scaling up) <br>
+increase resources and performance with increasing load and traffic over the existing system without affecting the complexity and performance; need enough resources to handle the increasing load, for it would be increased at any point in time; should be simple and easy to scale; performance should always be increased with scalability <br>
+A system can be called scalable if adding more resources in the system results in performance increases. Performance is directly proportional to resources added. <br>
+Scalability can be achieved through CDN (Cache which bring the content closer to user and remove the requirement of high bandwith), reading replicas, 
 
 ### Reliability: 
 keep delivering its service even when on or several of its software or hardware components fail; achieve this through redundancy of both the software component and data, (and hardware); achieve such resilience with a cost in order to eliminate every single point of failure; <-> vulnerable, data lost; (resilient, no single point of failure) (authentication)
