@@ -20,7 +20,7 @@
 	- [2.2 Storage in TB or GB/year](#22-storage-in-tb-or-gbyear)
 	- [2.3 Bandwidth in KB/s or MB/s](#23-bandwidth-in-kbs-or-mbs)
 	- [2.4 Memory (cache) in GB or TB /day](#24-memory-cache-in-gb-or-tb-day)
-- [3. System API design in CRUD (Create/paste/post, Read/get, Update/put, Delete) + Search](#3-system-api-design-in-crud-createpastepost-readget-updateput-delete--search)
+- [3. System API design](#3-system-api-design)
 - [4. Database Design (Define Data Model)](#4-database-design-define-data-model)
 	- [4.1 Database Schema or components/classes and their relationship/connection (static)](#41-database-schema-or-componentsclasses-and-their-relationshipconnection-static)
 - [5. High-Level Design — This is pretty much a template, you can put in front of interviewers.](#5-high-level-design--this-is-pretty-much-a-template-you-can-put-in-front-of-interviewers)
@@ -62,13 +62,18 @@
 4. Wrap: 5 minutes (3 - 5 m)
 
 # NOTE: 
-The key aspect of system design is to identify the problem area and trade off, and be able to justify a decision over another. 
-Get the skeleton in the place and then start optimizing (optimization is an evolutionary process) notch by notch;
+The key aspect of system design is to identify the problem area and trade off, and be able to justify a decision over another. <br>
+Get the skeleton in the place and then start optimizing (optimization is an evolutionary process) notch by notch; <br>
+Interviewrs are more interested in your thought process throughout the interview than in your final design. The success heavily depends on your ability to communicate your thought process and hold a discussion (collaborate). <br>
 
 * Lead and drive an Open-ended conversation as doing a demo or presentation;
 * Everything is a trade-off; Make points with justification; Defend your design;
 * Do NOT over-design or under-design;
 * No single-point failure (to achieve highly reliable, no data lost)
+* Identify potential bottlenecks and future problems (scale)
+* Describe failover and impacts on users and Service Level Agreements (SLAs)
+* Backup and disaster recovery
+* Usage patterns, and security
 
 # 1. Ask clarifying and high-level design Questions to scope the problem well
 what an interviewer is expecting from us, 
@@ -190,22 +195,32 @@ Bandwidth will decide how to manage traffic and balance load between servers. ??
 
 Benefit: Low latency (real time)
 
-# 3. System API design in CRUD (Create/paste/post, Read/get, Update/put, Delete) + Search
+# 3. System API design
+**Goal:**<br>
 The goal of the APIs is to make as much as clean & simple as possible to be simple to understand for everybody. A simple common way is making CRUDs. <br>
 Establish the exact contract expected from the system and ensure if we haven't gotten any requirements wrong.  <br>
+
+**Consideration:**<br>
 Remember to use always a key for secure authentication; throttle users based on their allocated quota. <br>
 Another consideration is to decide if our application will be Client Driver or Server Driver. <br>
 Another consideration how do we want to split our requests ??? <br>
 SOAP or REST API <br>
 
-api_dev_key : the API developer key of a registered account. throttle users based on their allocated quota <br>
-Search Query:  <br>
-Maximum Results to Return:  <br>
-sort(number) Optional sort mode: 0 - latest first, 1 - best matched, 2 - most liked <br>
-page_token(string) specify a page in the result set that should be returned <br>
-Timestamp:  <br>
+**Operations:** <br>
+* CRUD (Create/paste/post, Read/get, Update/put, Delete) 
+* Others (Search, list)
+* these operations might work on different objects/levels/scopes
 
-Return: (JSON) a list of results matching the search query
+**Parameters:** <br>
+* api_dev_key : the API developer key of a registered account. throttle users based on their * allocated quota <br>
+* Search Query:  <br>
+* aximum Results to Return:  <br>
+* sort(number) Optional sort mode: 0 - latest first, 1 - best matched, 2 - most liked <br>
+* page_token(string) specify a page in the result set that should be returned <br>
+* Timestamp:  <br>
+
+**Return:** <br>
+(JSON) a list of results matching the search query
 
 # 4. Database Design (Define Data Model)
 Benefit: Defining the data model in the early part of the interview will clarify how data will flow between different system components. Later, it will guide for data partitioning and management.  <br>
