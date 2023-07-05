@@ -26,7 +26,7 @@
 - [4. Database Design (Define Data Model)](#4-database-design-define-data-model)
 	- [4.1 Database Schema or components/classes and their relationship/connection (static)](#41-database-schema-or-componentsclasses-and-their-relationshipconnection-static)
 - [5. High-Level Design — This is pretty much a template, you can put in front of interviewers.](#5-high-level-design--this-is-pretty-much-a-template-you-can-put-in-front-of-interviewers)
-- [6. Low-Level Design - Design core components; detailed component design](#6-low-level-design---design-core-components-detailed-component-design)
+- [6. Low-Level Design - Deep dive core components; detailed component design](#6-low-level-design---deep-dive-core-components-detailed-component-design)
 	- [6.1 Scale the design](#61-scale-the-design)
 	- [6.2 Partition and Replication (core of a distributed system, to scale out the system)](#62-partition-and-replication-core-of-a-distributed-system-to-scale-out-the-system)
 - [7. Optimization](#7-optimization)
@@ -301,9 +301,9 @@ Usually, a scalable system include (The Single Responsibility Principle advocate
 1. Client
 2. Load balancer
 3. WebServer (reverse proxy), Front-end servers
-4. Service (application layer, aka. platform layer) (Service Partition; list different services required) 
+4. Services (application layer, aka. platform layer) (Service Partition; list different services required, micro-services) 
 5. Caching system
-6. Database (master/slave cluster)
+6. Database (master/slave cluster, partition and replication)
 7. Rate limiter
 8. Manager node: access privilege, console
 9. Monitoring service
@@ -311,16 +311,16 @@ Usually, a scalable system include (The Single Responsibility Principle advocate
 NOTE: 
 Application layer will process all incoming and outgoing requests. 
 
-# 6. Low-Level Design - Design core components; detailed component design
-Dig deeper into details of two or three major/core components;
-Pick or ask for; The interviewers' feedback should always guide us to what specific parts need focus, elaborate on, and further discussion. 
-(self choose some core components which are critical in performance)
+# 6. Low-Level Design - Deep dive core components; detailed component design
+Dig deeper into details of two or three major/core components; <br>
+Pick or ask for; The interviewers' feedback should always guide us to what specific parts need focus, elaborate on, and further discussion.  <br>
+(self choose some core components which are critical in performance)  <br>
 
-Present different approaches, their pros and cons, and explain why we will prefer one approach over the other;  
-Consider and Discuss potential solutions and trade-offs between different options while keeping system constrains in mind;
+Present different approaches, their pros and cons, and explain why we will prefer one approach over the other;  <br> 
+Consider and Discuss potential solutions and trade-offs between different options while keeping system constrains in mind; <br>
 
-How to handle XXX (a write or a read) request? If failed (such duplicated key), how to handle?
-pull vs push
+How to handle XXX (a write or a read) request? If failed (such duplicated key), how to handle? <br>
+pull vs push <br>
 
 reduce latency by prefetch/pre-calculate, caching, parallelization/Asynchronous loading
 Customer behavior can be predicted, and heavy customer requests can be pre-calculated and saved using customer proxy pre-cache.
@@ -333,62 +333,75 @@ Identify, address, and mitigate bottlenecks and single point of failures using p
 
 **Approaches/Methods** <br>
 1. Load balancer (avoid dynamic overheated or static overloaded) - What components need better load balancing? <br>
-2. Caching - How much and at which layer should we introduce cache to speed thing up? <br> 
-3. Partition (horizontally scale, Database sharding); How to partition to distribute to multiple database (avoid uneven istribution [overloaded] and hotspot [overheated], user abuse behavior) <br>
-4. Replication - Define how the data will be replicated across servers <br>
-5. Index the database/tables ??? <br>
+2. Caching 
+   * client side - hold some meta data
+   * server side - How much and at which layer should we introduce cache to speed thing up? can cache different objects for different services
+3. Partition (horizontally scale, Database sharding); How to partition to distribute to multiple database (avoid uneven istribution [overloaded] and hotspot [overheated], user abuse behavior)
+4. Replication - Define how the data will be replicated across servers, to achieve high availability; need to deal with consistency <br>
+5. Index the database/tables to speed up list or search operations <br>
 
 ## 6.2 Partition and Replication (core of a distributed system, to scale out the system)
 To mitigate the single point of failure and bottleneck:  <br>
-1. single point of failure: backup or failover (fault tolerance)
+1. single point of failure: backup (snapshot periodically and add logs) or failover (fault tolerance)
 2. bottleneck: improve load balancing and performance by creating duplicates/replication
-The new problem introduced by replication:
-1. consistency
+3. consistency: The new problem introduced by replication
 
-Replication: the duplication of critical components or functions of a system, in the form of a backup or fail-safe (for fault tolerance) or to improve actual system performance (for load balancing); make multiple copies of data and store them on different servers. sharing information must ensure consistency between redundant resources. remove the single points of failures and provide backups in a crisis. It improves the availability, durability, reliability of data across the system. It can achieve load balance and fault tolerance. e.g. Primary and secondary, primary-replica relationship <br>
-refers to keeping multiple copies of the data at various nodes(preferably geographically distributed) to achieve availability, scalability, and performance; the concepts of replication and partitioning go together; comes with the complexities, due to frequent changes, consistencies, concurrent writes, and fault tolerances<br>
-1. Keeping data geographically closer to the consumers of data
-2. Tolerate failure in case some parts of the system fail.
-3. Scale the number of machines that can serve read queries.
+**Replication:** the duplication of critical components or functions or data of a system, in the form of a backup or fail-safe (for fault tolerance) or to improve actual system performance (for load balancing); <br>
+refers to keeping multiple copies of the data at various nodes(preferably geographically distributed) to achieve availability, scalability, and performance; <br>
+the concepts of replication and partitioning go together; comes with the complexities, due to frequent changes, consistencies, concurrent writes, and fault tolerances<br>
+* make multiple copies of data and store them on different servers. sharing information must ensure consistency between redundant resources by synchronously replicate data
+* remove the single points of failures and provide backups in a crisis 
+* It improves the availability, durability, reliability of data across the system 
+* It can achieve load balance and fault tolerance. e.g. Primary and secondary, primary-replica relationship
+* Keeping data geographically closer to the consumers of data to improve performance by reducing latency
+* Tolerate failure in case some parts of the system fail.
+* Scale the number of machines that can serve read queries.
+* Replication factor: the number of copies of data, e.g. usually 3; for four copies: local copy to protect against server rank and drive failure, second copy in the other data center within the same region, and the third copy in a data center in different region to protect against regional disasters 
 
-Replication types (need a trade-off between data consistency and availability) (dimension #1)
-* Synchronous: success after the primary node receive the acknowledgment from all secondary nodes; pro: all secondary nodes are update to date; con: high latency if a secondary crashed without any acknowledge
-* Asynchronous: report success after primary node updating itself; pro: the primary can continue its work even if all secondary node are down; con: written data might be lost if the primary node is down
+**Replication types** (need a trade-off between data consistency and availability) (dimension #1 timing)
+* **Synchronous:** success after the primary node receive the acknowledgment from all secondary nodes; 
+  * replicate within a storage cluster
+  * pro: all secondary nodes are update to date; 
+  * con: high latency if a secondary crashed without any acknowledge
+* **Asynchronous:** report success after primary node updating itself; 
+  * replicate accross data centers and regions
+  * pro: the primary can continue its work even if all secondary node are down; 
+  * con: written data might be lost if the primary node is down
 
-Data replication models (dimension #2)
+**Data replication models** (dimension #2 leadership)
 * Single leader or primary-secondary replication; appropriate for read-heavy and read resilient, but not for write-heavy; primary is the bottleneck and the single point of failure; 
 * Multi-leader replication; conflict when concurrent writes on the same data on the leaders; avoid conflicts, last-write-wins, or custom logic to handle conflicts
 * Peer-to-peer or leaderless replication; quorums to solve the write-write inconsistency; 
 
-Partitioning (Horizontal or Vertical): the technique to break a big Database into many smaller parts, and the process of distributing/splitting up a database/table across a set of servers. So that each database can only manage a subset of the data. It is to improve the manageability, performance, scalability, availability (fault tolerance), and load balancing of an application; access only a smaller fraction of data to run a query faster as there is less data to scan; reduce the overall response time
-Partitioning of relational data usually refers to decomposing your tables either row-wise (horizontally) or column-wise (vertically).
-for higher efficiency and lower latencies
+**Partitioning (Horizontal or Vertical):** the technique to break a big Database into many smaller parts, and the process of distributing/splitting up a database/table across a set of servers. So that each database can only manage a subset of the data. It is to improve the manageability, performance, scalability, availability (fault tolerance), and load balancing of an application; access only a smaller fraction of data to run a query faster as there is less data to scan; reduce the overall response time <br>
+Partitioning of relational data usually refers to decomposing your tables either row-wise (horizontally) or column-wise (vertically). <br>
+for higher efficiency and lower latencies <br>
 
-Scaling horizontally (or scaling out) means adding more instances of an application or service to share the load. conversely, scaling vertically (or scaling up) is about adding more resources, like CPU power or memory, to an instance. 
+**Scaling horizontally (or scaling out)** means adding more instances of an application or service to share the load. conversely, scaling vertically (or scaling up) is about adding more resources, like CPU power or memory, to an instance. 
 
-Pro: less read and write traffic, less replication, and more cache hit. Allow write in parallel with increase throughput. Index size is also reduced, which generally improve performance with faster queries. 
+**Pro:** less read and write traffic, less replication, and more cache hit. Allow write in parallel with increase throughput. Index size is also reduced, which generally improve performance with faster queries. 
 
-Method: 
+**Method:** 
 1. Horizontal partitioning (range based partitioning, Data Sharding) put different rows into different tables: Pros: statically in a predictable manner; Cons: unbalanced servers or hotspots, higher latencies, and unavailability)
 e.g. Key-based (Hash) sharding; Range-based Sharding; Directory-Based Sharding (Dynamic Sharding)(by using a lookup table if the number is fixed) <br>
-	1. Hash-based Partitioning -> overloaded partition -> Consistent Hashing; Pros:evenly and randomly distribution, minimize hotspot, speed up the rebalancing process after adding or removing nodes, easier for clusters with heterogeneous machines; Cons: need to ask all and then aggregate the results
-	2. Range, list, hash partitioning; and combined partitioning (partition, and sub-partition); (partition based on the maximum capacity of the server); Pro: static and a predictable manner; Con: unbalanced
-	3. Directory Based Partitioning: a loosely coupled approach; the lookup/dictionary server that holds the mappings between each tuple key to its DB server. Pros: changing without an impact on the application
+   * Hash-based Partitioning -> overloaded partition -> Consistent Hashing; Pros:evenly and randomly distribution, minimize hotspot, speed up the rebalancing process after adding or removing nodes, easier for clusters with heterogeneous machines; Cons: need to ask all and then aggregate the results
+   * Range, list, hash partitioning; and combined partitioning (partition, and sub-partition); (partition based on the maximum capacity of the server); Pro: static and a predictable manner; Con: unbalanced
+   * Directory Based Partitioning: a loosely coupled approach; the lookup/dictionary server that holds the mappings between each tuple key to its DB server. Pros: changing without an impact on the application
 
-Criteria: (hash, range, RR, composite)
+**Criteria:** (hash, range, RR, composite)
 a. Key or Hash-based partitioning; hash some key attributes of the storing entities to the partition number; consistent hashing to create a uniform distribution/allocation
 b. List partitioning; each partition is assigned a list of (key) values (sometime, similar to a range based partitioning, sharding)
 c. Round-robin partitioning
 d. Composite partitioning; any combination of the above partitioning schemes to devise a new one
 
-Rebalancing Reasons: <br>
+**Rebalancing Reasons:** <br>
 a. the distribution is not uniform (not evenly distributed)[overloaded] <br>
 b. a lot of load on a partition (hotspot)[overheated] <br>
 Method: <br>
 a. Create more DB partitions; <br>
 b. Rebalance existing partitions <br>
 
-2. Vertical partitioning: manually partition; divide data to store tables (divide table to store its columns) related to a specific feature/need in their own servers: Pro: straightforward to implement and low impact on application; Con: additional growth->further partition, joining two tables in two separate Db can cause performance and consistency issues;  <br>
+1. Vertical partitioning: manually partition; divide data to store tables (divide table to store its columns) related to a specific feature/need in their own servers: Pro: straightforward to implement and low impact on application; Con: additional growth->further partition, joining two tables in two separate Db can cause performance and consistency issues;  <br>
 Federation (functional partitioning) splits up databases by function, resulting in less read and write traffic to each database and therefore less replication lag; the database is smaller, easier to fit in memory and cache; write in parallel, increasing throughput. <br>
 Con: Update application logic to determine which database to read and write; join is more complex; more hardware and additional complexity.  <br>
 
