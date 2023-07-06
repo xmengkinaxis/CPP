@@ -29,6 +29,10 @@
 - [6. Low-Level Design - Deep dive core components; detailed component design](#6-low-level-design---deep-dive-core-components-detailed-component-design)
 	- [6.1 Scale the design](#61-scale-the-design)
 	- [6.2 Partition and Replication (core of a distributed system, to scale out the system)](#62-partition-and-replication-core-of-a-distributed-system-to-scale-out-the-system)
+		- [6.2.1 Replication](#621-replication)
+		- [6.2.2 Partition](#622-partition)
+			- [6.2.2.1 Horizontal Partitioning](#6221-horizontal-partitioning)
+			- [6.2.2.2 Vertical Partitioning](#6222-vertical-partitioning)
 - [7. Optimization](#7-optimization)
 	- [7.1. Security and Permissions](#71-security-and-permissions)
 	- [7.2. Analytics - users behavior](#72-analytics---users-behavior)
@@ -111,16 +115,16 @@ Need enough resources to handle the increasing load; the system must be simple s
 * Availability can be achieved through CDN (Cache), redundancy (replica), load balancing (distribute the requests only to the active healthy nodes) <br>
 
 ### Consistency: 
-All nodes see the same data at the same time, no matter users read/write from/to any node. Equivalent to having a single up-to-date copy of the data. is the agreement between multiple nodes in a distributed system to achieve a certain value.
-Strong consistency: the data in all nodes is the same at any time; offers up-to-date data, but at the cost of high latency.
-Weak consistency: no guarantee that all nodes have the same data at any time. 
-Eventual consistency: ensure data of each node of the database get consistent eventually; offers low latency at the risk of returning stale data.
+All nodes see the same data at the same time, no matter users read/write from/to any node. Equivalent to having a single up-to-date copy of the data. is the agreement between multiple nodes in a distributed system to achieve a certain value. <br>
+* **Strong consistency**: the data in all nodes is the same at any time; offers up-to-date data, but at the cost of high latency. <br>
+* **Weak consistency:** no guarantee that all nodes have the same data at any time.  <br>
+* **Eventual consistency:** ensure data of each node of the database get consistent eventually; offers low latency at the risk of returning stale data. <br>
 
 ### Efficiency (Latency and throughput): 
 * Two standard measures of its efficiency are **the response time(or latency)** that denotes the delay to obtain the first item and **the throughput (or bandwidth)** with denotes the number of items delivered in a given time unit. (Metrics: Latency/Response Time, throughput/Bandwidth)
 * **Response Time**: the time difference between request and response
 * **Latency**: how long a system takes to transmit data from one point to another point in the system;
-* **Throughput** is the amount of work done by the system in a given particular time. 
+* **Throughput** is the amount of work done by the system in a given particular time. partition and split data, so they are served by different machines in the parallel read or write; cache at the different layers, including the client side, front-end servers, and databases
 * **Bandwidth** is the maximum data that can be transferred on the different networks.
 * Request Per Second;
 
@@ -130,9 +134,11 @@ Eventual consistency: ensure data of each node of the database get consistent ev
 * A system can be called scalable if adding more resources in the system results in performance increases. Performance is directly proportional to resources added. <br>
 * Horizontal (scaling out) vs Vertical Scaling (scaling up) <br>
 * Scalability can be achieved through CDN (Cache which bring the content closer to user and remove the requirement of high bandwith), reading replicas <br> 
+* Partition and split the big file/blobs into small-sized chunks to scale the requests, served by different partition servers; maybe range-based partition; need a partition mapping
 
 ### Reliability: 
-keep delivering its service even when on or several of its software or hardware components fail; achieve this through redundancy of both the software component and data, (and hardware); achieve such resilience with a cost in order to eliminate every single point of failure; <-> vulnerable, data lost; (resilient, no single point of failure) (authentication)
+keep delivering its service even when on or several of its software or hardware components fail; achieve this through redundancy of both the software component and data, (and hardware); achieve such resilience with a cost in order to eliminate every single point of failure; <-> vulnerable, data lost; (resilient, no single point of failure) (authentication) <br>
+Achieve with health check (heartbeat protocol, gossip protocol), and monitoring services with alerts. <br>
 
 ### Concurrency:
 To maximize system's performance: high bandwidth and high throughput.
@@ -141,7 +147,8 @@ To maximize system's performance: high bandwidth and high throughput.
 is the simplicity and speed with which a a system can be repaired or maintained. The ease of diagnosing and understanding problems when they occur, ease of making updates or modifications, and how simple the system is to operate
 
 ### Durability
-The data, once uploaded, shouldn't be lost unless users explicitly delete that data.
+The data, once uploaded, shouldn't be lost unless users explicitly delete that data. <br>
+The replication and monitoring services ensure the durability of the data. <br>
 
 ## 1.3 Prioritize requirements
 Break it down, to the most important, minimal features for your system.
@@ -346,6 +353,7 @@ To mitigate the single point of failure and bottleneck:  <br>
 2. bottleneck: improve load balancing and performance by creating duplicates/replication
 3. consistency: The new problem introduced by replication
 
+### 6.2.1 Replication 
 **Replication:** the duplication of critical components or functions or data of a system, in the form of a backup or fail-safe (for fault tolerance) or to improve actual system performance (for load balancing); <br>
 refers to keeping multiple copies of the data at various nodes(preferably geographically distributed) to achieve availability, scalability, and performance; <br>
 the concepts of replication and partitioning go together; comes with the complexities, due to frequent changes, consistencies, concurrent writes, and fault tolerances<br>
@@ -373,42 +381,57 @@ the concepts of replication and partitioning go together; comes with the complex
 * Multi-leader replication; conflict when concurrent writes on the same data on the leaders; avoid conflicts, last-write-wins, or custom logic to handle conflicts
 * Peer-to-peer or leaderless replication; quorums to solve the write-write inconsistency; 
 
+### 6.2.2 Partition
 **Partitioning (Horizontal or Vertical):** the technique to break a big Database into many smaller parts, and the process of distributing/splitting up a database/table across a set of servers. So that each database can only manage a subset of the data. It is to improve the manageability, performance, scalability, availability (fault tolerance), and load balancing of an application; access only a smaller fraction of data to run a query faster as there is less data to scan; reduce the overall response time <br>
 Partitioning of relational data usually refers to decomposing your tables either row-wise (horizontally) or column-wise (vertically). <br>
 for higher efficiency and lower latencies <br>
 
-**Scaling horizontally (or scaling out)** means adding more instances of an application or service to share the load. conversely, scaling vertically (or scaling up) is about adding more resources, like CPU power or memory, to an instance. 
+#### 6.2.2.1 Horizontal Partitioning
+**Scaling horizontally (or scaling out)** means adding more instances of an application or service to share the load. conversely, scaling vertically (or scaling up) is about adding more resources, like CPU power or memory, to an instance. <br>
 
 **Pro:** less read and write traffic, less replication, and more cache hit. Allow write in parallel with increase throughput. Index size is also reduced, which generally improve performance with faster queries. 
 
 **Method:** 
-1. Horizontal partitioning (range based partitioning, Data Sharding) put different rows into different tables: Pros: statically in a predictable manner; Cons: unbalanced servers or hotspots, higher latencies, and unavailability)
+ Horizontal partitioning (range based partitioning, Data Sharding) put different rows into different tables: 
+   * Pros: statically in a predictable manner; 
+   * Cons: unbalanced servers or hotspots, higher latencies, and unavailability)
+  
 e.g. Key-based (Hash) sharding; Range-based Sharding; Directory-Based Sharding (Dynamic Sharding)(by using a lookup table if the number is fixed) <br>
-   * Hash-based Partitioning -> overloaded partition -> Consistent Hashing; Pros:evenly and randomly distribution, minimize hotspot, speed up the rebalancing process after adding or removing nodes, easier for clusters with heterogeneous machines; Cons: need to ask all and then aggregate the results
-   * Range, list, hash partitioning; and combined partitioning (partition, and sub-partition); (partition based on the maximum capacity of the server); Pro: static and a predictable manner; Con: unbalanced
-   * Directory Based Partitioning: a loosely coupled approach; the lookup/dictionary server that holds the mappings between each tuple key to its DB server. Pros: changing without an impact on the application
+   * Hash-based Partitioning -> overloaded partition -> Consistent Hashing; 
+     * Pros:evenly and randomly distribution, minimize hotspot, speed up the rebalancing process after adding or removing nodes, easier for clusters with heterogeneous machines; 
+     * Cons: need to ask all and then aggregate the results
+   * Range, list, hash partitioning; and combined partitioning (partition, and sub-partition); (partition based on the maximum capacity of the server); 
+     * Pro: static and a predictable manner; 
+     * Con: unbalanced
+   * Directory Based Partitioning: a loosely coupled approach; the lookup/dictionary server that holds the mappings between each tuple key to its DB server. 
+     * Pros: changing without an impact on the application
 
 **Criteria:** (hash, range, RR, composite)
-a. Key or Hash-based partitioning; hash some key attributes of the storing entities to the partition number; consistent hashing to create a uniform distribution/allocation
-b. List partitioning; each partition is assigned a list of (key) values (sometime, similar to a range based partitioning, sharding)
-c. Round-robin partitioning
-d. Composite partitioning; any combination of the above partitioning schemes to devise a new one
+* Key or Hash-based partitioning; hash some key attributes of the storing entities to the partition number; consistent hashing to create a uniform distribution/allocation
+* List partitioning; each partition is assigned a list of (key) values (sometime, similar to a range based partitioning, sharding)
+* Round-robin partitioning
+* Composite partitioning; any combination of the above partitioning schemes to devise a new one
 
 **Rebalancing Reasons:** <br>
 a. the distribution is not uniform (not evenly distributed)[overloaded] <br>
 b. a lot of load on a partition (hotspot)[overheated] <br>
-Method: <br>
+
+**Method: **<br>
 a. Create more DB partitions; <br>
 b. Rebalance existing partitions <br>
 
-1. Vertical partitioning: manually partition; divide data to store tables (divide table to store its columns) related to a specific feature/need in their own servers: Pro: straightforward to implement and low impact on application; Con: additional growth->further partition, joining two tables in two separate Db can cause performance and consistency issues;  <br>
-Federation (functional partitioning) splits up databases by function, resulting in less read and write traffic to each database and therefore less replication lag; the database is smaller, easier to fit in memory and cache; write in parallel, increasing throughput. <br>
-Con: Update application logic to determine which database to read and write; join is more complex; more hardware and additional complexity.  <br>
+#### 6.2.2.2 Vertical Partitioning
+Vertical partitioning: manually partition; divide data to store tables (divide table to store its columns) related to a specific feature/need in their own servers: 
+* Pro: straightforward to implement and low impact on application; 
+* Con: additional growth->further partition, joining two tables in two separate Db can cause performance and consistency issues;  <br>
 
-Problem: on a partitioned database, there are some extra constraints on the operations that can be performed, esp. operations that across multiple tables or multiple rows in the same table, but on different servers <br>
-a. join and denormalization(data inconsistency): perform a cross-partition query on a partitioned database is not feasible; <br>
-b. Referential integrity (application have to enforce this); enforcing data integrity constraints such as foreign keys in a partitioned database can be extremely difficult; Database does not support; application that require referential integrity on partitioned database often have to enforce it in application code; <br> 
-c. Rebalancing: data distribution is not uniform (uneven, unbalanced, overloaded/underloaded); a lot of load on a partition (hotspot); <br> 
+Federation (functional partitioning) splits up databases by function, resulting in less read and write traffic to each database and therefore less replication lag; the database is smaller, easier to fit in memory and cache; write in parallel, increasing throughput. <br>
+* Con: Update application logic to determine which database to read and write; join is more complex; more hardware and additional complexity.  <br>
+
+**Problem:** on a partitioned database, there are some extra constraints on the operations that can be performed, esp. operations that across multiple tables or multiple rows in the same table, but on different servers <br>
+* join and denormalization(data inconsistency): perform a cross-partition query on a partitioned database is not feasible; <br>
+* Referential integrity (application have to enforce this); enforcing data integrity constraints such as foreign keys in a partitioned database can be extremely difficult; Database does not support; application that require referential integrity on partitioned database often have to enforce it in application code; <br> 
+* Rebalancing: data distribution is not uniform (uneven, unbalanced, overloaded/underloaded); a lot of load on a partition (hotspot); <br> 
 
 A large number of logical partitions to accommodate future data growth, vs a few physical database server. Such database server can have multiple database instances running on it. Use a configuration file to map the logical partitions to database server. So that can move partitions around easily.  <br>
 For better performance and scalability, we can keep more shard than these just required.  <br>
