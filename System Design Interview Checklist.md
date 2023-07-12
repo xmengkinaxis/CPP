@@ -82,10 +82,12 @@ Interviewrs are more interested in your thought process throughout the interview
 * Usage patterns, and security
 
 # 1. Ask clarifying and high-level design Questions to scope the problem well
-what an interviewer is expecting from us, 
-	* to Gather requirements, and to scope the problem
-	* to outline use cases, to gather constraints, and to validate our assumptions
-Whenever you interact with a platform, think of the who, why, what, and how. Looking into designing the incentives for all kinds of users for them to interact with the system. 
+what an interviewer is expecting from us, <br>
+* to Gather requirements, and to scope the problem
+* to outline use cases, to gather constraints, and to validate our assumptions
+Whenever you interact with a platform, think of the who, why, what, and how. Looking into designing the incentives for all kinds of users for them to interact with the system. <br>
+
+The functional requirements are the **features and functionalities** that the user will get, whereas the non-functional requirements are the **expectations in terms of performance** from the system. 
 
 ## 1.1 Functional Requirements (Product Features + User Requirements)
 What does the system do? <br>
@@ -127,14 +129,17 @@ All nodes see the same data at the same time, no matter users read/write from/to
 * **Throughput** is the amount of work done by the system in a given particular time. partition and split data, so they are served by different machines in the parallel read or write; cache at the different layers, including the client side, front-end servers, and databases
 * **Bandwidth** is the maximum data that can be transferred on the different networks.
 * Request Per Second;
+* can be achieved by using multiple machines to parallel process
+* video streaming should be smooth
 
 ### Scalability: 
 * a distributed system can continuously evolve in order to support the growing amount of work; 
 * increase resources and performance with increasing load and traffic over the existing system without affecting the complexity and performance; need enough resources to handle the increasing load, for it would be increased at any point in time; should be simple and easy to scale; performance should always be increased with scalability <br>
 * A system can be called scalable if adding more resources in the system results in performance increases. Performance is directly proportional to resources added. <br>
 * Horizontal (scaling out) vs Vertical Scaling (scaling up) <br>
-* Scalability can be achieved through CDN (Cache which bring the content closer to user and remove the requirement of high bandwith), reading replicas <br> 
+* Scalability can be achieved through CDN (Cache which bring the content closer to user and remove the requirement of high bandwith), reading replicas, partitioning data/files, and the isolation of different services (micro-services) <br> 
 * Partition and split the big file/blobs into small-sized chunks to scale the requests, served by different partition servers; maybe range-based partition; need a partition mapping
+* Storage, bandwidth, and the number of concurrent user request shold become bottleneck, or overwhelm any servers
 
 ### Reliability: 
 keep delivering its service even when on or several of its software or hardware components fail; achieve this through redundancy of both the software component and data, (and hardware); achieve such resilience with a cost in order to eliminate every single point of failure; <-> vulnerable, data lost; (resilient, no single point of failure) (authentication) <br>
@@ -218,6 +223,7 @@ Requests per second that a server can handle; used in estimating how many server
 **Goal:**<br>
 The goal of the APIs is to make as much as clean & simple as possible to be simple to understand for everybody. A simple common way is making CRUDs. <br>
 Establish the exact contract expected from the system and ensure if we haven't gotten any requirements wrong.  <br>
+APIs can translate feature set into technical 
 
 **Consideration:**<br>
 Remember to use always a key for secure authentication; throttle users based on their allocated quota. <br>
@@ -232,9 +238,10 @@ SOAP or REST API <br>
 * Registration or authentication
 
 **Parameters:** <br>
-* api_dev_key : the API developer key of a registered account. throttle users based on their * allocated quota <br>
+* user_id/api_dev_key : the API developer key of a registered account. throttle users based on their allocated quota <br>
+* All kinds of information about the file/video/picture/like/dislike/comments/etc, like name, ID, category, title, description, tags, channel, language, privacy <br>
 * Search Query:  <br>
-* aximum Results to Return:  <br>
+* maximum Results to Return:  <br>
 * sort(number) Optional sort mode: 0 - latest first, 1 - best matched, 2 - most liked <br>
 * page_token(string) specify a page in the result set that should be returned <br>
 * Timestamp:  <br>
@@ -243,8 +250,16 @@ SOAP or REST API <br>
 (JSON) a list of results matching the search query
 
 # 4. Database Design (Define Data Model)
-Benefit: Defining the data model in the early part of the interview will clarify how data will flow between different system components. Later, it will guide for data partitioning and management.  <br>
-Identify various system **entities** (primary objects), their **relationship** (static), how they will **interact** with each other (dynamic, create, extract, transform, load), and how these objects **flow** between different system components.  <br>
+**Benefit:** Defining the data model in the early part of the interview will 
+* clarify how data will flow between different system components, 
+* determine which database storage schema is required and which database type is preferred;
+* guide for data partitioning and management.  <br>
+  
+**static and dynamic to identify**
+* Identify various system **entities** (primary objects), 
+* their **relationship** (static), 
+* how they will **interact** with each other (dynamic, create, extract, transform, load), 
+* how these objects **flow** between different system components.  <br>
 
 Which database system should we use? NoSQL like Cassandra or MySQL?
 
@@ -311,9 +326,12 @@ Usually, a scalable system include (The Single Responsibility Principle advocate
 4. Services (application layer, aka. platform layer) (Service Partition; list different services required, micro-services) 
 5. Caching system
 6. Database (master/slave cluster, partition and replication)
-7. Rate limiter
-8. Manager node: access privilege, console
-9. Monitoring service
+
+Others <br>
+7. VPCs (publics, privates)
+8. Rate limiter
+9. Manager node: access privilege, console
+10. Monitoring service
 
 NOTE: 
 Application layer will process all incoming and outgoing requests. 
