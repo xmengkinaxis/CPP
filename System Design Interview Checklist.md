@@ -62,15 +62,18 @@
 <!-- TOC -->
 
 # 0. Time Allocation
+Clarify the problem, break down the complext probelm into parts, discuss the overall design, and deep dive into some components; identify and analyze the tradeoffs, recover fro mthe failures; 
 1. understand the problem and establish design core: ~10 minutes (3 - 10 m)
 2. Propose high-level design and get buy-in; -10 minutes (10 - 15 m)
 3. Design deep dive; 20 minutes (10 - 25 m)
 4. Wrap: 5 minutes (3 - 5 m)
 
+
 # NOTE: 
 The key aspect of system design is to identify the problem area and trade off, and be able to justify a decision over another. <br>
 Get the skeleton in the place and then start optimizing (optimization is an evolutionary process) notch by notch; <br>
 Interviewrs are more interested in your thought process throughout the interview than in your final design. The success heavily depends on your ability to communicate your thought process and hold a discussion (collaborate). <br>
+ assesses a candidate's ability to combine knowledge, theory, experience, and judgment toward solving a real-world engineering problem with significant ambiguity. <br>
 
 * Lead and drive an Open-ended conversation as doing a demo or presentation;
 * Everything is a trade-off; Make points with justification; Defend your design;
@@ -114,7 +117,7 @@ Need enough resources to handle the increasing load; the system must be simple s
 * Availability = Uptime ÷ (Uptime + downtime);  <br>
 * **Mean Time Between Failures (MTBF)**: total uptime / # of failures. This is the average time between failures.  <br>
 * **Mean Time to Repair (MTTR)**: total downtime / # of failures. This is the average time taken to recover from a failure. <br>
-* Availability can be achieved through CDN (Cache), redundancy (replica), load balancing (distribute the requests only to the active healthy nodes) <br>
+* Availability can be **achieved** through CDN (Cache), redundancy (replica), load balancing (distribute the requests only to the active healthy nodes) <br>
 
 ### Consistency: 
 All nodes see the same data at the same time, no matter users read/write from/to any node. Equivalent to having a single up-to-date copy of the data. is the agreement between multiple nodes in a distributed system to achieve a certain value. <br>
@@ -137,7 +140,7 @@ All nodes see the same data at the same time, no matter users read/write from/to
 * increase resources and performance with increasing load and traffic over the existing system without affecting the complexity and performance; need enough resources to handle the increasing load, for it would be increased at any point in time; should be simple and easy to scale; performance should always be increased with scalability <br>
 * A system can be called scalable if adding more resources in the system results in performance increases. Performance is directly proportional to resources added. <br>
 * Horizontal (scaling out) vs Vertical Scaling (scaling up) <br>
-* Scalability can be achieved through CDN (Cache which bring the content closer to user and remove the requirement of high bandwith), reading replicas, partitioning data/files, and the isolation of different services (micro-services) <br> 
+* Scalability can be **achieved** through CDN (Cache which bring the content closer to user and remove the requirement of high bandwith), reading replicas, partitioning data/files, and the isolation of different services (micro-services) <br> 
 * Partition and split the big file/blobs into small-sized chunks to scale the requests, served by different partition servers; maybe range-based partition; need a partition mapping
 * Storage, bandwidth, and the number of concurrent user request shold become bottleneck, or overwhelm any servers
 
@@ -261,7 +264,9 @@ SOAP or REST API <br>
 * how they will **interact** with each other (dynamic, create, extract, transform, load), 
 * how these objects **flow** between different system components.  <br>
 
-Which database system should we use? NoSQL like Cassandra or MySQL?
+**Consideration**
+* Which database system should we use? NoSQL like Cassandra or MySQL?
+* Separate the most frequently and less frequently accessed storage clusters from each other for optimal access time; can apply different configurations, cache strategies, shardings;  
 
 ## 4.1 Database Schema or components/classes and their relationship/connection (static)
 What to store? objects, and their relations <br>
@@ -611,37 +616,40 @@ precalculated results, pre-generating expensive indexes, storing copies of frequ
 ## Single point of failure require--> Redundancy and Replication
 HA Architecture - Micro services 
 
-Redundancy: the duplication of critical components or functions of a system with the intention of increasing the reliability of the system and to improve actual system performance. 
-Widely used in DBMS, usually with a primary-replica relationship between the original and the copies. The primary server gets all the updates, which then ripple through to the replica servers.
+**Redundancy**: the duplication of critical components or functions of a system with the intention of increasing the reliability of the system and to improve actual system performance. <br>
+Widely used in DBMS, usually with a primary-replica relationship between the original and the copies. The primary server gets all the updates, which then ripple through to the replica servers.<br>
 
-Replication: sharing information to ensure consistency between redundant resources (e.g. SW or HW), to improve reliability, fault-tolerance, or accessibility.
+**Replication**: sharing information to ensure consistency between redundant resources (e.g. SW or HW), to improve reliability, fault-tolerance, or accessibility.<br>
 
-Highly Availability Mode: improve reliability, fault-tolerance, or accessibility
-Redundancy  - Active-passive	HA mode (remove the single point of failure and provides backup in case a crisis by failover)
-Replication - Active-active		HA mode 
-Failover 
-(con: more hardware and additional complexity, the potential for loss of data)
-a. Active-passive (master-slave failover, the passive is hot/cold standby)
-b. Active-active (master-master failover)
+**Highly Availability Mode**: improve reliability, fault-tolerance, or accessibility<br>
+* Redundancy  - Active-passive	HA mode (remove the single point of failure and provides backup in case a crisis by failover)<br>
+* Replication - Active-active		HA mode <br>
 
-Need to ensure consistency
-Also provide a backup or spare functionality if needed in a crisis
+**Failover** 
+(con: more hardware and additional complexity, the potential for loss of data)<br>
+* Active-passive (master-slave failover, the passive is hot/cold standby)<br>
+* Active-active (master-master failover)<br>
 
-message queue to queue all requests, so that the system is highly available and open to updates while remaining the consistent at the same time
+Need to ensure consistency <br>
+Also provide a backup or spare functionality if needed in a crisis <br>
 
-Redundancy - describes the fact that you have more than one node/component/process in a system and it's pretty useful for handling failovers. In the case that one of your nodes fail, another node in the system can take over and carry on.<br> Redundancy can be:
-active - where all the traffic goes to all nodes at the same time<br>
-passive - where one node receive traffic and in the case of failure, a switch will be made to another node.<br>
+message queue to queue all requests, so that the system is highly available and open to updates while remaining the consistent at the same time<br>
+
+**Redundancy** - describes the fact that you have more than one node/component/process in a system and it's pretty useful for handling failovers. In the case that one of your nodes fail, another node in the system can take over and carry on.<br> 
+Redundancy can be:
+* active - where all the traffic goes to all nodes at the same time<br>
+* passive - where one node receive traffic and in the case of failure, a switch will be made to another node.<br>
 "Redundancy is the duplication of nodes, in case of some of them are failing"<br>
 
-Replication - includes redundancy, but involves the copying of data from one node to another or the synchronization of state between nodes. An example of where replication is done is at the databases or MQs level that forms a cluster.<br> Replication can be:
-active: each node receives each message in order to keep in sync with the rest of the nodes<br>
-passive: this is the leader-follower model, where the leader receives all the requests and then forwards them to the followers.<br>
+**Replication** - includes redundancy, but involves the copying of data from one node to another or the synchronization of state between nodes. An example of where replication is done is at the databases or MQs level that forms a cluster.<br> 
+Replication can be:
+* active: each node receives each message in order to keep in sync with the rest of the nodes<br>
+* passive: this is the leader-follower model, where the leader receives all the requests and then forwards them to the followers.<br>
 "Replication is the synchronization of state between redundant nodes."<br>
 
-Redundancy : Duplication of critical components (node, process) with the aim to achieve reliability. Redundancy helps avoid single-point failure. For instance, if we have two instances running and one of them fails then, then the system can switch over to another one.<br>
+**Redundancy** : Duplication of critical components (node, process) with the aim to achieve reliability. Redundancy helps avoid single-point failure. For instance, if we have two instances running and one of them fails then, then the system can switch over to another one.<br>
 
-Replication : Sharing information to ensure consistency between redundant resources.
+**Replication** : Sharing information to ensure consistency between redundant resources.
 
 ## Checkpointing <-- Fault Tolerance
 Each server performs checkpointing periodically and dump a snapshot to all its data onto a remote server. This will ensure that if a sever dies down, another server can replace it by taking its data from the last snapshot. 
