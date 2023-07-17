@@ -23,8 +23,10 @@
 	- [2.4 Memory (cache) in GB or TB /day](#24-memory-cache-in-gb-or-tb-day)
 	- [2.5 Servers' capability](#25-servers-capability)
 - [3. System API design](#3-system-api-design)
-- [4. Database Design (Define Data Model)](#4-database-design-define-data-model)
+- [4. Database Design (Define Data Model and choose Database)](#4-database-design-define-data-model-and-choose-database)
+	- [4.0 Data Model](#40-data-model)
 	- [4.1 Database Schema or components/classes and their relationship/connection (static)](#41-database-schema-or-componentsclasses-and-their-relationshipconnection-static)
+	- [4.2 Choose Database](#42-choose-database)
 - [5. High-Level Design — This is pretty much a template, you can put in front of interviewers.](#5-high-level-design--this-is-pretty-much-a-template-you-can-put-in-front-of-interviewers)
 - [6. Low-Level Design - Deep dive core components; detailed component design](#6-low-level-design---deep-dive-core-components-detailed-component-design)
 	- [6.1 Scale the design](#61-scale-the-design)
@@ -117,7 +119,7 @@ Need enough resources to handle the increasing load; the system must be simple s
 * Availability = Uptime ÷ (Uptime + downtime);  <br>
 * **Mean Time Between Failures (MTBF)**: total uptime / # of failures. This is the average time between failures.  <br>
 * **Mean Time to Repair (MTTR)**: total downtime / # of failures. This is the average time taken to recover from a failure. <br>
-* Availability can be **achieved** through CDN (Cache), redundancy (replica), load balancing (distribute the requests only to the active healthy nodes) <br>
+* Availability can be **achieved** through CDN (Cache), redundancy (replica), load balancing (distribute the requests only to the active healthy nodes by local LB and to different locations by global LB) <br>
 
 ### Consistency: 
 All nodes see the same data at the same time, no matter users read/write from/to any node. Equivalent to having a single up-to-date copy of the data. is the agreement between multiple nodes in a distributed system to achieve a certain value. <br>
@@ -132,15 +134,16 @@ All nodes see the same data at the same time, no matter users read/write from/to
 * **Throughput** is the amount of work done by the system in a given particular time. partition and split data, so they are served by different machines in the parallel read or write; cache at the different layers, including the client side, front-end servers, and databases
 * **Bandwidth** is the maximum data that can be transferred on the different networks.
 * Request Per Second;
-* can be achieved by using multiple machines to parallel process
+* can be **achieved** by using multiple machines to parallel process
 * video streaming should be smooth
+* Performance can be achieved by Caching at each layer (web server, application server, cluster, data base, file system, storage units), CDN, Index, the appropriate programming language
 
 ### Scalability: 
 * a distributed system can continuously evolve in order to support the growing amount of work; 
 * increase resources and performance with increasing load and traffic over the existing system without affecting the complexity and performance; need enough resources to handle the increasing load, for it would be increased at any point in time; should be simple and easy to scale; performance should always be increased with scalability <br>
 * A system can be called scalable if adding more resources in the system results in performance increases. Performance is directly proportional to resources added. <br>
 * Horizontal (scaling out) vs Vertical Scaling (scaling up) <br>
-* Scalability can be **achieved** through CDN (Cache which bring the content closer to user and remove the requirement of high bandwith), reading replicas, partitioning data/files, and the isolation of different services (micro-services) <br> 
+* Scalability can be **achieved** through CDN (Cache which bring the content closer to user and remove the requirement of high bandwith), reading replicas, partitioning data/files, and the isolation of different services (micro-services), load balancer, separate read/write operations on different servers <br> 
 * Partition and split the big file/blobs into small-sized chunks to scale the requests, served by different partition servers; maybe range-based partition; need a partition mapping
 * Storage, bandwidth, and the number of concurrent user request shold become bottleneck, or overwhelm any servers
 
@@ -252,7 +255,9 @@ SOAP or REST API <br>
 **Return:** <br>
 (JSON) a list of results matching the search query
 
-# 4. Database Design (Define Data Model)
+# 4. Database Design (Define Data Model and choose Database)
+
+## 4.0 Data Model
 **Benefit:** Defining the data model in the early part of the interview will 
 * clarify how data will flow between different system components, 
 * determine which database storage schema is required and which database type is preferred;
@@ -280,34 +285,55 @@ Consideration for objects <br>
 3. What is the relationship between records? <br>
 
 Storage:  <br>
-Storage layer = Metadata storage + Object storage; such a division of data will allow us to scale them individually <br>
-Metadata storage: like users/accounts, pastes/blobs(pictures, videos, etc.), etc. can use Relational DB like MySQL, or distributed key-value DB like Dynamo or Cassandra <br>
-Object Storage: like a text paste, an image, etc; use object storage like Amazon S3, or HDFS.  <br>
+* Storage layer = **Metadata** storage + **Object** storage; such a division of data will allow us to scale them individually <br>
+* Metadata storage: like users/accounts, pastes/blobs(pictures, videos, etc.), etc. can use Relational DB like MySQL, or distributed key-value DB like Dynamo or Cassandra <br>
+* Object Storage: like a text paste, an image, etc; use object storage like Amazon S3, or HDFS.  <br>
 
 Common objects (e.g.) <br>
-User: id (primary key, int), name (varchar 20), email (varchar 32), CreationDate (datetime, 4 byte?), LastLogin (datetime), Birthday (datetime) <br>
-Description (512 or 256), phone (12), path(256, path to the object storage) <br>
-item: CreationData, ExpirationDate, type (int), Description (varchar 512), Category: (smallint), UserId(int, creator), contents(varchar 256), Path(varchar 256) <br>
-location: latitude, longitude (int - 4 bytes, or 8 bytes) <br>
-num of likes/dislikes (int), num of comments, num of shares, num of views <br>
-Rating(how many stars a place gets out of ten) <br>
-Photo: PhotoID(int), UserID(int), PhotoPath(varchar 256), Photo Latitude & Longitude (int), User Latitude & Longitude (int), CreationDate(datetime) <br>
+* User: id (primary key, int), name (varchar 20), email (varchar 32), CreationDate (datetime, 4 byte?), LastLogin (datetime), Birthday (datetime) <br>
+* Description (512 or 256), phone (12), path(256, path to the object storage) <br>
+* Item/Object (picture, video, comment, etc): CreationData, ExpirationDate, type (int), Description (varchar 512), Category: (smallint), UserId(int, creator), contents(varchar 256), Path(varchar 256) <br>
+* Location: latitude, longitude (int - 4 bytes, or 8 bytes) <br>
+* Numbers: num of likes/dislikes (int), num of comments, num of shares, num of views <br>
+* Rating (how many stars a place gets out of ten) <br>
+* Photo: PhotoID(int), UserID(int), PhotoPath(varchar 256), Photo Latitude & Longitude (int), User Latitude & Longitude (int), CreationDate(datetime) <br>
 
-tags:  <br>
+Tags:  <br>
 category: (1 byte) <br>
 default_language:  <br>
 
 latest (CreationDate), popular (likes, comments, shares), relevant (used in ranking)   <br>
 
-On which field(s) to build some index? <br>
-Pro: database performance =>  indexes to improve the performance of search queries, esp. when dataset is huge <br>
-Con: Dramatically speed up data retrieval, but slow down the write (insert, update, and delete) performance. <br>
+Index: <br>
+* On which field(s) to build some index? <br>
+* Pro: database performance =>  indexes to improve the performance of search queries, esp. when dataset is huge <br>
+* Con: Dramatically speed up data retrieval, but slow down the write (insert, update, and delete) performance. <br>
 
 the goal of creating an index on a particular table in a database is to make it faster to search through the table and find the row or rows that we want.  <br>
 must carefully consider how users will access the data.  <br>
 Indexing needs a primary key on the table with a unique value; Using one or more columns <br>
 Ordered indexing (increasing or decreasing) or Hash-indexing <br>
 In any index-based data, the partition is not allowed ??? <br>
+
+## 4.2 Choose Database
+choosing the proper database is a critical decision that can significantly impact the performance, scalability, and reliability of the system. <br>
+
+Factors to consider (Data Model [structured, semi-structure, unstructed], Size and Volume, ACID, Join and Aggregate)
+* Data Model: Determine the data model that best fits the application's requirements; relational (SQL), document-based (NoSQL), key-value store, graph database, or time-series database.
+* Data Size and Volume: Assess the expected data size and growth rate to choose a database that can handle the scale of data effectively
+* Query Requirements: Understand the types of queries the system needs to support and whether they are read-heavy, write-heavy, or balanced.
+* Performance: Consider the database's performance characteristics, such as read and write latency, throughput, and indexing capabilities.
+* ACID Compliance: Determine whether the application requires strong consistency and transactional guarantees (ACID compliance) or can tolerate eventual consistency (NoSQL databases).
+* Horizontal Scalability: Assess the need for horizontal scaling, i.e., distributing data across multiple nodes, and choose a database that supports sharding and partitioning.
+* Data Integrity and Constraints: Evaluate the need for data integrity constraints (e.g., foreign keys, unique constraints) and choose a database that enforces these constraints.
+* Data Redundancy and Normalization: Decide on the level of data redundancy and normalization based on read and write patterns, aiming for an appropriate balance between data duplication and normalization.
+* Joins and Aggregations: Assess the frequency and complexity of joins and aggregations required in the queries and choose a database that can handle them efficiently.
+
+* Replication and High Availability: Evaluate the need for data replication and high availability to ensure data durability and system resilience.
+* Consistency Models: Understand the trade-offs between strong consistency and eventual consistency models and choose a database that aligns with the application's requirements.
+* Backup and Disaster Recovery: Consider the database's backup and disaster recovery capabilities to ensure data safety.
+* Cost and Licensing: Factor in the cost of database licenses, cloud service charges, and hardware requirements.
+* Integration with Existing Tools and Systems: Assess whether the database integrates well with existing tools, frameworks, and systems used in the application.
 
 # 5. High-Level Design — This is pretty much a template, you can put in front of interviewers.
 **Goal** 
@@ -405,7 +431,8 @@ the concepts of replication and partitioning go together; comes with the complex
 * Peer-to-peer or leaderless replication; quorums to solve the write-write inconsistency; 
 
 ### 6.2.2 Partition
-**Partitioning (Horizontal or Vertical):** the technique to break a big Database into many smaller parts, and the process of distributing/splitting up a database/table across a set of servers. So that each database can only manage a subset of the data. It is to improve the manageability, performance, scalability, availability (fault tolerance), and load balancing of an application; access only a smaller fraction of data to run a query faster as there is less data to scan; reduce the overall response time <br>
+**Partitioning (Horizontal or Vertical):** the technique to break a big Database into many smaller parts, and the process of distributing/splitting up a database/table across a set of servers. So that each database can only manage a subset of the data. <br> 
+**Benefit** It is to improve the manageability, performance, scalability, availability (fault tolerance, non-availability of one type of data will not affect others), and load balancing of an application; access only a smaller fraction of data to run a query faster as there is less data to scan; reduce the overall response time <br>
 Partitioning of relational data usually refers to decomposing your tables either row-wise (horizontally) or column-wise (vertically). <br>
 for higher efficiency and lower latencies <br>
 
@@ -551,28 +578,33 @@ c, single point of failure<br>
 
 ## 2. How to scale database? -> Caching or vertically and horizontally
 Cache the DB results adding an extra caching layer between the servers and the database <br>
-Cache will enable you to make vastly better use of the resources you already have as well as making otherwise unattainable product requirements feasible. <br>
-Can exist at all levels in architecture, but are often found at the level nearest to the front end, where they are implemented to return data quickly without taxing downstream levels. <br>
-Disadvantages: main consistency between caches and the source of truth (database) through cache invalidation which is difficult; need to make application changes<br>
+A cache is a key-value store that reside between applications and data storage; <br>
+Redis is persistent while memcache scales well.
 
-CDN (Content Delivery Network) are a kind of cache that comes into play for sites serving large amounts of static media. Can replicate content in multiple places, based on user's geographic location and the original of the webpage; security improvement, increase in content availability and redundancy, better load times, low bandwidth cost.  <br>
-type: Push and Pull, referring the data streaming upload and download???<br>
-
-Caching works well with static data by saving time and increasing speed, but not well with mutable or dynamic , for need to make sure that the cached data is in sync<br>
+**Benefit**
+* Cache will enable you to make vastly better use of the resources you already have as well as making otherwise unattainable product requirements feasible. <br>
+* Can exist at all levels in architecture, but are often found at the level nearest to the front end, where they are implemented to return data quickly without taxing downstream levels. <br>
 What should be cached? long-running queries on databases; high-latency network requests (for external APIs), computation-intensive processing; <br>
 
-A cache is a key-value store that reside between applications and data storage; 
-Redis is persistent while memcache scales well.
+**Disadvantages**: 
+* main consistency between caches and the source of truth (database) through cache invalidation which is difficult; need to make application changes<br>
+* Caching works well with static data by saving time and increasing speed, but not well with mutable or dynamic, for need to make sure that the cached data is in sync<br>
+
+**CDN (Content Delivery Network)** are a kind of cache that comes into play for sites serving large amounts of static media. Can replicate content in multiple places, based on user's geographic location and the original of the webpage; security improvement, increase in content availability and redundancy, better load times, low bandwidth cost.  <br>
+* type: Push and Pull, referring the data streaming upload and download???<br>
 
 
 ### Cache eviction policies:
 Policies: Order (first vs last), Recently (time: least vs most), Frequency (least), Random;<br>
-First In First Out (FIFO)<br>
-Last In First Out (LIFO)<br>
-Least Recently Used (LRU)<br>
-Most Recently Used (MRU)<br>
-Least Frequently Used (LFU)<br>
-Random Replacement (RR)<br>
+* Order
+	* First In First Out (FIFO), time-serious ???<br>
+	* Last In First Out (LIFO)<br>
+* Recent
+	* Least Recently Used (LRU), suitable for long-tailed<br>
+	* Most Recently Used (MRU)<br>
+* Frequency
+	* Least Frequently Used (LFU)<br>
+* Random Replacement (RR)<br>
 
 ### Cache strategy (Invalidation): 
 Cache Invalidation: keep the cache coherent with the source of data (e.g. database);  <br>
@@ -690,7 +722,7 @@ Explore competing solutions, speak to all their major tradeoffs, and make intell
 		* Combination of Tweet ID and its Creation Time (Encode the creation time into Tweet Id, e.g. Epoch Second || auto incrementing sequence)				
 	* range-based or hash based 
 * Database: RDBM SQL vs NoSQL
-* CAP Availability vs Consistency; choose based on business requirements in case of network partition
+* CAP - Availability vs Consistency; choose based on business requirements in case of network partition
 
 
 
