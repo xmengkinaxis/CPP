@@ -48,15 +48,22 @@ int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
 // for the window with the fixed size, only need a single pointer to point to the end of the window
 // for the window with the fixed size, remove the start since the end >= the window size
 // must ensure the start is moved, otherwise, the inner loop would become a dead one.
+// e.g. 239. Sliding Window Maximum;  https://leetcode.com/problems/sliding-window-maximum/?envType=list&envId=9kpcif56
 int fnSlidingWindow(vector<int>& arr) {
 	int ans = 0; 
 	for (int left = 0, right = 0, curr = 0; right < arr.size(); ++right) {
 		// add arr[right] into curr; 
+		// the curr might be a complex one, such as a monotonic deque, and need some preprocess before adding
+
+		// depend on if the window size is fixed or not, 
+		// if fixed, when left >= size, remove the left
+		// if not fixed, depend on the loop condition to remove the left
 		while (CONDITION && left <= right ) {
 			// remove arr[left] from curr; 
 			++left; 
 		}
 		// do something for this valid window
+		// if the size is fixed, when left >= size - 1, do something
 	}
 	return ans; 
 }
@@ -100,14 +107,20 @@ ListNode* fnReverse(ListNode* head) {
 	return prev; 
 }
 
-// ???? Find numbers of subarrays that fit an exact criteria
+// Find numbers of subarrays that fit an exact criteria
+// 325. Maximum Size Subarray Sum Equals k; https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/description/?envType=list&envId=9kpcif56
+// 523. Continuous Subarray Sum; https://leetcode.com/problems/continuous-subarray-sum/description/?envType=list&envId=9kpcif56 
 int fnFindSubarrays(vector<int>& arr, int k) {
-	unordered_map<int, int> counts; 
-	counts[0] = 1; 
+	// using a map to quickly 
+	unordered_map<int, int> counts;  // choose the proper name for this map according to the problem; the map serves as a dp array too
+	counts[0] = 1; // must initialize counts[0], but its value will depend on the problem; dp array needs a base case
 	int ans = 0, curr = 0; 
 	for (int num : arr) {
+        // do logic to change curr based on num
+		// search the map and then add the curr into map; 
+		// NOTE: cannot add curr into map first; otherwise, ans might be counted incorrectly
 		ans += counts[curr -k]; 
-		counts[curr]++; 
+		counts[curr]++; // there might be a condition to check before adding into the map
 	}
 	return ans; 
 }
@@ -188,13 +201,15 @@ int bfsTree(TreeNode* root) {
 
 // for DFS, the core actions are: 
 // 1. check if the node is valid, e.g. it must be in the grid when the problem is a grid, 
-// 2. check if the node is already visited, e.g. seen/visited already contains it
-// 3. check if the node should be visited, e.g. the original value/attribute of this node makes it as a valid candidate. 
+// 2. check if the node should be visited, e.g. the original value/attribute of this node makes it as a valid candidate. 
+// 3. check if the node is already visited, e.g. seen/visited already contains it
 // 4. do something for this node; this is a real visit on this node
 // 5. visit all its neighbors; 
 // * these core actions is the core of DFS and the block of the BFS while loop
 // * for BFS, the order might be 4, 5, 1, 2, 3
 // * if changing the original value instead of using seen/visited, the 2 and 3 are merged into one of checking value
+// e.g. 317. Shortest Distance from All Buildings
+// https://leetcode.com/problems/shortest-distance-from-all-buildings/description/?envType=list&envId=9kpcif56
 
 
 unordered_set<int> seen; 
@@ -326,6 +341,7 @@ int binarySearch(vector<int>& arr, int target) {
 	return left; 
 }
 
+// e.g. 852. Peak Index in a Mountain Array, https://leetcode.com/problems/peak-index-in-a-mountain-array/description/
 int binaryLeftMost(vector<int>& arr, int target) {
 	int left = 0;
 	for (int right = arr.size(); left < right; )  {
