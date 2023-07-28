@@ -125,16 +125,22 @@ int fnFindSubarrays(vector<int>& arr, int k) {
 	return ans; 
 }
 
-// ????
+// the monotonic stack might contain values or some index; 
+// if the stack contains index, the while condition should be changed accordingly
+// e.g. 1944. Number of Visible People in a Queue https://leetcode.com/problems/number-of-visible-people-in-a-queue/description/?envType=list&envId=9kpcif56
 int fnMonotonicIncreasingStack(vector<int>& arr) {
 	stack<int> stack; 
 	int ans = 0;
 
 	for (int n : arr) {
+		// this is monotonic increasing
+		// for monotonic decrease, change > to < 
 		while (!stack.empty() && stack.top() > num) {
+			// do logic here
 			stack.pop(); 
 		}
-		stack.push(n); 
+		// might do logic here too
+		stack.push(n); // might be index pushed into the stack
 	}
 }
 
@@ -342,6 +348,9 @@ int binarySearch(vector<int>& arr, int target) {
 }
 
 // e.g. 852. Peak Index in a Mountain Array, https://leetcode.com/problems/peak-index-in-a-mountain-array/description/
+// 1870. Minimum Speed to Arrive on Time; https://leetcode.com/problems/minimum-speed-to-arrive-on-time/description/
+// 1060. Missing Element in Sorted Array; https://leetcode.com/problems/missing-element-in-sorted-array/?envType=list&envId=9kpcif56
+// 1539. Kth Missing Positive Number; https://leetcode.com/problems/kth-missing-positive-number/?envType=list&envId=9kpcif56
 int binaryLeftMost(vector<int>& arr, int target) {
 	int left = 0;
 	for (int right = arr.size(); left < right; )  {
@@ -354,6 +363,27 @@ int binaryLeftMost(vector<int>& arr, int target) {
 	}
 	return left; 
 }
+/*
+int minSpeedOnTime(vector<int>& dist, double hour) {
+	int left = 1;
+	int right = 1e7;
+	int minSpeed = -1;
+	
+	while (left <= right) {
+		int mid = (left + right) / 2;
+		
+		// Move to the left half.
+		if (timeRequired(dist, mid) <= hour) {
+			minSpeed = mid;
+			right = mid - 1;
+		} else {
+			// Move to the right half.
+			left = mid + 1;
+		}
+	}
+	return minSpeed;
+}
+*/
 
 int binaryRightMost(vector<int>& arr, int target) {
 	int left = 0;
@@ -367,6 +397,23 @@ int binaryRightMost(vector<int>& arr, int target) {
 	}
 	return left; 
 }
+// e.g. 1060. Missing Element in Sorted Array https://leetcode.com/problems/missing-element-in-sorted-array/description/?envType=list&envId=9kpcif56 
+/* in this example, its right and left are similar to the normal left and right; in other words, these two pointers are swapped
+int missingElement(vector<int>& nums, int k) {
+	int left = 0; 
+	for (int right = nums.size() - 1; left < right; ) {
+		auto mid = right - (right - left) / 2; 
+		auto gap = nums[mid] - nums[0] - mid; 
+		if (gap < k) {
+			left = mid;
+		} else {
+			right = mid - 1; 
+		}
+	}
+	return nums[0] + k + left; 
+}
+*/
+
 
 {
 	auto cmpLeftMost = [](auto lhs, auto rhs) -> bool {
