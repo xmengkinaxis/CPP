@@ -110,14 +110,15 @@ ListNode* fnReverse(ListNode* head) {
 // Find numbers of subarrays that fit an exact criteria
 // 325. Maximum Size Subarray Sum Equals k; https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/description/?envType=list&envId=9kpcif56
 // 523. Continuous Subarray Sum; https://leetcode.com/problems/continuous-subarray-sum/description/?envType=list&envId=9kpcif56 
+// 560. Subarray Sum Equals K; https://leetcode.com/problems/subarray-sum-equals-k/description/
 int fnFindSubarrays(vector<int>& arr, int k) {
-	// using a map to quickly 
+	// using a map to look up quickly 
 	unordered_map<int, int> counts;  // choose the proper name for this map according to the problem; the map serves as a dp array too
 	counts[0] = 1; // must initialize counts[0], but its value will depend on the problem; dp array needs a base case
-	int ans = 0, curr = 0; 
+	int ans = 0, curr = 0; // curr might be the current pre sum; 
 	for (int num : arr) {
         // do logic to change curr based on num
-		// search the map and then add the curr into map; 
+		// search the map and then add the curr into map; ???
 		// NOTE: cannot add curr into map first; otherwise, ans might be counted incorrectly
 		ans += counts[curr -k]; 
 		counts[curr]++; // there might be a condition to check before adding into the map
@@ -128,6 +129,7 @@ int fnFindSubarrays(vector<int>& arr, int k) {
 // the monotonic stack might contain values or some index; 
 // if the stack contains index, the while condition should be changed accordingly
 // e.g. 1944. Number of Visible People in a Queue https://leetcode.com/problems/number-of-visible-people-in-a-queue/description/?envType=list&envId=9kpcif56
+// e.g. 1762. Buildings With an Ocean View https://leetcode.com/problems/buildings-with-an-ocean-view/description/ 
 int fnMonotonicIncreasingStack(vector<int>& arr) {
 	stack<int> stack; 
 	int ans = 0;
@@ -145,7 +147,8 @@ int fnMonotonicIncreasingStack(vector<int>& arr) {
 }
 
 // inorder, preorder, postorder;
-
+// 987. Vertical Order Traversal of a Binary Tree; https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/?envType=list&envId=9kpcif56
+// 543. Diameter of Binary Tree; https://leetcode.com/problems/diameter-of-binary-tree/description/
 int dfsTree(TreeNode *root) {
 	// 1. deal withing the special base cases
 	// leave is one of these cases
@@ -184,6 +187,8 @@ int dfsTreeStack(TreeNode* root) {
 	return ans; 
 }
 
+
+// e.g. 314. Binary Tree Vertical Order Traversal, https://leetcode.com/problems/binary-tree-vertical-order-traversal/
 int bfsTree(TreeNode* root) {
 	if (!root) { return 0; }
 
@@ -351,6 +356,7 @@ int binarySearch(vector<int>& arr, int target) {
 // 1870. Minimum Speed to Arrive on Time; https://leetcode.com/problems/minimum-speed-to-arrive-on-time/description/
 // 1060. Missing Element in Sorted Array; https://leetcode.com/problems/missing-element-in-sorted-array/?envType=list&envId=9kpcif56
 // 1539. Kth Missing Positive Number; https://leetcode.com/problems/kth-missing-positive-number/?envType=list&envId=9kpcif56
+// Binary search: duplicate elements, left-most insertion point
 int binaryLeftMost(vector<int>& arr, int target) {
 	int left = 0;
 	for (int right = arr.size(); left < right; )  {
@@ -384,7 +390,7 @@ int minSpeedOnTime(vector<int>& dist, double hour) {
 	return minSpeed;
 }
 */
-
+// Binary search: duplicate elements, right-most insertion point
 int binaryRightMost(vector<int>& arr, int target) {
 	int left = 0;
 	for (int right = arr.size(); left < right; )  {
@@ -414,7 +420,44 @@ int missingElement(vector<int>& nums, int k) {
 }
 */
 
+/*
+In C++, when using binary search, the initialization of the right pointer in the search range can be done in two ways:
 
+1. When considering the entire array:
+   - If the binary search needs to consider all elements of the array, the right pointer is initialized to `array.size()`. For example:
+*/
+     int left = 0;
+     int right = nums.size(); // Right pointer initialized to array.size()
+     while (left < right) {
+         // Binary search logic
+     }
+/*
+2. When excluding the last element:
+   - In some scenarios, the binary search may need to exclude the last element from the search range. 
+   This is commonly seen when searching for a specific target or finding an element that is just greater or equal to a given value. 
+   In such cases, the right pointer is initialized to `array.size() - 1`. For example:
+*/
+     int left = 0;
+     int right = nums.size() - 1; // Right pointer initialized to array.size() - 1
+     while (left <= right) {
+         // Binary search logic
+     }
+	 
+/*
+3. Adjusting indexing convention:
+   - In C++, arrays are 0-indexed, which means that the valid indices of elements range from 0 to `array.size() - 1`. 
+   If the binary search uses this indexing convention, then the right pointer is typically initialized to `array.size() - 1` to prevent accessing an element beyond the valid index range. For example:
+*/
+     int left = 0;
+     int right = nums.size() - 1; // Right pointer initialized to array.size() - 1
+     while (left <= right) {
+         // Binary search logic
+     }
+/*
+In summary, the choice of initializing the right pointer to `array.size()` or `array.size() - 1` in a binary search 
+depends on the specific problem's requirements and the indexing convention used (0-indexed or 1-indexed). 
+Careful consideration of the search range and the desired behavior will determine the appropriate initialization of the right pointer.
+*/
 {
 	auto cmpLeftMost = [](auto lhs, auto rhs) -> bool {
 		return lhs >= rhs; 
@@ -439,35 +482,43 @@ int missingElement(vector<int>& nums, int k) {
 	auto last = binarySearch(cmpRightMost) - 1; 
 }
 
-// ????
+// Binary search: for greedy problems
+// If looking for a minimum:
+// e.g. 1011. Capacity To Ship Packages Within D Days; https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/
 int binaryMinimum(vector<int>& arr) {
 	int left = MINIMUM_POSSIBLE_ANSWER; 
 	int right = MAXIMUM_POSSIBLE_ANSWER; 
+	// must use <= here; this is different from the above binary search
 	while (left <= right) {
 		auto mid = left + (right - left) / 2; 
 		if (check(mid)) {
 			right = mid - 1; 
 		} else {
-			left = mid + 1; 
+			left = mid + 1;  // when exit, left will be the first to meet the check function
 		}
 	}
 	return left; 
 }
 
+// e.g. 1891. Cutting Ribbons https://leetcode.com/problems/cutting-ribbons/description/?envType=list&envId=9kpcif56 
+// Binary search: for greedy problems
+// If looking for a maximum:
 int binaryMaximum(vector<int>& arr) {
 	int left = MINIMUM_POSSIBLE_ANSWER; 
 	int right = MAXIMUM_POSSIBLE_ANSWER;
+	// must use <= here
 	while (left <= right) {
 		auto mid = left + (right - left) / 2; 
 		if (check(mid)) {
-			right = mid - 1; 
-		} else {
 			left = mid + 1; 
+		} else {
+			right = mid - 1; // when exit, right will be the last to meet the check function
 		}
 	}
 	return right; 
 }
 
+// 78. Subsets https://leetcode.com/problems/subsets/description/
 int backtrack(STATE curr, OTHERS) {
 	if (BASE_CASE) {
 		return 0; // modify the answer
