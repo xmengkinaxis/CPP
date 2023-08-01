@@ -4,14 +4,32 @@
 #include <String> 
 #include <unordered_map> 
 #include <stack>
+#include <queue> // for priority_queue
+#include <unordered_set>
 
 using namespace std; 
+
+#define CONDITION true
+
+struct ListNode {
+	int val; 
+	ListNode *next; 
+};
+
+struct TreeNode {
+	int val; 
+	TreeNode *left, *right; 
+};
+
+#define START_NODE 0
+#define start_node 0
 
 // two pointers with opposite directions
 int fnTwoPointers(vector<int>& arr) {
 	int left = 0, right = arr.size() - 1; 
 	int ans = 0;
 	while (left < right)  {
+		// do some logic here with left and right for ans
 		if (CONDITION) {
 			++left;
 		} else {
@@ -20,6 +38,12 @@ int fnTwoPointers(vector<int>& arr) {
 	}
 	return ans; 
 }
+
+/*
+Two Pointers Technique: left and right, or slow and fast 
+Sliding Window Technique: start and end
+Binary Search: low and high
+*/
 
 // two pointers for two arrays with the same direction
 int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
@@ -51,19 +75,19 @@ int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
 // e.g. 239. Sliding Window Maximum;  https://leetcode.com/problems/sliding-window-maximum/?envType=list&envId=9kpcif56
 int fnSlidingWindow(vector<int>& arr) {
 	int ans = 0; 
-	for (int left = 0, right = 0, curr = 0; right < arr.size(); ++right) {
-		// add arr[right] into curr; 
+	for (int start = 0, end = 0, curr = 0; end < arr.size(); ++end) {
+		// add arr[end] into curr; 
 		// the curr might be a complex one, such as a monotonic deque, and need some preprocess before adding
 
 		// depend on if the window size is fixed or not, 
-		// if fixed, when left >= size, remove the left
-		// if not fixed, depend on the loop condition to remove the left
-		while (CONDITION && left <= right ) {
-			// remove arr[left] from curr; 
-			++left; 
+		// if fixed, when end >= size, remove the start by moving it towards end by one
+		// if not fixed, depend on the loop condition to remove the start
+		while (CONDITION && start <= end ) {
+			// remove arr[start] from curr; 
+			++start; 
 		}
 		// do something for this valid window
-		// if the size is fixed, when left >= size - 1, do something
+		// if the size is fixed, when end >= size - 1, do something
 	}
 	return ans; 
 }
@@ -84,7 +108,8 @@ string fnString(vector<char>& arr) {
 	return string(arr.begin(), arr.end()); 
 }
 
-// fast and slow pointers
+// fast and slow pointers; a case of two pointers with the same direction
+// e..g. 283. Move Zeroes; https://leetcode.com/problems/move-zeroes/description/
 int fnFastAndSlowPointers(ListNode* head) {
 	int ans = 0;
 	ListNode *slow = head, *fast = head; 
@@ -108,19 +133,20 @@ ListNode* fnReverse(ListNode* head) {
 }
 
 // Find numbers of subarrays that fit an exact criteria
+// this like a fixed-left-side sliding window and process as a length-increasing-forever window, sharing the similar code template
 // 325. Maximum Size Subarray Sum Equals k; https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/description/?envType=list&envId=9kpcif56
 // 523. Continuous Subarray Sum; https://leetcode.com/problems/continuous-subarray-sum/description/?envType=list&envId=9kpcif56 
 // 560. Subarray Sum Equals K; https://leetcode.com/problems/subarray-sum-equals-k/description/
 int fnFindSubarrays(vector<int>& arr, int k) {
-	// using a map to look up quickly 
+	// using a map to look up quickly; adnd it serves as a memo/dp, so it needs the initialization
 	unordered_map<int, int> counts;  // choose the proper name for this map according to the problem; the map serves as a dp array too
 	counts[0] = 1; // must initialize counts[0], but its value will depend on the problem; dp array needs a base case
 	int ans = 0, curr = 0; // curr might be the current pre sum; 
-	for (int num : arr) {
+
+	for (int num : arr) { // in this loop, search the map first and then add the curr into map later
         // do logic to change curr based on num
-		// search the map and then add the curr into map; ???
-		// NOTE: cannot add curr into map first; otherwise, ans might be counted incorrectly
 		ans += counts[curr -k]; 
+		// NOTE: cannot add curr into map first; otherwise, ans might be counted incorrectly
 		counts[curr]++; // there might be a condition to check before adding into the map
 	}
 	return ans; 
@@ -137,7 +163,7 @@ int fnMonotonicIncreasingStack(vector<int>& arr) {
 	for (int n : arr) {
 		// this is monotonic increasing
 		// for monotonic decrease, change > to < 
-		while (!stack.empty() && stack.top() > num) {
+		while (!stack.empty() && stack.top() > n) {
 			// do logic here
 			stack.pop(); 
 		}
@@ -228,7 +254,7 @@ int dfsGraph1(vector<vector<int>>& graph) {
 	seen.insert(START_NODE); // #1. must do insert before visiting it in order to avoid the dead loop
 							// #2. alternatively, immediately insert it when start visiting it, 
 							// and check if the neighbor is already visited when iterating them 
-	return dfsGraph(START_NODE, graph);
+	return dfsGraph1(START_NODE, graph);
 }
 
 int dfsGraph1(int node, vector<vector<int>>& graph) {
@@ -240,7 +266,7 @@ int dfsGraph1(int node, vector<vector<int>>& graph) {
 			// an atomic action: add into seen, and then dfs ths node
 			// AKA. the atomic action: want to visit (add into seen), and do visit (do dfs)
 			seen.insert(neighbor); // this and the next steps are repeating the two steps in the above function
-			dfsGraph(neighbor, graph); 
+			dfsGraph1(neighbor, graph); 
 		}
 	}
 	return ans; 
@@ -250,7 +276,7 @@ int dfsGraph1(int node, vector<vector<int>>& graph) {
 // ????
 unordered_set<int> seen2; 
 int dfsGraph2(vector<vector<int>>& graph) {
-	return dfsGraph(START_NODE, graph);
+	return dfsGraph2(START_NODE, graph);
 }
 
 int dfsGraph2(int node, vector<vector<int>>& graph) {
@@ -273,8 +299,8 @@ int dfsGraph2(int node, vector<vector<int>>& graph) {
 int dfsIterative(vector<vector<int>> & graph) {
 	stack<int> stack; 
 	unordered_set<int> seen; 
-	seen.insert(Start_node);
-	stack.push(Start_node);
+	seen.insert(START_NODE);
+	stack.push(START_NODE);
 	int ans = 0;
 	while (!stack.empty())  {
 		auto node = stack.top(); stack.pop(); 
@@ -300,8 +326,8 @@ int bfsGraph(vector<vector<int>>& graph) {
 	// there might be a numbers of starting nodes and all these need to be added into the queue initially
 	// there might be zero of starting nodes. This is an edge case. 
 	// in summary, the number of starting nodes, could be 0, 1, N; 
-	seen.insert(start_node); 
-	queue.push(start_node); 
+	seen.insert(START_NODE); 
+	queue.push(START_NODE); 
 	int ans = 0; 
 	while (!queue.empty()) {
 		int node = queue.front(); 
@@ -338,18 +364,18 @@ vector<int> fnTopK(vector<int>& arr, int k) {
 }
 
 int binarySearch(vector<int>& arr, int target) {
-	int left = 0, right = arr.size() - 1; 
-	while (left <= right) {
-		int mid = left + (right - left) / 2; 
+	int low = 0, high = arr.size() - 1; 
+	while (low <= high) {
+		int mid = low + (high - low) / 2; 
 		if (target == arr[mid])  {
 			return mid; 
 		} else if (target < arr[mid]) {
-			right = mid - 1; 
+			high = mid - 1; 
 		} else {
-			left = mid + 1; 
+			low = mid + 1; 
 		}
 	}
-	return left; 
+	return low; 
 }
 
 // e.g. 852. Peak Index in a Mountain Array, https://leetcode.com/problems/peak-index-in-a-mountain-array/description/
@@ -362,9 +388,10 @@ int binaryLeftMost(vector<int>& arr, int target) {
 	for (int right = arr.size(); left < right; )  {
 		auto mid = left + (right - left) / 2; 
 		if (arr[mid] >= target) {
-			right = mid; 
+			right = mid; // right make the above condition always true, and right become smaller and smaller
 		} else {
-			left = mid + 1; 
+			left = mid + 1; // when for-loop is break-out, left would make the above condition become true for the first time; 
+							// therefore, left becomes the smallest right which can make the condition true
 		}
 	}
 	return left; 
@@ -426,37 +453,67 @@ In C++, when using binary search, the initialization of the right pointer in the
 1. When considering the entire array:
    - If the binary search needs to consider all elements of the array, the right pointer is initialized to `array.size()`. For example:
 */
+
+vector<int> nums; 
+{
      int left = 0;
      int right = nums.size(); // Right pointer initialized to array.size()
      while (left < right) {
          // Binary search logic
      }
+}
 /*
 2. When excluding the last element:
    - In some scenarios, the binary search may need to exclude the last element from the search range. 
    This is commonly seen when searching for a specific target or finding an element that is just greater or equal to a given value. 
    In such cases, the right pointer is initialized to `array.size() - 1`. For example:
 */
+{
      int left = 0;
      int right = nums.size() - 1; // Right pointer initialized to array.size() - 1
      while (left <= right) {
          // Binary search logic
      }
+}
 	 
 /*
 3. Adjusting indexing convention:
    - In C++, arrays are 0-indexed, which means that the valid indices of elements range from 0 to `array.size() - 1`. 
    If the binary search uses this indexing convention, then the right pointer is typically initialized to `array.size() - 1` to prevent accessing an element beyond the valid index range. For example:
 */
+{
      int left = 0;
      int right = nums.size() - 1; // Right pointer initialized to array.size() - 1
      while (left <= right) {
          // Binary search logic
      }
+}
 /*
 In summary, the choice of initializing the right pointer to `array.size()` or `array.size() - 1` in a binary search 
 depends on the specific problem's requirements and the indexing convention used (0-indexed or 1-indexed). 
 Careful consideration of the search range and the desired behavior will determine the appropriate initialization of the right pointer.
+*/
+
+/*
+In binary search, if "left" is 0, "right" is the array size, the loop condition is "left < right". 
+However, if "right" is  the array size minus 1, the loop condition is "left <= right".
+
+Yes, the above statement is correct. The choice of loop condition in binary search depends on how you initialize the `right` pointer.
+
+When the `right` pointer is initialized to the array size, the loop condition is typically `left < right`. 
+This is because you want to keep searching until the pointers narrow down to a single element. 
+When `left` and `right` point to the same element, the search space contains only one element, and at that point, the search is complete.
+
+On the other hand, when the `right` pointer is initialized to the array size minus 1, the loop condition is typically `left <= right`. 
+This is because you want to keep searching until the pointers narrow down to an empty subarray. 
+When `left` and `right` cross each other, the search space becomes empty, and that is when the search is complete.
+
+To summarize:
+- If `right` is initialized to the array size: use `left < right` as the loop condition.
+- If `right` is initialized to the array size minus 1: use `left <= right` as the loop condition.
+
+Both approaches are valid, and you can choose the one that suits your preference or the specific problem you are solving. 
+Just make sure to be consistent with the loop condition and handle boundary cases correctly to avoid any off-by-one errors.
 */
 {
 	auto cmpLeftMost = [](auto lhs, auto rhs) -> bool {
@@ -486,36 +543,36 @@ Careful consideration of the search range and the desired behavior will determin
 // If looking for a minimum:
 // e.g. 1011. Capacity To Ship Packages Within D Days; https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/
 int binaryMinimum(vector<int>& arr) {
-	int left = MINIMUM_POSSIBLE_ANSWER; 
-	int right = MAXIMUM_POSSIBLE_ANSWER; 
+	int low = MINIMUM_POSSIBLE_ANSWER; 
+	int high = MAXIMUM_POSSIBLE_ANSWER; 
 	// must use <= here; this is different from the above binary search
-	while (left <= right) {
-		auto mid = left + (right - left) / 2; 
+	while (low <= high) {
+		auto mid = low + (high - low) / 2; 
 		if (check(mid)) {
-			right = mid - 1; 
+			high = mid - 1; 
 		} else {
-			left = mid + 1;  // when exit, left will be the first to meet the check function
+			low = mid + 1;  // when exit, low will be the first to meet the check function
 		}
 	}
-	return left; 
+	return low; 
 }
 
 // e.g. 1891. Cutting Ribbons https://leetcode.com/problems/cutting-ribbons/description/?envType=list&envId=9kpcif56 
 // Binary search: for greedy problems
 // If looking for a maximum:
 int binaryMaximum(vector<int>& arr) {
-	int left = MINIMUM_POSSIBLE_ANSWER; 
-	int right = MAXIMUM_POSSIBLE_ANSWER;
+	int low = MINIMUM_POSSIBLE_ANSWER; 
+	int high = MAXIMUM_POSSIBLE_ANSWER;
 	// must use <= here
-	while (left <= right) {
-		auto mid = left + (right - left) / 2; 
+	while (low <= high) {
+		auto mid = low + (high - low) / 2; 
 		if (check(mid)) {
-			left = mid + 1; 
+			low = mid + 1; 
 		} else {
-			right = mid - 1; // when exit, right will be the last to meet the check function
+			high = mid - 1; // when exit, high will be the last to meet the check function
 		}
 	}
-	return right; 
+	return high; 
 }
 
 // 78. Subsets https://leetcode.com/problems/subsets/description/
@@ -557,6 +614,7 @@ TrieNode* buildTrie(vector<string> words) {
 }
 
 // Input size VS time complexity
+/*
 n <= 10 : O(n^2 * n!) or O(4^n), backtrack or brute-force 
 n <= 20: O(2^n), backtrack or recursion 
 n <= 100: O(n^3), brute-force
@@ -566,3 +624,4 @@ hash map, two pointers, sliding windows, Monotonic stack,
 binary search, heap, or combination
 n <= 1,000,000: O(n) or O(n * logh n): hash map
 More: O(log n ) or O(1)
+*/
