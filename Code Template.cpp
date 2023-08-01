@@ -3,13 +3,14 @@
 #include <vector>
 #include <String> 
 #include <unordered_map> 
+#include <unordered_set>
 #include <stack>
 #include <queue> // for priority_queue
-#include <unordered_set>
 
 using namespace std; 
 
 #define CONDITION true
+#define START_NODE 0
 
 struct ListNode {
 	int val; 
@@ -21,8 +22,13 @@ struct TreeNode {
 	TreeNode *left, *right; 
 };
 
-#define START_NODE 0
-#define start_node 0
+/*
+Two Pointers Technique: left and right, or slow and fast 
+Sliding Window Technique: start and end
+Binary Search: low and high if the array is strictly increased, or use left and right if there are some duplications
+*/
+
+// ??? sort all problems of meta once a week into different algorithms, whose numbers are less than 23 and after 29
 
 // two pointers with opposite directions
 int fnTwoPointers(vector<int>& arr) {
@@ -39,13 +45,9 @@ int fnTwoPointers(vector<int>& arr) {
 	return ans; 
 }
 
-/*
-Two Pointers Technique: left and right, or slow and fast 
-Sliding Window Technique: start and end
-Binary Search: low and high
-*/
 
 // two pointers for two arrays with the same direction
+// 408. Valid Word Abbreviation https://leetcode.com/problems/valid-word-abbreviation/?envType=list&envId=9kpcif56
 int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
 	int i = 0, j = 0, ans = 0; 
 
@@ -72,7 +74,8 @@ int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
 // for the window with the fixed size, only need a single pointer to point to the end of the window
 // for the window with the fixed size, remove the start since the end >= the window size
 // must ensure the start is moved, otherwise, the inner loop would become a dead one.
-// e.g. 239. Sliding Window Maximum;  https://leetcode.com/problems/sliding-window-maximum/?envType=list&envId=9kpcif56
+// 239. Sliding Window Maximum;  https://leetcode.com/problems/sliding-window-maximum/?envType=list&envId=9kpcif56
+// 1004. Max Consecutive Ones III; https://leetcode.com/problems/max-consecutive-ones-iii/?envType=list&envId=9kpcif56
 int fnSlidingWindow(vector<int>& arr) {
 	int ans = 0; 
 	for (int start = 0, end = 0, curr = 0; end < arr.size(); ++end) {
@@ -154,8 +157,9 @@ int fnFindSubarrays(vector<int>& arr, int k) {
 
 // the monotonic stack might contain values or some index; 
 // if the stack contains index, the while condition should be changed accordingly
-// e.g. 1944. Number of Visible People in a Queue https://leetcode.com/problems/number-of-visible-people-in-a-queue/description/?envType=list&envId=9kpcif56
-// e.g. 1762. Buildings With an Ocean View https://leetcode.com/problems/buildings-with-an-ocean-view/description/ 
+// 1944. Number of Visible People in a Queue https://leetcode.com/problems/number-of-visible-people-in-a-queue/description/?envType=list&envId=9kpcif56
+// 1762. Buildings With an Ocean View https://leetcode.com/problems/buildings-with-an-ocean-view/description/ 
+// 316. Remove Duplicate Letters; https://leetcode.com/problems/remove-duplicate-letters/?envType=list&envId=9kpcif56
 int fnMonotonicIncreasingStack(vector<int>& arr) {
 	stack<int> stack; 
 	int ans = 0;
@@ -175,9 +179,10 @@ int fnMonotonicIncreasingStack(vector<int>& arr) {
 // inorder, preorder, postorder;
 // 987. Vertical Order Traversal of a Binary Tree; https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/?envType=list&envId=9kpcif56
 // 543. Diameter of Binary Tree; https://leetcode.com/problems/diameter-of-binary-tree/description/
+// 1382. Balance a Binary Search Tree; https://leetcode.com/problems/balance-a-binary-search-tree/?envType=list&envId=9kpcif56
 int dfsTree(TreeNode *root) {
 	// 1. deal withing the special base cases
-	// leave is one of these cases
+	// leave is one of these cases ??? when calculating the depth, it is 0 for nullptr and 1 for a leave; so the base case is still nullptr; 
 	// could be more base cases
 	if (!root) { return 0; }
 	int ans = 0; 
@@ -317,7 +322,7 @@ int dfsIterative(vector<vector<int>> & graph) {
 
 // when do Topological Sort, no need to keep the seen set, 
 // for it is DAG, and a node is added into queue only when only its in/out degree reach zero
-
+// 317. Shortest Distance from All Buildings; https://leetcode.com/problems/shortest-distance-from-all-buildings/?envType=list&envId=9kpcif56
 int bfsGraph(vector<vector<int>>& graph) {
 	queue<int> queue; 
 	unordered_set<int> seen; 
@@ -380,13 +385,13 @@ int binarySearch(vector<int>& arr, int target) {
 
 // e.g. 852. Peak Index in a Mountain Array, https://leetcode.com/problems/peak-index-in-a-mountain-array/description/
 // 1870. Minimum Speed to Arrive on Time; https://leetcode.com/problems/minimum-speed-to-arrive-on-time/description/
-// 1060. Missing Element in Sorted Array; https://leetcode.com/problems/missing-element-in-sorted-array/?envType=list&envId=9kpcif56
 // 1539. Kth Missing Positive Number; https://leetcode.com/problems/kth-missing-positive-number/?envType=list&envId=9kpcif56
 // Binary search: duplicate elements, left-most insertion point
 int binaryLeftMost(vector<int>& arr, int target) {
 	int left = 0;
 	for (int right = arr.size(); left < right; )  {
 		auto mid = left + (right - left) / 2; 
+		// it could be a condition to calculated here and then checked in the next if statement
 		if (arr[mid] >= target) {
 			right = mid; // right make the above condition always true, and right become smaller and smaller
 		} else {
@@ -418,6 +423,7 @@ int minSpeedOnTime(vector<int>& dist, double hour) {
 }
 */
 // Binary search: duplicate elements, right-most insertion point
+// 1060. Missing Element in Sorted Array; https://leetcode.com/problems/missing-element-in-sorted-array/?envType=list&envId=9kpcif56
 int binaryRightMost(vector<int>& arr, int target) {
 	int left = 0;
 	for (int right = arr.size(); left < right; )  {
@@ -576,6 +582,8 @@ int binaryMaximum(vector<int>& arr) {
 }
 
 // 78. Subsets https://leetcode.com/problems/subsets/description/
+// 301. Remove Invalid Parentheses; https://leetcode.com/problems/remove-invalid-parentheses/?envType=list&envId=9kpcif56
+
 int backtrack(STATE curr, OTHERS) {
 	if (BASE_CASE) {
 		return 0; // modify the answer
