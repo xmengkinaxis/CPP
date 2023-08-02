@@ -1,11 +1,17 @@
 // https://leetcode.com/explore/interview/card/cheatsheets/720/resources/4723/
-// cheatsheet and code template
+// cheat sheet and code template
+#include <iostream> // cout, cin
+#include <cctype> // isalnum, isalpha, isdigit, islower, isupper, isspace
+#include <cctype> // toupper, tolower
+#include <sstream> // stringstream
+#include <String> // substr, geline, strlen, strcpy, strncpy, strcmp, stryncmp
 #include <vector>
-#include <String> 
 #include <unordered_map> 
 #include <unordered_set>
 #include <stack>
-#include <queue> // for priority_queue
+#include <queue> // riority_queue
+#include <deque> // deque
+#include <algorithm> // sort, min, max, 
 
 using namespace std; 
 
@@ -31,6 +37,9 @@ Binary Search: low and high if the array is strictly increased, or use left and 
 // ??? sort all problems of meta once a week into different algorithms, whose numbers are less than 23 and after 29
 
 // two pointers with opposite directions
+// e.g. Palindrome problems 
+// 15. 3Sum; https://leetcode.com/problems/3sum/description/
+// 125. Valid Palindrome; https://leetcode.com/problems/valid-palindrome/description/
 int fnTwoPointers(vector<int>& arr) {
 	int left = 0, right = arr.size() - 1; 
 	int ans = 0;
@@ -41,6 +50,8 @@ int fnTwoPointers(vector<int>& arr) {
 		} else {
 			--right; 
 		}
+		// there might be a case that left++ and right-- here
+		// Anyway, must update left, or right, or both. Otherwise, it would be a dead loop
 	}
 	return ans; 
 }
@@ -48,6 +59,8 @@ int fnTwoPointers(vector<int>& arr) {
 
 // two pointers for two arrays with the same direction
 // 408. Valid Word Abbreviation https://leetcode.com/problems/valid-word-abbreviation/?envType=list&envId=9kpcif56
+// 21. Merge Two Sorted Lists; https://leetcode.com/problems/merge-two-sorted-lists/
+// 234. Palindrome Linked List; https://leetcode.com/problems/palindrome-linked-list/description/
 int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
 	int i = 0, j = 0, ans = 0; 
 
@@ -112,7 +125,10 @@ string fnString(vector<char>& arr) {
 }
 
 // fast and slow pointers; a case of two pointers with the same direction
-// e..g. 283. Move Zeroes; https://leetcode.com/problems/move-zeroes/description/
+// odd number of items: fast is valid, but fast->next is nullptr, slow points to the exact middle node of list
+// even number of items: fast is nullptr, and slow points to the second middle (right-middle) node 
+// 283. Move Zeroes; https://leetcode.com/problems/move-zeroes/description/
+// 234. Palindrome Linked List; https://leetcode.com/problems/palindrome-linked-list/description/
 int fnFastAndSlowPointers(ListNode* head) {
 	int ans = 0;
 	ListNode *slow = head, *fast = head; 
@@ -124,6 +140,7 @@ int fnFastAndSlowPointers(ListNode* head) {
 }
 
 // reverse a linked list 
+// 234. Palindrome Linked List; https://leetcode.com/problems/palindrome-linked-list/description/
 ListNode* fnReverse(ListNode* head) {
 	ListNode *prev = nullptr; 
 	for (auto curr = head; curr; ) {
@@ -141,7 +158,7 @@ ListNode* fnReverse(ListNode* head) {
 // 523. Continuous Subarray Sum; https://leetcode.com/problems/continuous-subarray-sum/description/?envType=list&envId=9kpcif56 
 // 560. Subarray Sum Equals K; https://leetcode.com/problems/subarray-sum-equals-k/description/
 int fnFindSubarrays(vector<int>& arr, int k) {
-	// using a map to look up quickly; adnd it serves as a memo/dp, so it needs the initialization
+	// using a map to look up quickly; and it serves as a memo/dp, so it needs the initialization
 	unordered_map<int, int> counts;  // choose the proper name for this map according to the problem; the map serves as a dp array too
 	counts[0] = 1; // must initialize counts[0], but its value will depend on the problem; dp array needs a base case
 	int ans = 0, curr = 0; // curr might be the current pre sum; 
@@ -563,7 +580,7 @@ int binaryMinimum(vector<int>& arr) {
 	return low; 
 }
 
-// e.g. 1891. Cutting Ribbons https://leetcode.com/problems/cutting-ribbons/description/?envType=list&envId=9kpcif56 
+// 1891. Cutting Ribbons https://leetcode.com/problems/cutting-ribbons/description/?envType=list&envId=9kpcif56 
 // Binary search: for greedy problems
 // If looking for a maximum:
 int binaryMaximum(vector<int>& arr) {
