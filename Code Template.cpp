@@ -28,6 +28,20 @@ struct TreeNode {
 	TreeNode *left, *right; 
 };
 
+// Input size VS time complexity
+/*
+n <= 10 : O(n^2 * n!) or O(4^n), backtrack or brute-force 
+n <= 20: O(2^n), backtrack or recursion 
+n <= 100: O(n^3), brute-force
+n <= 1,000: O(n * n)
+n <= 100,000: O(n * log n) or O(n): sort or heap; 
+hash map, two pointers, sliding windows, Monotonic stack, 
+binary search, heap, or combination
+n <= 1,000,000: O(n) or O(n * logh n): hash map
+More: O(log n ) or O(1)
+*/
+
+
 /*
 Two Pointers Technique: left and right, or slow and fast 
 Sliding Window Technique: start and end
@@ -37,7 +51,7 @@ Binary Search: low and high if the array is strictly increased, or use left and 
 // ??? sort all problems of meta once a week into different algorithms, whose numbers are less than 23 and after 29
 
 // two pointers with opposite directions
-// e.g. Palindrome problems 
+// e.g. Palindrome problems (odd or even, two pointers with the opposite directions): 647. Palindromic Substrings https://leetcode.com/problems/palindromic-substrings/?envType=list&envId=9kpcif56
 // 15. 3Sum; https://leetcode.com/problems/3sum/description/
 // 125. Valid Palindrome; https://leetcode.com/problems/valid-palindrome/description/
 int fnTwoPointers(vector<int>& arr) {
@@ -61,6 +75,8 @@ int fnTwoPointers(vector<int>& arr) {
 // 408. Valid Word Abbreviation https://leetcode.com/problems/valid-word-abbreviation/?envType=list&envId=9kpcif56
 // 21. Merge Two Sorted Lists; https://leetcode.com/problems/merge-two-sorted-lists/
 // 234. Palindrome Linked List; https://leetcode.com/problems/palindrome-linked-list/description/
+// 1570. Dot Product of Two Sparse Vectors; https://leetcode.com/problems/dot-product-of-two-sparse-vectors/
+// 1650. Lowest Common Ancestor of a Binary Tree III; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iii/description/
 int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
 	int i = 0, j = 0, ans = 0; 
 
@@ -89,16 +105,20 @@ int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
 // must ensure the start is moved, otherwise, the inner loop would become a dead one.
 // 239. Sliding Window Maximum;  https://leetcode.com/problems/sliding-window-maximum/?envType=list&envId=9kpcif56
 // 1004. Max Consecutive Ones III; https://leetcode.com/problems/max-consecutive-ones-iii/?envType=list&envId=9kpcif56
+// 76. Minimum Window Substring; https://leetcode.com/problems/minimum-window-substring/description/
 int fnSlidingWindow(vector<int>& arr) {
 	int ans = 0; 
 	for (int start = 0, end = 0, curr = 0; end < arr.size(); ++end) {
 		// add arr[end] into curr; 
-		// the curr might be a complex one, such as a monotonic deque, and need some preprocess before adding
+		// the curr might be a complex one, 
+		// 	such as a monotonic deque, and need some preprocess before adding
+		// 	or a unordered_map to represent the frequency of characters in the window
 
 		// depend on if the window size is fixed or not, 
 		// if fixed, when end >= size, remove the start by moving it towards end by one
 		// if not fixed, depend on the loop condition to remove the start
 		while (CONDITION && start <= end ) {
+			// can do something for the valid window here as the window is shrinking
 			// remove arr[start] from curr; 
 			++start; 
 		}
@@ -161,6 +181,7 @@ int fnFindSubarrays(vector<int>& arr, int k) {
 	// using a map to look up quickly; and it serves as a memo/dp, so it needs the initialization
 	unordered_map<int, int> counts;  // choose the proper name for this map according to the problem; the map serves as a dp array too
 	counts[0] = 1; // must initialize counts[0], but its value will depend on the problem; dp array needs a base case
+					// might be memo[0] = -1, if the value is the index of the array
 	int ans = 0, curr = 0; // curr might be the current pre sum; 
 
 	for (int num : arr) { // in this loop, search the map first and then add the curr into map later
@@ -171,6 +192,8 @@ int fnFindSubarrays(vector<int>& arr, int k) {
 	}
 	return ans; 
 }
+
+// similar e.g. 219. Contains Duplicate II; https://leetcode.com/problems/contains-duplicate-ii/description/
 
 // the monotonic stack might contain values or some index; 
 // if the stack contains index, the while condition should be changed accordingly
@@ -197,6 +220,7 @@ int fnMonotonicIncreasingStack(vector<int>& arr) {
 // 987. Vertical Order Traversal of a Binary Tree; https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/?envType=list&envId=9kpcif56
 // 543. Diameter of Binary Tree; https://leetcode.com/problems/diameter-of-binary-tree/description/
 // 1382. Balance a Binary Search Tree; https://leetcode.com/problems/balance-a-binary-search-tree/?envType=list&envId=9kpcif56
+// 536. Construct Binary Tree from String; https://leetcode.com/problems/construct-binary-tree-from-string/?envType=list&envId=9kpcif56
 int dfsTree(TreeNode *root) {
 	// 1. deal withing the special base cases
 	// leave is one of these cases ??? when calculating the depth, it is 0 for nullptr and 1 for a leave; so the base case is still nullptr; 
@@ -236,7 +260,7 @@ int dfsTreeStack(TreeNode* root) {
 }
 
 
-// e.g. 314. Binary Tree Vertical Order Traversal, https://leetcode.com/problems/binary-tree-vertical-order-traversal/
+// 314. Binary Tree Vertical Order Traversal, https://leetcode.com/problems/binary-tree-vertical-order-traversal/
 int bfsTree(TreeNode* root) {
 	if (!root) { return 0; }
 
@@ -259,18 +283,17 @@ int bfsTree(TreeNode* root) {
 }
 
 // for DFS, the core actions are: 
-// 1. check if the node is valid, e.g. it must be in the grid when the problem is a grid, 
-// 2. check if the node should be visited, e.g. the original value/attribute of this node makes it as a valid candidate. 
-// 3. check if the node is already visited, e.g. seen/visited already contains it
+// 1. check if the node is valid, e.g. it must be in the grid when the problem is a grid,
+// 2. check if the node is already visited, e.g. seen/visited already contains it 
+// 3. check if the node should be visited, e.g. the original value/attribute of this node makes it as a valid candidate. 
 // 4. do something for this node; this is a real visit on this node
 // 5. visit all its neighbors; 
 // * these core actions is the core of DFS and the block of the BFS while loop
 // * for BFS, the order might be 4, 5, 1, 2, 3
 // * if changing the original value instead of using seen/visited, the 2 and 3 are merged into one of checking value
-// e.g. 317. Shortest Distance from All Buildings
-// https://leetcode.com/problems/shortest-distance-from-all-buildings/description/?envType=list&envId=9kpcif56
 
-
+// 317. Shortest Distance from All Buildings;  https://leetcode.com/problems/shortest-distance-from-all-buildings/description/?envType=list&envId=9kpcif56
+// 339. Nested List Weight Sum; https://leetcode.com/problems/nested-list-weight-sum/description/
 unordered_set<int> seen; 
 int dfsGraph1(vector<vector<int>>& graph) {
 	seen.insert(START_NODE); // #1. must do insert before visiting it in order to avoid the dead loop
@@ -598,12 +621,17 @@ int binaryMaximum(vector<int>& arr) {
 	return high; 
 }
 
+// 17. Letter Combinations of a Phone Number; https://leetcode.com/problems/letter-combinations-of-a-phone-number/description/
 // 78. Subsets https://leetcode.com/problems/subsets/description/
 // 301. Remove Invalid Parentheses; https://leetcode.com/problems/remove-invalid-parentheses/?envType=list&envId=9kpcif56
-
+// 46. Permutations; https://leetcode.com/problems/permutations/
+// 77. Combinations; https://leetcode.com/problems/combinations/
+// 140. Word Break II; https://leetcode.com/problems/word-break-ii/description/?envType=list&envId=9kpcif56 
+// 282. Expression Add Operators; https://leetcode.com/problems/expression-add-operators/?envType=list&envId=9kpcif56
 int backtrack(STATE curr, OTHERS) {
-	if (BASE_CASE) {
-		return 0; // modify the answer
+	if (BASE_CASE) { // startId, or curr state size, or both
+		// modify the answer
+		return 0; 
 	}
 
 	int ans = 0; 
@@ -636,17 +664,44 @@ TrieNode* buildTrie(vector<string> words) {
 			// perform something on the current TrieNode; 
 		}
 	}
+	return root; 
 }
 
-// Input size VS time complexity
-/*
-n <= 10 : O(n^2 * n!) or O(4^n), backtrack or brute-force 
-n <= 20: O(2^n), backtrack or recursion 
-n <= 100: O(n^3), brute-force
-n <= 1,000: O(n * n)
-n <= 100,000: O(n * log n) or O(n): sort or heap; 
-hash map, two pointers, sliding windows, Monotonic stack, 
-binary search, heap, or combination
-n <= 1,000,000: O(n) or O(n * logh n): hash map
-More: O(log n ) or O(1)
+
+/* Parentheses
+
+921. Minimum Add to Make Parentheses Valid; https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/?envType=list&envId=9kpcif56
+1249. Minimum Remove to Make Valid Parentheses; https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/*/
+
+// combine data structures
+
+// sell and buy stocks
+
+/* Calculator 
+224. Basic Calculator; https://leetcode.com/problems/basic-calculator/
+227. Basic Calculator II; https://leetcode.com/problems/basic-calculator-ii/
+772. Basic Calculator III; https://leetcode.com/problems/basic-calculator-iii/
+282. Expression Add Operators; https://leetcode.com/problems/expression-add-operators/ 
+*/
+
+/* dp
+1216. Valid Palindrome III https://leetcode.com/problems/valid-palindrome-iii/?envType=list&envId=9kpcif56
+*/
+
+/* Palindrome
+680. Valid Palindrome II; https://leetcode.com/problems/valid-palindrome-ii/
+1216. Valid Palindrome III https://leetcode.com/problems/valid-palindrome-iii/?envType=list&envId=9kpcif56 ; 2D DP
+*/
+
+/* Heap
+215. Kth Largest Element in an Array; https://leetcode.com/problems/kth-largest-element-in-an-array/
+
+*/
+
+/* unordered_map and map
+249. Group Shifted Strings; https://leetcode.com/problems/group-shifted-strings/
+*/
+
+/* stack
+71. Simplify Path; https://leetcode.com/problems/simplify-path/description/
 */
