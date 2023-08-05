@@ -185,8 +185,15 @@ int fnFindSubarrays(vector<int>& arr, int k) {
 	int ans = 0, curr = 0; // curr might be the current pre sum; 
 
 	for (int num : arr) { // in this loop, search the map first and then add the curr into map later
-        // do logic to change curr based on num
-		ans += counts[curr -k]; 
+        // 1. Update curr to include num; 
+		// do logic here to change curr based on num
+
+		// 2. Check the map
+		// might need to check if the key in the unordered_map to avoid adding one mistakenly
+		// might need to check some conditions before updating ans;
+		ans += counts[curr - k]; 
+
+		// 3. Update the map
 		// NOTE: cannot add curr into map first; otherwise, ans might be counted incorrectly
 		counts[curr]++; // there might be a condition to check before adding into the map
 	}
@@ -221,6 +228,10 @@ int fnMonotonicIncreasingStack(vector<int>& arr) {
 // 543. Diameter of Binary Tree; https://leetcode.com/problems/diameter-of-binary-tree/description/
 // 1382. Balance a Binary Search Tree; https://leetcode.com/problems/balance-a-binary-search-tree/?envType=list&envId=9kpcif56
 // 536. Construct Binary Tree from String; https://leetcode.com/problems/construct-binary-tree-from-string/?envType=list&envId=9kpcif56
+// 938. Range Sum of BST; https://leetcode.com/problems/range-sum-of-bst/description/
+// 236. Lowest Common Ancestor of a Binary Tree; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/
+// 426. Convert Binary Search Tree to Sorted Doubly Linked List; https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/description/
+// 95. Unique Binary Search Trees II; https://leetcode.com/problems/unique-binary-search-trees-ii/description/
 int dfsTree(TreeNode *root) {
 	// 1. deal withing the special base cases
 	// leave is one of these cases ??? when calculating the depth, it is 0 for nullptr and 1 for a leave; so the base case is still nullptr; 
@@ -363,6 +374,7 @@ int dfsIterative(vector<vector<int>> & graph) {
 // when do Topological Sort, no need to keep the seen set, 
 // for it is DAG, and a node is added into queue only when only its in/out degree reach zero
 // 317. Shortest Distance from All Buildings; https://leetcode.com/problems/shortest-distance-from-all-buildings/?envType=list&envId=9kpcif56
+// 1091. Shortest Path in Binary Matrix; https://leetcode.com/problems/shortest-path-in-binary-matrix/description/
 int bfsGraph(vector<vector<int>>& graph) {
 	queue<int> queue; 
 	unordered_set<int> seen; 
@@ -389,6 +401,37 @@ int bfsGraph(vector<vector<int>>& graph) {
 		}
 	}
 	return ans; 
+}
+
+int bfsGraphSteps(vector<vector<int>>& grid) {
+	const int N = grid.size(); 
+	// deal with the special case, e.g. grid[0][0] or/and grid[N - 1][N - 1]
+
+	queue<pair<int, int>> queue; 
+	queue.push({0, 0}); 
+	grid[0][0] = 2; // mark it as visited by changing its value
+	for (int step = 1; !queue.empty(); step++) { // the step must be initialized properly, and is increased level by level
+		for (int count = queue.size(); 0 < count; --count) {
+			auto [r, c] = queue.front(); queue.pop(); 
+			// do logic for this node, e.g. check if it is finished
+			if (N - 1 == r && N - 1 == c) {
+				return step; 
+			}
+			constexpr int dirs[][2] = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}, 
+				{-1, -1}, {-1, 1}, {1, 1}, {1, -1}}; 
+			// iterate all candidates
+			for (auto [dr, dc] : dirs) {
+				auto nr = r + dr, nc = c + dc; 
+				if (nr < 0 || nr >= N || nc < 0 || nc >= N // valid if it is a valid candidate
+					|| grid[nr][nc]) { // check if it was visited
+					continue; 
+				}
+				grid[nr][nc] = 2; 
+				queue.push({nr, nc});
+			}
+		}
+	}
+	return -1; 
 }
 
 vector<int> fnTopK(vector<int>& arr, int k) {
@@ -669,9 +712,17 @@ TrieNode* buildTrie(vector<string> words) {
 
 
 /* Parentheses
-
 921. Minimum Add to Make Parentheses Valid; https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/?envType=list&envId=9kpcif56
-1249. Minimum Remove to Make Valid Parentheses; https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/*/
+1249. Minimum Remove to Make Valid Parentheses; https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/
+301. Remove Invalid Parentheses; https://leetcode.com/problems/remove-invalid-parentheses/
+*/
+
+/* intervals 
+sort by start or end; when merging, newEnd = max(newEnd, end); when overlapping, newEnd = min(minEnd, end); 
+56. Merge Intervals; https://leetcode.com/problems/merge-intervals/
+253. Meeting Rooms II; https://leetcode.com/problems/meeting-rooms-ii/
+163. Missing Ranges; https://leetcode.com/problems/missing-ranges/
+*/
 
 // combine data structures
 
@@ -695,7 +746,7 @@ TrieNode* buildTrie(vector<string> words) {
 
 /* Heap
 215. Kth Largest Element in an Array; https://leetcode.com/problems/kth-largest-element-in-an-array/
-
+253. Meeting Rooms II; https://leetcode.com/problems/meeting-rooms-ii/
 */
 
 /* unordered_map and map
