@@ -1,4 +1,5 @@
-# What constraints should be clarified if the input is a string?
+# String
+## What constraints should be clarified if the input is a string?
 
 When dealing with input as a string, there are several constraints that should be clarified or validated to ensure correct processing and avoid unexpected behavior:
 
@@ -20,8 +21,62 @@ When dealing with input as a string, there are several constraints that should b
 
 By clarifying these constraints, you ensure that your code can handle a wide range of input strings safely and accurately. Additionally, you can provide meaningful error messages or user feedback when the input does not meet the specified requirements.
 
+## What cases should be used if the input is a string?
+When testing a function or algorithm that operates on strings, you should consider various types of test cases to ensure your code handles different scenarios correctly. Here are some common cases you should consider:
 
-# What constraints should be clarified if the input is an integer array?
+1. **Basic Cases**:
+   - Empty String: Test with an empty string to see how your code handles it.
+   - Single Character: Test with a string containing only one character.
+
+2. **String Length**:
+   - Short Strings: Test with short strings of various lengths.
+   - Long Strings: Test with long strings to ensure your code handles larger inputs.
+
+3. **Whitespace Handling**:
+   - Leading and Trailing Whitespace: Test with strings containing spaces or tabs at the beginning or end.
+   - Internal Whitespace: Test with strings containing spaces or tabs within the text.
+
+4. **Uppercase and Lowercase**:
+   - Case Sensitivity: Test with strings containing a mix of uppercase and lowercase letters to ensure your code handles case-sensitive scenarios correctly.
+
+5. **Special Characters and Symbols**:
+   - Test with strings containing special characters, punctuation marks, and symbols.
+
+6. **Numbers**:
+   - Test with strings containing numerical digits.
+
+7. **Unicode and Non-ASCII Characters**:
+   - Test with strings containing non-ASCII characters and Unicode characters to ensure your code handles internationalization and encoding correctly.
+
+8. **Substring Scenarios**:
+   - Substring Extraction: Test substring extraction functions/methods with different start and end indices.
+   - Substring Matching: Test your code's ability to match and find substrings within the given string.
+
+9. **Concatenation and Joining**:
+   - Test string concatenation and joining operations with multiple strings.
+
+10. **Search and Replace**:
+    - Test your code's ability to search for specific patterns or substrings and replace them with other strings.
+
+11. **Palindrome or Anagram Cases**:
+    - Test your code's ability to check for palindromes or anagrams in strings.
+
+12. **Edge Cases**:
+    - Test with strings that have extreme lengths, including very long strings and strings with minimal lengths.
+
+13. **Input Validation**:
+    - Test with strings that contain invalid or unexpected inputs to check how your code handles errors or edge cases.
+
+14. **Performance Testing**:
+    - For algorithms that process large strings, create test cases with significant lengths to evaluate the efficiency of your code.
+
+15. **Custom Test Cases**:
+    - Create custom test cases based on the specific requirements and characteristics of the problem you're solving.
+
+Remember that a good testing strategy covers a wide range of scenarios, including both common and edge cases. This helps ensure that your code is robust and works correctly in various situations.
+
+# Array/vector
+## What constraints should be clarified if the input is an integer array?
 
 When dealing with an input integer array, there are several constraints that should be clarified or validated to ensure correct processing and prevent potential issues:
 
@@ -45,7 +100,73 @@ When dealing with an input integer array, there are several constraints that sho
 
 By clarifying these constraints, you can design your code to handle different input scenarios effectively and provide meaningful error messages or user feedback when the input does not meet the specified requirements. Additionally, it helps ensure that your code is robust and reliable in various situations.
 
-# What constraints should be clarified if the input is a tree root?
+## What cases should be used in testing a vector problem?
+When testing a vector problem in C++, you should consider various cases to ensure the correctness and robustness of your solution. Some important test cases to consider include:
+
+1. Empty vector: Test with an empty vector to check how your code handles edge cases.
+2. Small inputs: Test with small input vectors to verify the correctness of your code for basic scenarios.
+3. Large inputs: Test with large input vectors to check the efficiency and scalability of your code.
+4. Vector with duplicates: Test with vectors that contain duplicate elements to ensure your code handles them correctly.
+5. Vector with sorted elements: Test with vectors that are already sorted to see how your code handles this scenario.
+6. Vector with reversed elements: Test with vectors in which elements are in descending order to cover different cases.
+7. Vector with random elements: Test with vectors containing random elements to ensure your code works for a wide range of inputs.
+8. Vector with special values: Test with vectors containing special values like zeros, negative numbers, or very large numbers, depending on the problem's requirements.
+9. Vector with different data types: If your vector contains custom data types, make sure to test them accordingly.
+10. Edge cases: Consider any specific edge cases mentioned in the problem description and test them explicitly.
+
+When testing a function or algorithm that operates on arrays, it's important to cover a variety of scenarios to ensure your code handles different situations correctly. Here are some common cases you should consider:
+
+1. **Empty Array**:
+   - Test with an empty array to check how your code handles it.
+
+2. **Single Element Array**:
+   - Test with an array containing only one element.
+
+3. **Small and Large Arrays**:
+   - Test with arrays of different lengths, both small and large.
+
+4. **Sorted and Unsorted Arrays**:
+   - Test with arrays that are already sorted and arrays that are not sorted.
+
+5. **Duplicates and Unique Values**:
+   - Test with arrays containing duplicate elements and arrays with only unique elements.
+
+6. **Negative Numbers and Zero**:
+   - Test with arrays containing negative numbers and zero.
+
+7. **Edge Cases**:
+   - Test with arrays that have extreme values, such as very large or very small numbers.
+
+8. **Subarray Scenarios**:
+   - Test subarray extraction functions/methods with different start and end indices.
+
+9. **Search and Lookup**:
+   - Test searching for specific elements within the array and checking if certain values exist.
+
+10. **Insertion and Deletion**:
+    - Test adding or removing elements from the array.
+
+11. **Swapping and Reversing**:
+    - Test algorithms that involve swapping elements or reversing the order of elements.
+
+12. **Shuffling and Randomization**:
+    - If applicable, test functions that shuffle the elements randomly.
+
+13. **Boundary and Middle Cases**:
+    - Test cases where the target element is at the beginning, middle, or end of the array.
+
+14. **Performance Testing**:
+    - For algorithms that process large arrays, create test cases with significant lengths to evaluate the efficiency of your code.
+
+15. **Custom Test Cases**:
+    - Create custom test cases based on the specific requirements and characteristics of the problem you're solving.
+
+A comprehensive testing strategy should cover a wide range of scenarios, including both common and edge cases. This helps ensure that your code is robust and works correctly in various situations.
+
+By covering these test cases, you can have more confidence in the correctness and efficiency of your vector-based solutions. Additionally, you should verify your results against known correct answers for some test cases to ensure your code produces accurate results.
+
+# Tree
+## What constraints should be clarified if the input is a tree root?
 
 When dealing with a tree data structure and its root, there are several constraints and considerations that should be clarified to handle the tree correctly and efficiently:
 
@@ -73,7 +194,61 @@ When dealing with a tree data structure and its root, there are several constrai
 
 By clarifying these constraints, you can design your tree-related algorithms and code to handle different tree structures effectively and provide meaningful error messages or user feedback when the input does not meet the specified requirements. Additionally, it ensures that your code is robust and reliable in various tree scenarios.
 
-# What constraints should be clarified if the input is a graph?
+## What cases should be used if the input is a tree?
+When testing a function or algorithm that works with trees, it's important to cover a variety of scenarios to ensure your code handles different tree structures and scenarios correctly. Here are some common cases you should consider when testing with trees:
+
+1. **Empty Tree**:
+   - Test with an empty tree to see how your code handles this scenario.
+
+2. **Single Node Tree**:
+   - Test with a tree that contains only one node.
+
+3. **Small and Large Trees**:
+   - Test with trees of different sizes, both small and large.
+
+4. **Balanced and Unbalanced Trees**:
+   - Test with trees that are balanced (like AVL trees) and trees that are unbalanced (like skewed trees).
+
+5. **Binary Trees and n-ary Trees**:
+   - Test with both binary trees and trees with more than two children per node.
+
+6. **Different Traversal Orders**:
+   - Test with different traversal orders such as preorder, inorder, postorder, and level order.
+
+7. **Specific Values and Data**:
+   - Test with specific values for nodes, including numbers, characters, strings, or other custom data types.
+
+8. **Null Nodes**:
+   - Test with trees containing null or empty nodes.
+
+9. **Leaf Nodes and Internal Nodes**:
+   - Test with scenarios where the target node is a leaf node or an internal node.
+
+10. **Parent-Child Relationships**:
+    - Test functions that check parent-child relationships, such as checking if a node is a child of another node.
+
+11. **Search and Lookup**:
+    - Test searching for specific nodes within the tree and checking if certain values exist.
+
+12. **Insertion and Deletion**:
+    - Test adding or removing nodes from the tree.
+
+13. **Tree Traversal**:
+    - Test different types of tree traversals for correctness and order.
+
+14. **Height and Depth**:
+    - Test algorithms that calculate the height, depth, or level of nodes in the tree.
+
+15. **Balancing Operations**:
+    - If applicable, test tree balancing operations like rotation for AVL trees.
+
+16. **Custom Test Cases**:
+    - Create custom test cases based on the specific requirements and characteristics of the problem you're solving.
+
+A comprehensive testing strategy should cover a wide range of tree structures and scenarios, including both common and edge cases. This helps ensure that your code is robust and works correctly for various tree configurations.
+
+# Graph
+## What constraints should be clarified if the input is a graph?
 
 When dealing with a graph as input, there are several constraints and considerations that should be clarified to handle the graph correctly and efficiently:
 
@@ -102,6 +277,56 @@ When dealing with a graph as input, there are several constraints and considerat
 12. Graph Density: Consider the density of the graph (i.e., the number of edges compared to the number of possible edges). A sparse graph with few edges may require different algorithms than a dense graph with many edges.
 
 By clarifying these constraints, you can design your graph algorithms and code to handle different graph structures effectively and provide meaningful error messages or user feedback when the input does not meet the specified requirements. Additionally, it ensures that your code is robust and reliable in various graph scenarios.
+
+## What cases should be used if the input is a graph?
+When testing functions or algorithms that work with graphs, it's important to cover various scenarios to ensure your code handles different graph structures and scenarios correctly. Here are some common cases you should consider when testing with graphs:
+
+1. **Empty Graph**:
+   - Test with an empty graph to see how your code handles this scenario.
+
+2. **Single Node Graph**:
+   - Test with a graph that contains only one node.
+
+3. **Small and Large Graphs**:
+   - Test with graphs of different sizes, both small and large.
+
+4. **Connected and Disconnected Graphs**:
+   - Test with graphs that are connected and graphs that have disconnected components.
+
+5. **Directed and Undirected Graphs**:
+   - Test with both directed and undirected graphs.
+
+6. **Cyclic and Acyclic Graphs**:
+   - Test with graphs that are cyclic and graphs that are acyclic.
+
+7. **Weighted and Unweighted Graphs**:
+   - Test with graphs that have weighted edges and graphs with unweighted edges.
+
+8. **Different Edge Types**:
+   - Test with graphs that have different types of edges (e.g., directed, undirected, weighted, unweighted).
+
+9. **Specific Values and Data**:
+   - Test with specific values for nodes and edges, including numbers, characters, strings, or other custom data types.
+
+10. **Node and Edge Deletion**:
+    - Test algorithms that involve deleting nodes or edges from the graph.
+
+11. **Shortest Path**:
+    - Test algorithms for finding the shortest path between nodes.
+
+12. **Minimum Spanning Tree**:
+    - Test algorithms for finding the minimum spanning tree of the graph.
+
+13. **Cycle Detection**:
+    - Test algorithms for detecting cycles in the graph.
+
+14. **Graph Traversal**:
+    - Test different graph traversal algorithms such as depth-first search (DFS) and breadth-first search (BFS).
+
+15. **Custom Test Cases**:
+    - Create custom test cases based on the specific requirements and characteristics of the problem you're solving.
+
+A comprehensive testing strategy should cover a wide range of graph structures and scenarios, including both common and edge cases. This helps ensure that your code is robust and works correctly for various graph configurations.
 
 # Optimize a solution
 Optimizing a solution in coding interviews involves improving the **efficiency**, **time complexity**, or **space complexity** of your initial solution. Here are some common approaches and methods for optimization:
