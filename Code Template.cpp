@@ -1,10 +1,9 @@
 // https://leetcode.com/explore/interview/card/cheatsheets/720/resources/4723/
 // cheat sheet and code template
 #include <iostream> // cout, cin
-#include <cctype> // isalnum, isalpha, isdigit, islower, isupper, isspace
-#include <cctype> // toupper, tolower
+#include <cctype> // isalnum, isalpha, isdigit, islower, isupper, isspace; toupper, tolower
 #include <sstream> // stringstream
-#include <String> // substr, geline, strlen, strcpy, strncpy, strcmp, stryncmp
+#include <String> // substr, getline, strlen, string(n, char), append(n, char), strcpy, strncpy, strcmp, stryncmp
 #include <vector>
 #include <unordered_map> 
 #include <unordered_set>
@@ -178,6 +177,7 @@ ListNode* fnReverse(ListNode* head) {
 // 523. Continuous Subarray Sum; https://leetcode.com/problems/continuous-subarray-sum/description/?envType=list&envId=9kpcif56 
 // 560. Subarray Sum Equals K; https://leetcode.com/problems/subarray-sum-equals-k/description/
 int fnFindSubarrays(vector<int>& arr, int k) {
+	// 0. define the map and initialize it properly
 	// using a map to look up quickly; and it serves as a memo/dp, so it needs the initialization
 	unordered_map<int, int> counts;  // choose the proper name for this map according to the problem; the map serves as a dp array too
 	counts[0] = 1; // must initialize counts[0], but its value will depend on the problem; dp array needs a base case
@@ -230,16 +230,20 @@ int fnMonotonicIncreasingStack(vector<int>& arr) {
 // 536. Construct Binary Tree from String; https://leetcode.com/problems/construct-binary-tree-from-string/?envType=list&envId=9kpcif56
 // 938. Range Sum of BST; https://leetcode.com/problems/range-sum-of-bst/description/
 // 236. Lowest Common Ancestor of a Binary Tree; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/
+// 1644. Lowest Common Ancestor of a Binary Tree II; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-ii/description/
+// 1676. Lowest Common Ancestor of a Binary Tree IV; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iv/description/
 // 426. Convert Binary Search Tree to Sorted Doubly Linked List; https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/description/
 // 95. Unique Binary Search Trees II; https://leetcode.com/problems/unique-binary-search-trees-ii/description/
+// 129. Sum Root to Leaf Numbers; https://leetcode.com/problems/sum-root-to-leaf-numbers/description/; // leave is one of the base cases 
+// 623. Add One Row to Tree; https://leetcode.com/problems/add-one-row-to-tree/description/; do logic for the node at the certain level
+// 1110. Delete Nodes And Return Forest; https://leetcode.com/problems/delete-nodes-and-return-forest/description/
 int dfsTree(TreeNode *root) {
-	// 1. deal withing the special base cases
-	// leave is one of these cases ??? when calculating the depth, it is 0 for nullptr and 1 for a leave; so the base case is still nullptr; 
-	// could be more base cases
+	// 1. deal withing the special base cases;  could be more base cases
+	// when calculating the depth, it is 0 for nullptr and 1 for a leave; so the base case is still nullptr; 
 	if (!root) { return 0; }
 	int ans = 0; 
 	// 2. do logic for this node
-	// 3. iterate all branches/candidates/choices/
+	// 3. iterate all branches/candidates/choices/; sometime check if the root is a leave, do the logic for leaf and then return; 
 	// 4. might need to check if a branch should be visited with some conditions
 	//  or depending on if other branches exist or not
 	dfsTree(root->left); 
@@ -247,7 +251,7 @@ int dfsTree(TreeNode *root) {
 	return ans; 	
 }
 
-
+// 173. Binary Search Tree Iterator; https://leetcode.com/problems/binary-search-tree-iterator/description/
 int dfsTreeStack(TreeNode* root) {
 	if (!root) { return 0; 	}
 
@@ -272,6 +276,7 @@ int dfsTreeStack(TreeNode* root) {
 
 
 // 314. Binary Tree Vertical Order Traversal, https://leetcode.com/problems/binary-tree-vertical-order-traversal/
+// 199. Binary Tree Right Side View; https://leetcode.com/problems/binary-tree-right-side-view/description/
 int bfsTree(TreeNode* root) {
 	if (!root) { return 0; }
 
@@ -295,8 +300,8 @@ int bfsTree(TreeNode* root) {
 
 // for DFS, the core actions are: 
 // 1. check if the node is valid, e.g. it must be in the grid when the problem is a grid,
-// 2. check if the node is already visited, e.g. seen/visited already contains it 
-// 3. check if the node should be visited, e.g. the original value/attribute of this node makes it as a valid candidate. 
+// 2. check if the node should be visited, e.g. the original value/attribute of this node makes it as a valid candidate. 
+// 3. check if the node is already visited, e.g. seen/visited already contains it 
 // 4. do something for this node; this is a real visit on this node
 // 5. visit all its neighbors; 
 // * these core actions is the core of DFS and the block of the BFS while loop
@@ -305,6 +310,7 @@ int bfsTree(TreeNode* root) {
 
 // 317. Shortest Distance from All Buildings;  https://leetcode.com/problems/shortest-distance-from-all-buildings/description/?envType=list&envId=9kpcif56
 // 339. Nested List Weight Sum; https://leetcode.com/problems/nested-list-weight-sum/description/
+// 529. Minesweeper; https://leetcode.com/problems/minesweeper/description/; acton 2 and 3 are separated
 unordered_set<int> seen; 
 int dfsGraph1(vector<vector<int>>& graph) {
 	seen.insert(START_NODE); // #1. must do insert before visiting it in order to avoid the dead loop
@@ -317,7 +323,7 @@ int dfsGraph1(int node, vector<vector<int>>& graph) {
 	int ans = 0; 
 	// do logic for node here
 	for (int neighbor : graph[node]) { // might to validate if a neighbor is valid first		
-		if (seen.find(neighbor) = seen.end()) { // prerequisite of the atomic action: ensure the node is not visited before
+		if (seen.find(neighbor) == seen.end()) { // prerequisite of the atomic action: ensure the node is not visited before
 			// they are a pair of actions, inserting the node into seen and call dfs on this node.
 			// an atomic action: add into seen, and then dfs ths node
 			// AKA. the atomic action: want to visit (add into seen), and do visit (do dfs)
@@ -329,7 +335,7 @@ int dfsGraph1(int node, vector<vector<int>>& graph) {
 }
 
 
-// ????
+// 490. The Maze; https://leetcode.com/problems/the-maze/description/
 unordered_set<int> seen2; 
 int dfsGraph2(vector<vector<int>>& graph) {
 	return dfsGraph2(START_NODE, graph);
@@ -342,7 +348,7 @@ int dfsGraph2(int node, vector<vector<int>>& graph) {
 	// if the node value can be changed and the changed value can be used as the visited flag, 
 	// then there is no need to create a separated seen/visited data structure
 	for (int neighbor : graph[node]) { // might to validate if a neighbor is valid first		
-		if (seen2.find(neighbor) = seen2.end()) { // prerequisite of the atomic action: ensure the node is not visited before
+		if (seen2.find(neighbor) == seen2.end()) { // prerequisite of the atomic action: ensure the node is not visited before
 			// they are a pair of actions, inserting the node into seen and call dfs on this node.
 			// an atomic action: add into seen, and then dfs ths node
 			// AKA. the atomic action: want to visit (add into seen), and do visit (do dfs)
@@ -351,6 +357,23 @@ int dfsGraph2(int node, vector<vector<int>>& graph) {
 	}
 	return ans; 
 }
+
+bool dfsGraph3(int node, vector<vector<int>>& graph) {	
+	if (seen2.find(node) == seen2.end()) {
+		return false; 
+	} else if (CONDITION) { // CONDITION: node is the destination
+		return true; // found
+	}
+	seen2.insert(START_NODE); // must do insert before visiting it in order to avoid the dead loop
+	// do logic for node here
+	for (int neighbor : graph[node]) { 
+		if (dfsGraph3(neighbor, graph)) {
+			return true; 
+		} 
+	}
+	return false; 
+}
+
 
 int dfsIterative(vector<vector<int>> & graph) {
 	stack<int> stack; 
@@ -375,6 +398,7 @@ int dfsIterative(vector<vector<int>> & graph) {
 // for it is DAG, and a node is added into queue only when only its in/out degree reach zero
 // 317. Shortest Distance from All Buildings; https://leetcode.com/problems/shortest-distance-from-all-buildings/?envType=list&envId=9kpcif56
 // 1091. Shortest Path in Binary Matrix; https://leetcode.com/problems/shortest-path-in-binary-matrix/description/
+// 286. Walls and Gates; https://leetcode.com/problems/walls-and-gates/description/
 int bfsGraph(vector<vector<int>>& graph) {
 	queue<int> queue; 
 	unordered_set<int> seen; 
@@ -434,6 +458,7 @@ int bfsGraphSteps(vector<vector<int>>& grid) {
 	return -1; 
 }
 
+// 973. K Closest Points to Origin; https://leetcode.com/problems/k-closest-points-to-origin/description/
 vector<int> fnTopK(vector<int>& arr, int k) {
 	priority_queue<int, vector<int>, greater<int>> minHeap; // priority_queue<int> heap; 
 	for (auto n : arr) {
@@ -755,4 +780,9 @@ sort by start or end; when merging, newEnd = max(newEnd, end); when overlapping,
 
 /* stack
 71. Simplify Path; https://leetcode.com/problems/simplify-path/description/
+*/
+
+/* Divide and conquer
+779. K-th Symbol in Grammar; https://leetcode.com/problems/k-th-symbol-in-grammar/description/
+50. Pow(x, n); https://leetcode.com/problems/powx-n/
 */
