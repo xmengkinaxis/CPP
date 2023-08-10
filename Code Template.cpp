@@ -41,6 +41,14 @@ n <= 1,000,000: O(n) or O(n * logh n): hash map
 More: O(log n ) or O(1)
 */
 
+/* Common time complexity notations: 
+O(1) - Constant Time: The algorithm's performance does not change with input size.
+O(log n) - Logarithmic Time: The algorithm's performance increases logarithmically with the input size.
+O(n) - Linear Time: The algorithm's performance scales linearly with the input size.
+O(n log n) - Linearithmic Time: Common for efficient sorting and searching algorithms.
+O(n^2), O(n^3), ... - Polynomial Time: Performance grows with the square, cube, etc. of the input size.
+O(2^n), O(n!) - Exponential and Factorial Time: Extremely inefficient algorithms.
+*/
 
 /*
 Two Pointers Technique: left and right, or slow and fast 
@@ -82,7 +90,7 @@ int fnTwoPointers(vector<int>& arr) {
 int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
 	int i = 0, j = 0, ans = 0; 
 
-	while (i < arr1.size() && j < arr2.size()) {
+	while (i < arr1.size() && j < arr2.size()) { // might contain other conditions here like a carry in adding
 		if (CONDITION) {
 			++i;
 		} else {
@@ -119,10 +127,10 @@ int fnSlidingWindow(vector<int>& arr) {
 		// depend on if the window size is fixed or not, 
 		// if fixed, when end >= size, remove the start by moving it towards end by one
 		// if not fixed, depend on the loop condition to remove the start
-		while (CONDITION && start <= end ) {
+		while (CONDITION && start <= end ) { // the condition "start <= end" is critical to ensure it is still a valid window
 			// can do something for the valid window here as the window is shrinking
 			// remove arr[start] from curr; 
-			++start; 
+			++start;  // it would be a dead loop if start is not moved
 		}
 		// do something for this valid window
 		// if the size is fixed, when end >= size - 1, do something
@@ -206,6 +214,9 @@ int fnFindSubarrays(vector<int>& arr, int k) {
 
 // the monotonic stack might contain values or some index; 
 // if the stack contains index, the while condition should be changed accordingly
+// < and > is opposite to the order decreasing and increasing
+// 	increase: >
+// 	decrease: <
 // 1944. Number of Visible People in a Queue https://leetcode.com/problems/number-of-visible-people-in-a-queue/description/?envType=list&envId=9kpcif56
 // 1762. Buildings With an Ocean View https://leetcode.com/problems/buildings-with-an-ocean-view/description/ 
 // 316. Remove Duplicate Letters; https://leetcode.com/problems/remove-duplicate-letters/?envType=list&envId=9kpcif56
@@ -243,10 +254,13 @@ int dfsTree(TreeNode *root) {
 	// 1. deal withing the special base cases;  could be more base cases
 	// when calculating the depth, it is 0 for nullptr and 1 for a leave; so the base case is still nullptr; 
 	if (!root) { return 0; }
+
 	int ans = 0; 
 	// 2. do logic for this node
-	// 3. iterate all branches/candidates/choices/; sometime check if the root is a leave, do the logic for leaf and then return; 
-	// 4. might need to check if a branch should be visited with some conditions
+	// sometime check if the root is the special target, such as a leave, do the logic for leaf and then return; 
+
+	// 3. iterate all branches/candidates/choices/;
+	// 4. might need to check if a branch should be visited with some conditions, e.g. value in the special range
 	//  or depending on if other branches exist or not
 	dfsTree(root->left); 
 	dfsTree(root->right); 
@@ -254,6 +268,7 @@ int dfsTree(TreeNode *root) {
 }
 
 // 173. Binary Search Tree Iterator; https://leetcode.com/problems/binary-search-tree-iterator/description/
+// dfsTreeStack is much similar to bfsTree; the only difference is stack vs queue
 int dfsTreeStack(TreeNode* root) {
 	if (!root) { return 0; 	}
 
@@ -264,13 +279,10 @@ int dfsTreeStack(TreeNode* root) {
 	while (!stack.empty()) {
 		auto node = stack.top(); 
 		stack.pop(); 
-		// do logic for this node
-		if (node->left) {
-			stack.push(node->left);
-		}
-		if (node->right) {
-			stack.push(node->right);
-		}
+		// 1. do logic for this node
+		// 2. visit its branches
+		if (node->left) { stack.push(node->left); }
+		if (node->right) { stack.push(node->right); }
 
 	}
 	return ans; 
@@ -290,7 +302,8 @@ int bfsTree(TreeNode* root) {
 		// the following for loop can be eliminated if there is NO action for each layer
 		for (int count = queue.size(); 0 < count; --count) {
 			auto node = queue.front(); queue.pop(); 
-			// do logic for node
+			// 1. do logic for this node
+			// 2. visit its branches
 			if (node->left) { queue.push(node->left); }
 			if (node->right) { queue.push(node->right); }
 		}
@@ -615,6 +628,8 @@ Careful consideration of the search range and the desired behavior will determin
 /*
 In binary search, if "left" is 0, "right" is the array size, the loop condition is "left < right". 
 However, if "right" is  the array size minus 1, the loop condition is "left <= right".
+For "left < right", the loop condition is that there are two items in the array, and the exit condition is only one item left (left == right); 
+For "left <= right", the loop condition is that there is at least one item in the array, and the exit condition is the empty array (left > right);
 
 Yes, the above statement is correct. The choice of loop condition in binary search depends on how you initialize the `right` pointer.
 
@@ -669,7 +684,7 @@ int binaryMinimum(vector<int>& arr) {
 		if (check(mid)) {
 			high = mid - 1; 
 		} else {
-			low = mid + 1;  // when exit, low will be the first to meet the check function
+			low = mid + 1;  // when exit, low will be the first/smallest/minimum to meet the check function
 		}
 	}
 	return low; 
@@ -687,7 +702,7 @@ int binaryMaximum(vector<int>& arr) {
 		if (check(mid)) {
 			low = mid + 1; 
 		} else {
-			high = mid - 1; // when exit, high will be the last to meet the check function
+			high = mid - 1; // when exit, high will be the last/largest/maximum to meet the check function
 		}
 	}
 	return high; 
@@ -834,4 +849,8 @@ sort by start or end; when merging, newEnd = max(newEnd, end); when overlapping,
 /* Divide and conquer
 779. K-th Symbol in Grammar; https://leetcode.com/problems/k-th-symbol-in-grammar/description/
 50. Pow(x, n); https://leetcode.com/problems/powx-n/
+*/
+
+/* Multiset
+218. The Skyline Problem; https://leetcode.com/problems/the-skyline-problem/description/
 */
