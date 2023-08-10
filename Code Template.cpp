@@ -3,10 +3,11 @@
 #include <iostream> // cout, cin
 #include <cctype> // isalnum, isalpha, isdigit, islower, isupper, isspace; toupper, tolower
 #include <sstream> // stringstream
-#include <String> // substr, getline, strlen, string(n, char), append(n, char), strcpy, strncpy, strcmp, stryncmp
+#include <String> // substr, getline, strlen, string(n, char), append(n, char), find(str, pos), strcpy, strncpy, strcmp, stryncmp
 #include <vector>
 #include <unordered_map> 
 #include <unordered_set>
+#include <set> // multiset
 #include <stack>
 #include <queue> // riority_queue
 #include <deque> // deque
@@ -50,9 +51,11 @@ Binary Search: low and high if the array is strictly increased, or use left and 
 // ??? sort all problems of meta once a week into different algorithms, whose numbers are less than 23 and after 29
 
 // two pointers with opposite directions
-// e.g. Palindrome problems (odd or even, two pointers with the opposite directions): 647. Palindromic Substrings https://leetcode.com/problems/palindromic-substrings/?envType=list&envId=9kpcif56
+// e.g. Palindrome problems (odd or even, two pointers with the opposite directions): 
+// 647. Palindromic Substrings https://leetcode.com/problems/palindromic-substrings/?envType=list&envId=9kpcif56
 // 15. 3Sum; https://leetcode.com/problems/3sum/description/
 // 125. Valid Palindrome; https://leetcode.com/problems/valid-palindrome/description/
+// 557. Reverse Words in a String III; https://leetcode.com/problems/reverse-words-in-a-string-iii/
 int fnTwoPointers(vector<int>& arr) {
 	int left = 0, right = arr.size() - 1; 
 	int ans = 0;
@@ -70,7 +73,7 @@ int fnTwoPointers(vector<int>& arr) {
 }
 
 
-// two pointers for two arrays with the same direction
+// two pointers for two arrays with the same direction; to merge rather to to intersect 
 // 408. Valid Word Abbreviation https://leetcode.com/problems/valid-word-abbreviation/?envType=list&envId=9kpcif56
 // 21. Merge Two Sorted Lists; https://leetcode.com/problems/merge-two-sorted-lists/
 // 234. Palindrome Linked List; https://leetcode.com/problems/palindrome-linked-list/description/
@@ -176,6 +179,7 @@ ListNode* fnReverse(ListNode* head) {
 // 325. Maximum Size Subarray Sum Equals k; https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/description/?envType=list&envId=9kpcif56
 // 523. Continuous Subarray Sum; https://leetcode.com/problems/continuous-subarray-sum/description/?envType=list&envId=9kpcif56 
 // 560. Subarray Sum Equals K; https://leetcode.com/problems/subarray-sum-equals-k/description/
+// similar e.g. 219. Contains Duplicate II; https://leetcode.com/problems/contains-duplicate-ii/description/
 int fnFindSubarrays(vector<int>& arr, int k) {
 	// 0. define the map and initialize it properly
 	// using a map to look up quickly; and it serves as a memo/dp, so it needs the initialization
@@ -199,8 +203,6 @@ int fnFindSubarrays(vector<int>& arr, int k) {
 	}
 	return ans; 
 }
-
-// similar e.g. 219. Contains Duplicate II; https://leetcode.com/problems/contains-duplicate-ii/description/
 
 // the monotonic stack might contain values or some index; 
 // if the stack contains index, the while condition should be changed accordingly
@@ -283,7 +285,7 @@ int bfsTree(TreeNode* root) {
 	queue<TreeNode*> queue; 
 	queue.push(root); 
 	int ans = 0; 
-	// beside if the queue is empty, it might need to check if other conditions are met
+	// beside if the queue is empty, it might need to check if other conditions are met, e.g. reaching the target level
 	while (!queue.empty()) {
 		// the following for loop can be eliminated if there is NO action for each layer
 		for (int count = queue.size(); 0 < count; --count) {
@@ -358,6 +360,7 @@ int dfsGraph2(int node, vector<vector<int>>& graph) {
 	return ans; 
 }
 
+// 490. The Maze; https://leetcode.com/problems/the-maze/description/
 bool dfsGraph3(int node, vector<vector<int>>& graph) {	
 	if (seen2.find(node) == seen2.end()) {
 		return false; 
@@ -399,6 +402,7 @@ int dfsIterative(vector<vector<int>> & graph) {
 // 317. Shortest Distance from All Buildings; https://leetcode.com/problems/shortest-distance-from-all-buildings/?envType=list&envId=9kpcif56
 // 1091. Shortest Path in Binary Matrix; https://leetcode.com/problems/shortest-path-in-binary-matrix/description/
 // 286. Walls and Gates; https://leetcode.com/problems/walls-and-gates/description/
+// 863. All Nodes Distance K in Binary Tree; https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/description/; reach a certain level
 int bfsGraph(vector<vector<int>>& graph) {
 	queue<int> queue; 
 	unordered_set<int> seen; 
@@ -735,6 +739,49 @@ TrieNode* buildTrie(vector<string> words) {
 	return root; 
 }
 
+// Union-Find
+class UnionFind {
+public:
+    unordered_map<int, int> parent;
+    
+    // Constructor: Initialize each element as its own parent
+    UnionFind(vector<int>& elements) {
+        for (int element : elements) {
+            parent[element] = element;
+        }
+    }
+    
+    // Find the representative parent of a component (with path compression)
+    int find(int a) {
+        if (parent[a] != a) {
+            parent[a] = find(parent[a]); // Path compression
+        }
+        return parent[a];
+    }
+    
+    // Merge two components by updating their parent pointers
+    void merge(int a, int b) {
+        parent[find(b)] = find(a);
+    }
+};
+
+// or 
+class UnionFind {
+public:
+    unordered_map<int, int> parent;
+
+    int find(int a) {
+        if(!parent.count(a))
+            parent[a] = a;
+        if(parent[a] != a)
+            parent[a] = find(parent[a]);
+        return parent[a];
+    }
+    void merge(int a, int b) {
+        parent[find(b)] = find(a);
+    }
+};
+
 
 /* Parentheses
 921. Minimum Add to Make Parentheses Valid; https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/?envType=list&envId=9kpcif56
@@ -747,6 +794,7 @@ sort by start or end; when merging, newEnd = max(newEnd, end); when overlapping,
 56. Merge Intervals; https://leetcode.com/problems/merge-intervals/
 253. Meeting Rooms II; https://leetcode.com/problems/meeting-rooms-ii/
 163. Missing Ranges; https://leetcode.com/problems/missing-ranges/
+986. Interval List Intersections; https://leetcode.com/problems/interval-list-intersections/
 */
 
 // combine data structures
@@ -780,6 +828,7 @@ sort by start or end; when merging, newEnd = max(newEnd, end); when overlapping,
 
 /* stack
 71. Simplify Path; https://leetcode.com/problems/simplify-path/description/
+1209. Remove All Adjacent Duplicates in String II; https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string-ii/
 */
 
 /* Divide and conquer
