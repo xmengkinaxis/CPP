@@ -45,16 +45,20 @@
 - [8 trade-off](#8-trade-off)
 - [9 System Design Principles](#9-system-design-principles)
 - [10 System Design Best Practices](#10-system-design-best-practices)
-- [Q\&A](#qa)
-	- [1. How to scale web servers (reverse proxy)? -\> Load Balancers \& its algorithms](#1-how-to-scale-web-servers-reverse-proxy---load-balancers--its-algorithms)
-	- [2. How to scale database? -\> Caching or vertically and horizontally](#2-how-to-scale-database---caching-or-vertically-and-horizontally)
+- [11 Scale](#11-scale)
+	- [11.1 Load Balancers \& its algorithms - How to scale web servers (reverse proxy)](#111-load-balancers--its-algorithms---how-to-scale-web-servers-reverse-proxy)
+		- [metrics:](#metrics)
+		- [algorithms:](#algorithms)
+	- [11.2 Caching - How to scale database?  Caching or vertically and horizontally](#112-caching---how-to-scale-database--caching-or-vertically-and-horizontally)
 		- [Cache eviction policies:](#cache-eviction-policies)
 		- [Cache strategy (Invalidation):](#cache-strategy-invalidation)
-	- [Scalability result ==\> low-latency and fault-tolerant by replicate (deal with lower performance)](#scalability-result--low-latency-and-fault-tolerant-by-replicate-deal-with-lower-performance)
-	- [Shard result==\> high performance by destructing the load and high available, and latency-free](#shard-result-high-performance-by-destructing-the-load-and-high-available-and-latency-free)
-	- [3. How to prepare our assets to deliver faster across the world? -\> CDNs](#3-how-to-prepare-our-assets-to-deliver-faster-across-the-world---cdns)
-	- [real-time and low-latency require--\> Replication of servers and server's location close to users (CDN) (PULL vs PUSH)](#real-time-and-low-latency-require---replication-of-servers-and-servers-location-close-to-users-cdn-pull-vs-push)
+	- [11.3 CDN -\> How to prepare our assets to deliver faster across the world?](#113-cdn---how-to-prepare-our-assets-to-deliver-faster-across-the-world)
+		- [real-time and low-latency require--\> Replication of servers and server's location close to users (CDN) (PULL vs PUSH)](#real-time-and-low-latency-require---replication-of-servers-and-servers-location-close-to-users-cdn-pull-vs-push)
+	- [11.4 Cache, Scale, and Shard result](#114-cache-scale-and-shard-result)
 		- [cache result==\> low latency, high throughput and high available (if db server is down for a while)](#cache-result-low-latency-high-throughput-and-high-available-if-db-server-is-down-for-a-while)
+		- [Scalability result ==\> low-latency and fault-tolerant by replicate (deal with lower performance)](#scalability-result--low-latency-and-fault-tolerant-by-replicate-deal-with-lower-performance)
+		- [Shard result==\> high performance by destructing the load and high available, and latency-free](#shard-result-high-performance-by-destructing-the-load-and-high-available-and-latency-free)
+- [Q\&A](#qa)
 	- [Single point of failure require--\> Redundancy and Replication](#single-point-of-failure-require---redundancy-and-replication)
 	- [Checkpointing \<-- Fault Tolerance](#checkpointing----fault-tolerance)
 	- [Fault Tolerance -\> Checkpointing, Load Balancer, Replication](#fault-tolerance---checkpointing-load-balancer-replication)
@@ -759,15 +763,15 @@ System design best practices are guidelines and strategies that help software ar
 
 By following these best practices, you can create software systems that are more resilient, maintainable, and aligned with the needs of both users and stakeholders.
 
-# Q&A
+# 11 Scale
 
-## 1. How to scale web servers (reverse proxy)? -> Load Balancers & its algorithms
+## 11.1 Load Balancers & its algorithms - How to scale web servers (reverse proxy)
 LB helps to spread the traffic across a cluster of servers to improve overall responsiveness and availability of application, websites or databases, prevent a single point of failures, and keeps tracks of the status of all the resources; optimize resource usage (avoid overload and under-load of any machine); achieve maximum throughput; minimize response time<br>
 To utilize full scalability and redundancy, try to balance the load at each layer of the system;<br>
 faster, higher throughput, easier for administrators, predictive analytics to determine traffic bottlenecks, give actionable insights to automation and help drive business decisions.
 LB helps scale horizontally across an ever-increasing number of servers.<br>
 
-metrics: 
+### metrics: 
 * active Connections (session affinity or sticky session) <br> 
 * Latency <br>
 * Bandwidth(throughput) <br>
@@ -791,7 +795,7 @@ algorithm categories:
 	* tier - 2: layer 4 LB; maintain connections/sessions; consistent hashing; 
 	* tier - 3: layer 7 LB; enable scalability and provide high availability; offload TLS/SSL
 
-algorithms: 
+### algorithms: 
 * Least connection Method, LCM (servers with fewest active connections)<br>
 * Least Response Time Method, LRM (servers with lowest average response time)<br>
 * Least Bandwidth Method, LBM (lowest MB/s traffic)<br>
@@ -808,7 +812,7 @@ a. performance bottleneck, if it does not have enough resources or it is not con
 b. increase the complexity (be stateless, session can be stored in a centralized data store)<br>
 c, single point of failure<br>
 
-## 2. How to scale database? -> Caching or vertically and horizontally
+## 11.2 Caching - How to scale database?  Caching or vertically and horizontally
 Cache the DB results adding an extra caching layer between the servers and the database <br>
 A cache is a key-value store that reside between applications and data storage; <br>
 Redis is persistent while memcache scales well.
@@ -849,15 +853,9 @@ metrics: read-intensive vs write-intensive (write-write, write-reread); latency 
 * Write-around (storage only): data is written into the permanent storage only (bypassing the cache). pros: cache is not flooded with written operation which is not subsequently be re-read. con: higher latency for the recently written data, for cache-miss, so higher latency; <br>   
 * Write-back (write-behind)(cache only): the data is written to cache alone; asynchronously write entry to the data store. pros: low-latency and high-throughput for write-intensive applications. con: risk of data loss; more complex to implement, for its asynchronously writing.  <br> 
 
-## Scalability result ==> low-latency and fault-tolerant by replicate (deal with lower performance)
-Scalability methods—With the architecture, there are many techniques and methods which can be used in order to customize and improve the design of a system.<br> 
-Some of the most widely used are: redundancy, partitioning, caching, indexing, load balancing, and queues.<br>
+## 11.3 CDN -> How to prepare our assets to deliver faster across the world?
 
-## Shard result==> high performance by destructing the load and high available, and latency-free
-
-## 3. How to prepare our assets to deliver faster across the world? -> CDNs
-
-## real-time and low-latency require--> Replication of servers and server's location close to users (CDN) (PULL vs PUSH)
+### real-time and low-latency require--> Replication of servers and server's location close to users (CDN) (PULL vs PUSH)
 real-time (VOIP, video, notification system and real-time feeds) : push (message queue), not pull(expensive in bandwidth and unnecessary load on Servers and DB, not scalable)
 The process of pushing a post to all the followers is called fanout. The push fanout is called fanout-on-write, while the pull fanout is called fanout-on-load. A combination of 'push to notify and 'pull for serving' <br>
 
@@ -870,12 +868,21 @@ Pull: Pro: mobile does not waste data plan, con: not real-time/in-time, most req
 Push: need main a long poll request; Con: celebrity users who has millions of followers, the server pushes update too frequently<br>
 Hybrid: the users who have a high number of followers to a pull-based model and only push data to those who have a few hundred/thousand follows; or the server pushes update to all the users not more than a certain frequency and letting users with a lot of updates to pull data regularly<br>
 
+## 11.4 Cache, Scale, and Shard result
 ### cache result==> low latency, high throughput and high available (if db server is down for a while)
 caching will enable you to make vastly better use of the resources you already have; 
 application caching, database caching (need tweaking the configuration), in-memory caches
 
 In-memory caches: 
 precalculated results, pre-generating expensive indexes, storing copies of frequently accessed data in a faster backend
+
+### Scalability result ==> low-latency and fault-tolerant by replicate (deal with lower performance)
+Scalability methods—With the architecture, there are many techniques and methods which can be used in order to customize and improve the design of a system.<br> 
+Some of the most widely used are: redundancy, partitioning, caching, indexing, load balancing, and queues.<br>
+
+### Shard result==> high performance by destructing the load and high available, and latency-free
+
+# Q&A
 
 ## Single point of failure require--> Redundancy and Replication
 HA Architecture - Micro services 
