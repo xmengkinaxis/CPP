@@ -48,6 +48,11 @@ O(n) - Linear Time: The algorithm's performance scales linearly with the input s
 O(n log n) - Linearithmic Time: Common for efficient sorting and searching algorithms.
 O(n^2), O(n^3), ... - Polynomial Time: Performance grows with the square, cube, etc. of the input size.
 O(2^n), O(n!) - Exponential and Factorial Time: Extremely inefficient algorithms.
+
+Common space complexity notations include:
+O(1) - Constant Space: The algorithm uses a fixed amount of memory regardless of the input size.
+O(n) - Linear Space: The algorithm's memory usage scales linearly with the input size.
+O(n^2), O(n^3), ... - Polynomial Space: Memory usage grows with the square, cube, etc. of the input size.
 */
 
 /*
@@ -250,7 +255,8 @@ int fnMonotonicIncreasingStack(vector<int>& arr) {
 // 129. Sum Root to Leaf Numbers; https://leetcode.com/problems/sum-root-to-leaf-numbers/description/; // leave is one of the base cases 
 // 623. Add One Row to Tree; https://leetcode.com/problems/add-one-row-to-tree/description/; do logic for the node at the certain level
 // 1110. Delete Nodes And Return Forest; https://leetcode.com/problems/delete-nodes-and-return-forest/description/
-int dfsTree(TreeNode *root) {
+// 865. Smallest Subtree with all the Deepest Nodes; https://leetcode.com/problems/smallest-subtree-with-all-the-deepest-nodes/
+int dfsTree(TreeNode *root) { // could return a tuple of a node and the depth
 	// 1. deal withing the special base cases;  could be more base cases
 	// when calculating the depth, it is 0 for nullptr and 1 for a leave; so the base case is still nullptr; 
 	if (!root) { return 0; }
@@ -374,6 +380,8 @@ int dfsGraph2(int node, vector<vector<int>>& graph) {
 }
 
 // 490. The Maze; https://leetcode.com/problems/the-maze/description/
+// 778. Swim in Rising Water; https://leetcode.com/problems/swim-in-rising-water/description/?envType=list&envId=9kpcif56
+// 79. Word Search; https://leetcode.com/problems/word-search/
 bool dfsGraph3(int node, vector<vector<int>>& graph) {	
 	if (seen2.find(node) == seen2.end()) {
 		return false; 
@@ -511,6 +519,7 @@ int binarySearch(vector<int>& arr, int target) {
 // e.g. 852. Peak Index in a Mountain Array, https://leetcode.com/problems/peak-index-in-a-mountain-array/description/
 // 1870. Minimum Speed to Arrive on Time; https://leetcode.com/problems/minimum-speed-to-arrive-on-time/description/
 // 1539. Kth Missing Positive Number; https://leetcode.com/problems/kth-missing-positive-number/?envType=list&envId=9kpcif56
+// 778. Swim in Rising Water; https://leetcode.com/problems/swim-in-rising-water/description/?envType=list&envId=9kpcif56
 // Binary search: duplicate elements, left-most insertion point
 int binaryLeftMost(vector<int>& arr, int target) {
 	int left = 0;
@@ -733,6 +742,7 @@ int backtrack(STATE curr, OTHERS) {
 	return ans; 
 }
 
+// 212. Word Search II; https://leetcode.com/problems/word-search-ii/description/
 struct TrieNode {
 	int data; 
 	unordered_map<char, TrieNode*> children; 
@@ -825,6 +835,11 @@ sort by start or end; when merging, newEnd = max(newEnd, end); when overlapping,
 
 /* dp
 1216. Valid Palindrome III https://leetcode.com/problems/valid-palindrome-iii/?envType=list&envId=9kpcif56
+91. Decode Ways; https://leetcode.com/problems/decode-ways/description/
+139. Word Break; https://leetcode.com/problems/word-break/
+
+2D dp
+63. Unique Paths II; https://leetcode.com/problems/unique-paths-ii/description/
 */
 
 /* Palindrome
