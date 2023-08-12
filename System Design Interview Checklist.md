@@ -4,6 +4,7 @@
 - [0. Time Allocation](#0-time-allocation)
 - [NOTE:](#note)
 - [Tips](#tips)
+	- [Expectations:](#expectations)
 - [1. Ask clarifying and high-level design Questions to scope the problem well](#1-ask-clarifying-and-high-level-design-questions-to-scope-the-problem-well)
 	- [1.1 Functional Requirements (Product Features + User Requirements)](#11-functional-requirements-product-features--user-requirements)
 	- [1.2 Non-Functional Requirements (Product Properties + User Expectations) (PACELC + reliable + Scalability + Extensibility)](#12-non-functional-requirements-product-properties--user-expectations-pacelc--reliable--scalability--extensibility)
@@ -43,6 +44,7 @@
 	- [7.3 Performance monitor - system performance (telemetry)](#73-performance-monitor---system-performance-telemetry)
 - [8 trade-off](#8-trade-off)
 - [9 System Design Principles](#9-system-design-principles)
+- [10 System Design Best Practices](#10-system-design-best-practices)
 - [Q\&A](#qa)
 	- [1. How to scale web servers (reverse proxy)? -\> Load Balancers \& its algorithms](#1-how-to-scale-web-servers-reverse-proxy---load-balancers--its-algorithms)
 	- [2. How to scale database? -\> Caching or vertically and horizontally](#2-how-to-scale-database---caching-or-vertically-and-horizontally)
@@ -99,6 +101,21 @@ It is critical to demonstrate your ability to recognize and evaluate trade-offs,
 1. Discuss trade-offs with your interviewers
 2. Manage your time efficiently
 3. Start wide and end deep
+
+## Expectations: 
+* Mid-level System Designers 
+  * Be able to identify and address performance, scalability, and reliablility issues
+  * be well-versed in various architectural styles, design patterns, and their trade-off
+* Senior System Designer
+  * strong expertise on System Design
+  * tackle some of the most challenging design issues
+  * have the insight to address long-term issues that may affect a system over its lifetime
+  * speak toward bottlenecks and long-term scalability of the system
+  * feel confident enough to lead and mentor other designers in regard to system design principles, concepts, and best practices; 
+* Principle/Lead System Designer
+  * extensive knowledge of System Design, its history, and industry trends; 
+  * be recognized for designing and implementing complex and large-scale systems
+  * have a deep and thorough understanding of trade-offs, performance optimizations, and long-term scalability
 
 # 1. Ask clarifying and high-level design Questions to scope the problem well
 what an interviewer is expecting from us; the interviewer is evaluating your investigative abilities<br>
@@ -668,6 +685,79 @@ System design principles are fundamental guidelines and concepts that help softw
 
 These principles guide architects and developers in making informed decisions throughout the system design process. Applying these principles leads to systems that are more maintainable, adaptable, and aligned with the goals of the project.
 
+
+# 10 System Design Best Practices
+System design best practices are guidelines and strategies that help software architects and engineers create high-quality, efficient, scalable, and maintainable software systems. These practices are based on industry experience and lessons learned, aiming to ensure that the resulting systems meet both functional and non-functional requirements. Here are some key system design best practices:
+
+1. **Understand Requirements**:
+   - Thoroughly understand the requirements of the system before beginning the design process.
+   - Engage with stakeholders to gather and clarify requirements.
+
+2. **Prioritize Non-Functional Requirements**:
+   - Consider factors like performance, scalability, security, and availability from the outset.
+   - Address non-functional requirements early in the design to avoid costly changes later.
+
+3. **Divide and Conquer**:
+   - Divide the system into smaller, manageable components or services.
+   - Each component should have a well-defined responsibility.
+
+4. **Use Design Patterns**:
+   - Leverage well-known design patterns to solve common architectural challenges.
+   - Patterns improve consistency and help communicate design decisions.
+
+5. **Choose the Right Architecture**:
+   - Select an architecture (monolithic, microservices, etc.) that aligns with the system's requirements and goals.
+   - Consider trade-offs like maintainability, scalability, and complexity.
+
+6. **Data Modeling**:
+   - Design the data model based on the requirements and relationships between data entities.
+   - Normalize or denormalize the data schema based on access patterns and performance considerations.
+
+7. **Scalability and Performance**:
+   - Plan for scalability by designing components that can be horizontally scaled.
+   - Use caching, load balancing, and distributed architectures to improve performance.
+
+8. **Security Considerations**:
+   - Implement security measures, including authentication, authorization, and data encryption.
+   - Address potential vulnerabilities early in the design process.
+
+9. **Decoupling and Loose Coupling**:
+   - Minimize dependencies between components to allow for easier changes and replacements.
+   - Use well-defined interfaces to achieve loose coupling.
+
+10. **Testing and Quality Assurance**:
+    - Design for testability by creating components that can be easily tested in isolation.
+    - Implement automated testing for both unit and integration tests.
+
+11. **Documentation**:
+    - Document the architecture, design decisions, and rationale behind choices.
+    - Provide clear API documentation for components and interfaces.
+
+12. **Version Control and Collaboration**:
+    - Use version control systems to track changes and collaborate effectively.
+    - Encourage code reviews to ensure code quality and share knowledge.
+
+13. **Code Maintainability**:
+    - Follow coding standards and guidelines for consistent and readable code.
+    - Refactor code regularly to improve maintainability.
+
+14. **Performance Profiling and Optimization**:
+    - Profile the system to identify performance bottlenecks and optimize critical parts.
+    - Focus optimization efforts on areas that have the most impact.
+
+15. **Continuous Integration and Deployment (CI/CD)**:
+    - Implement CI/CD pipelines for automated testing and deployment.
+    - Automate deployment processes to ensure consistency and reduce human errors.
+
+16. **Monitoring and Analytics**:
+    - Implement monitoring and logging to track system behavior and detect issues.
+    - Use analytics to gather insights into user behavior and system performance.
+
+17. **Evolution and Flexibility**:
+    - Design systems that can evolve over time to accommodate changing requirements.
+    - Build in flexibility to add new features and components as needed.
+
+By following these best practices, you can create software systems that are more resilient, maintainable, and aligned with the needs of both users and stakeholders.
 
 # Q&A
 
