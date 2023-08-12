@@ -42,6 +42,7 @@
 	- [7.2. Analytics - users behavior](#72-analytics---users-behavior)
 	- [7.3 Performance monitor - system performance (telemetry)](#73-performance-monitor---system-performance-telemetry)
 - [8 trade-off](#8-trade-off)
+- [9 System Design Principles](#9-system-design-principles)
 - [Q\&A](#qa)
 	- [1. How to scale web servers (reverse proxy)? -\> Load Balancers \& its algorithms](#1-how-to-scale-web-servers-reverse-proxy---load-balancers--its-algorithms)
 	- [2. How to scale database? -\> Caching or vertically and horizontally](#2-how-to-scale-database---caching-or-vertically-and-horizontally)
@@ -600,6 +601,74 @@ Trade-offs can occur between various requirements of a system:
 	* range-based or hash based 
 * Database: RDBM SQL vs NoSQL
 * CAP - Availability vs Consistency; choose based on business requirements in case of network partition
+
+
+# 9 System Design Principles
+System design principles are fundamental guidelines and concepts that help software engineers and architects create effective, efficient, and maintainable software systems. These principles provide **a framework for making decisions about the architecture, structure, and behavior of a system**. They aim to ensure that the resulting system meets both its functional and non-functional requirements while **being adaptable to changes and scalable**. Here are some key system design principles:
+
+1. **Modularity and Separation of Concerns**:
+   - Divide the system into smaller, manageable modules with distinct responsibilities.
+   - Each module should focus on a single aspect or concern of the system.
+
+2. **Abstraction**:
+   - Hide complex implementation details behind well-defined interfaces.
+   - Abstractions make components easier to use, understand, and modify.
+
+3. **Encapsulation**:
+   - Restrict access to internal details of a component and expose only necessary functionalities.
+   - Encapsulation promotes information hiding and helps manage complexity.
+
+4. **Single Responsibility Principle (SRP)**:
+   - Each module or class should have a single reason to change.
+   - Promotes maintainability by reducing the impact of changes.
+
+5. **Open/Closed Principle**:
+   - Software entities (classes, modules) should be open for extension but closed for modification.
+   - Encourages designing systems that can be easily extended without altering existing code.
+
+6. **Dependency Inversion Principle**:
+   - Depend on abstractions rather than concrete implementations.
+   - Helps reduce coupling between components and promotes flexibility.
+
+7. **Liskov Substitution Principle**:
+   - Objects of a derived class should be substitutable for objects of the base class without affecting program correctness.
+   - Ensures that derived classes adhere to the behavior expected by clients.
+
+8. **Interface Segregation Principle**:
+   - Clients should not be forced to depend on interfaces they do not use.
+   - Encourages designing fine-grained interfaces tailored to specific client needs.
+
+9. **Composition over Inheritance**:
+   - Favor composition (building objects from smaller parts) over inheritance (creating new classes from existing ones).
+   - Composition is more flexible and avoids some limitations of class hierarchies.
+
+10. **Keep It Simple and Stupid (KISS)**:
+    - Strive for simplicity in design and avoid unnecessary complexities.
+    - Simple designs are easier to understand, maintain, and troubleshoot.
+
+11. **Don't Repeat Yourself (DRY)**:
+    - Avoid duplicating code or logic. Instead, use abstractions to eliminate redundancy.
+    - DRY promotes maintainability and reduces the risk of inconsistencies.
+
+12. **Separation of Concerns (SoC)**:
+    - Divide a system into distinct sections that address different aspects (e.g., user interface, data storage, business logic).
+    - Separation improves modularity and allows independent development of components.
+
+13. **Scalability**:
+    - Design systems that can handle increased loads and growth without sacrificing performance or stability.
+    - Consider techniques like horizontal scaling, load balancing, and caching.
+
+14. **Performance Optimization**:
+    - Optimize critical parts of the system while considering trade-offs.
+    - Profile and benchmark the system to identify bottlenecks.
+
+15. **YAGNI (You Aren't Gonna Need It)**:
+    - Avoid adding features or functionality that aren't currently needed.
+    - YAGNI prevents unnecessary complexity and allows the system to evolve based on actual requirements.
+
+These principles guide architects and developers in making informed decisions throughout the system design process. Applying these principles leads to systems that are more maintainable, adaptable, and aligned with the goals of the project.
+
+
 # Q&A
 
 ## 1. How to scale web servers (reverse proxy)? -> Load Balancers & its algorithms
