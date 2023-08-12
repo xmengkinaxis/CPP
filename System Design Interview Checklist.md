@@ -3,6 +3,7 @@
 - [System Design Interviews checklist](#system-design-interviews-checklist)
 - [0. Time Allocation](#0-time-allocation)
 - [NOTE:](#note)
+- [Tips](#tips)
 - [1. Ask clarifying and high-level design Questions to scope the problem well](#1-ask-clarifying-and-high-level-design-questions-to-scope-the-problem-well)
 	- [1.1 Functional Requirements (Product Features + User Requirements)](#11-functional-requirements-product-features--user-requirements)
 	- [1.2 Non-Functional Requirements (Product Properties + User Expectations) (PACELC + reliable + Scalability + Extensibility)](#12-non-functional-requirements-product-properties--user-expectations-pacelc--reliable--scalability--extensibility)
@@ -35,10 +36,12 @@
 		- [6.2.2 Partition](#622-partition)
 			- [6.2.2.1 Horizontal Partitioning](#6221-horizontal-partitioning)
 			- [6.2.2.2 Vertical Partitioning](#6222-vertical-partitioning)
-- [7. Optimization](#7-optimization)
+	- [6.3 Evaluation](#63-evaluation)
+- [7. Evaluation and Optimization](#7-evaluation-and-optimization)
 	- [7.1. Security and Permissions](#71-security-and-permissions)
 	- [7.2. Analytics - users behavior](#72-analytics---users-behavior)
 	- [7.3 Performance monitor - system performance (telemetry)](#73-performance-monitor---system-performance-telemetry)
+- [8 trade-off](#8-trade-off)
 - [Q\&A](#qa)
 	- [1. How to scale web servers (reverse proxy)? -\> Load Balancers \& its algorithms](#1-how-to-scale-web-servers-reverse-proxy---load-balancers--its-algorithms)
 	- [2. How to scale database? -\> Caching or vertically and horizontally](#2-how-to-scale-database---caching-or-vertically-and-horizontally)
@@ -55,7 +58,6 @@
 	- [Asynchronism](#asynchronism)
 	- [Extensibility](#extensibility)
 	- [Ranking](#ranking)
-	- [trade-off](#trade-off)
 	- [Popular services:](#popular-services)
 	- [Interview tool](#interview-tool)
 	- [Questions:](#questions)
@@ -64,11 +66,11 @@
 <!-- TOC -->
 
 # 0. Time Allocation
-Clarify the problem, break down the complext probelm into parts, discuss the overall design, and deep dive into some components; identify and analyze the tradeoffs, recover fro mthe failures; 
+Clarify the problem, break down the complext problem into parts, discuss the overall design, and deep dive into some components; identify and analyze the tradeoffs, recover from the failures; 
 1. understand the problem and establish design core: ~10 minutes (3 - 10 m)
 2. Propose high-level design and get buy-in; -10 minutes (10 - 15 m)
 3. Design deep dive; 20 minutes (10 - 25 m)
-4. Wrap: 5 minutes (3 - 5 m)
+4. Wrap / Evaluation / feedback / discusson / question : 5 minutes (3 - 5 m)
 
 
 # NOTE: 
@@ -76,9 +78,13 @@ The key aspect of system design is to identify the problem area and trade off, a
 Get the skeleton in the place and then start optimizing (optimization is an evolutionary process) notch by notch; <br>
 Interviewrs are more interested in your thought process throughout the interview than in your final design. The success heavily depends on your ability to communicate your thought process and hold a discussion (collaborate). <br>
  assesses a candidate's ability to combine knowledge, theory, experience, and judgment toward solving a real-world engineering problem with significant ambiguity. <br>
+Demonstrate your thought process and domain-specific knowledge; Presentation matter.<br>
+It is critical to demonstrate your ability to recognize and evaluate trade-offs, as it reflects your understanding of various design aspects and their implications<br>
 
 * Lead and drive an Open-ended conversation as doing a demo or presentation;
 * Everything is a trade-off; Make points with justification; Defend your design;
+* Regularly monitor the time on track
+* Evaluate the solution, and engage in feedback, discussion and question;
 * Do NOT over-design or under-design;
 * No single-point failure (to achieve highly reliable, no data lost)
 * Identify potential bottlenecks and future problems (scale)
@@ -86,8 +92,15 @@ Interviewrs are more interested in your thought process throughout the interview
 * Backup and disaster recovery
 * Usage patterns, and security
 
+* System design is similar to Object/Class Design. Why need such a class? Which method/function should it provide? Which information should it stores or manages?
+
+# Tips
+1. Discuss trade-offs with your interviewers
+2. Manage your time efficiently
+3. Start wide and end deep
+
 # 1. Ask clarifying and high-level design Questions to scope the problem well
-what an interviewer is expecting from us, <br>
+what an interviewer is expecting from us; the interviewer is evaluating your investigative abilities<br>
 * to Gather requirements, and to scope the problem
 * to outline use cases, to gather constraints, and to validate our assumptions
 Whenever you interact with a platform, think of the who, why, what, and how. Looking into designing the incentives for all kinds of users for them to interact with the system. <br>
@@ -119,7 +132,7 @@ Need enough resources to handle the increasing load; the system must be simple s
 * Availability = Uptime ÷ (Uptime + downtime);  <br>
 * **Mean Time Between Failures (MTBF)**: total uptime / # of failures. This is the average time between failures.  <br>
 * **Mean Time to Repair (MTTR)**: total downtime / # of failures. This is the average time taken to recover from a failure. <br>
-* Availability can be **achieved** through CDN (Cache), redundancy (replica), load balancing (distribute the requests only to the active healthy nodes by local LB and to different locations by global LB) <br>
+* Availability can be **achieved** through CDN (Cache), redundancy (replica of servers and data) , load balancing (distribute the requests only to the active healthy nodes by local LB and to different locations by global LB), choosing high availability databases <br>
 
 ### Consistency: 
 All nodes see the same data at the same time, no matter users read/write from/to any node. Equivalent to having a single up-to-date copy of the data. is the agreement between multiple nodes in a distributed system to achieve a certain value. <br>
@@ -143,13 +156,19 @@ All nodes see the same data at the same time, no matter users read/write from/to
 * increase resources and performance with increasing load and traffic over the existing system without affecting the complexity and performance; need enough resources to handle the increasing load, for it would be increased at any point in time; should be simple and easy to scale; performance should always be increased with scalability <br>
 * A system can be called scalable if adding more resources in the system results in performance increases. Performance is directly proportional to resources added. <br>
 * Horizontal (scaling out) vs Vertical Scaling (scaling up) <br>
-* Scalability can be **achieved** through CDN (Cache which bring the content closer to user and remove the requirement of high bandwith), reading replicas, partitioning data/files, and the isolation of different services (micro-services), load balancer, separate read/write operations on different servers <br> 
+* The system should be able to scale up and down, depending on the number of requests; Auto-scaling policies are crucial for maintaining the desired level of performance, availability, and cost efficiency <br>
+* Scalability can be **achieved** through CDN (Cache which bring the content closer to user and remove the requirement of high bandwith), reading replicas, partitioning data/files, horizontal sharding of database,  the isolation of different services (micro-services), load balancer, separate read/write operations on different servers <br> 
 * Partition and split the big file/blobs into small-sized chunks to scale the requests, served by different partition servers; maybe range-based partition; need a partition mapping
-* Storage, bandwidth, and the number of concurrent user request shold become bottleneck, or overwhelm any servers
+* Storage, bandwidth, and the number of concurrent user request should NOT become bottleneck, or overwhelm any servers
 
 ### Reliability: 
-keep delivering its service even when on or several of its software or hardware components fail; achieve this through redundancy of both the software component and data, (and hardware); achieve such resilience with a cost in order to eliminate every single point of failure; <-> vulnerable, data lost; (resilient, no single point of failure) (authentication) <br>
-Achieve with health check (heartbeat protocol, gossip protocol), and monitoring services with alerts. <br>
+* keep delivering its service even when on or several of its software or hardware components fail; 
+* **achieve** such resilience with a cost in order to eliminate every single point of failure (vulnerable), data lost, authentication(???)
+  * redundancy of the hardware, software components and data
+  * use local storage, and resend after reconnect <br>
+  * services are decoupled and isolated; 
+  * load balancer
+* Achieve with health check (heartbeat protocol, gossip protocol), and monitoring services with alerts. <br>
 
 ### Concurrency:
 To maximize system's performance: high bandwidth and high throughput.
@@ -165,11 +184,13 @@ The replication and monitoring services ensure the durability of the data. <br>
 Break it down, to the most important, minimal features for your system.
 
 ## 1.4 Design Considerations (no do, or assumption)
-No user authentication or authorization; both are already completed <br>
-get all or nothing, not a partial result;  <br>
-fairness <br>
-put some restriction to stop system abuse, e.g. limit the size of text or image or video, or add a rate limiter (prevent abuse behavior, provide a fair and reasonable use of the resource's capacity when sharing among many users, control the cost of operations and avoid excess costs) <br>
-assumption: surge in traffic <br>
+* Security: No user authentication or authorization; both are already completed <br>
+* Result: get all or nothing, not a partial result;  <br>
+* Fairness and ethical <br>
+* Prevent abuse: put some restriction to stop system abuse, 
+  * limit the size of text or image or video, 
+  * add a rate limiter (prevent abuse behavior, provide a fair and reasonable use of the resource's capacity when sharing among many users, control the cost of operations and avoid excess costs) <br>
+* assumption: surge in traffic <br>
 
 # 2. Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation.
 The estimation will be helpful later when focusing on scaling, partitioning, load balancing, and caching <br>
@@ -184,11 +205,15 @@ If a system is write-heavy then we need to estimate the Storage requirements per
 // Estimation of the scale of the system, is helpful when we focus on scaling, partitioning, load balancing, and caching.  <br>
 
 ## 2.1 Traffic in write/second, or read/second
-**Total users** <br>
+**Users** <br>
+* User types, e.g. riders vs drivers, guest vs owner <br>
+* Total user <br>
 * DAU (Daily active users) <br>
 * Active connections per minutes <br>
+* New users added per day <br>
+* Meta data required for each user <br>
 
-**How many requests per second/day do we expect?** <br>
+**Requests:** How many requests per second/day do we expect? <br>
 * Type: (read, write, search); fast reads, fast writes, or both? <br>
 * Count: write and Read count in million per day <br>
 * Ratio: write : read ratio; generally 5 : 1 <br>
@@ -239,21 +264,23 @@ SOAP or REST API <br>
 
 **Operations:** <br>
 * CRUD (Create/paste/post, Read/get, Update/put, Delete) 
-* Others (Search, list)
+* Others (Search, list, store, stream, request)
 * these operations might work on different objects/levels/scopes
 * Registration or authentication
 
 **Parameters:** <br>
 * user_id/api_dev_key : the API developer key of a registered account. throttle users based on their allocated quota <br>
-* All kinds of information about the file/video/picture/like/dislike/comments/etc, like name, ID, category, title, description, tags, channel, language, privacy <br>
-* Search Query:  <br>
+* All kinds of information about the file/video/picture/like/dislike/comments/etc, like name/title, user/place ID, category, description, latitude, longitude, rating, tags, channel, language, privacy<br>
+* Search Query: category, user_location, radius, name_of_place  <br>
 * maximum Results to Return:  <br>
 * sort(number) Optional sort mode: 0 - latest first, 1 - best matched, 2 - most liked <br>
 * page_token(string) specify a page in the result set that should be returned <br>
 * Timestamp:  <br>
 
 **Return:** <br>
-(JSON) a list of results matching the search query
+(JSON) a list of results matching the search query <br>
+e.g. This process returns a JSON object that contains a list of all the possible items in the specified category that also fall within the specified radius. <br>
+Each entry has a place name, address, category, rating, and thumbnail.<br>
 
 # 4. Database Design (Define Data Model and choose Database)
 
@@ -272,9 +299,10 @@ SOAP or REST API <br>
 **Consideration**
 * Which database system should we use? NoSQL like Cassandra or MySQL?
 * Separate the most frequently and less frequently accessed storage clusters from each other for optimal access time; can apply different configurations, cache strategies, shardings;  
+* Separate the read and the write???
 
 ## 4.1 Database Schema or components/classes and their relationship/connection (static)
-What to store? objects, and their relations <br>
+What to store? objects/entities, and their relations <br>
 Table, Relationship <br>
 Primary Key <br>
 Foreign Key  <br>
@@ -284,7 +312,7 @@ Consideration for objects <br>
 2. for each object, Is the object small (less than 1KB) or medium (a few MB, separated to object storage)? <br>
 3. What is the relationship between records? <br>
 
-Storage:  <br>
+Storage:  <br>~~~~
 * Storage layer = **Metadata** storage + **Object** storage; such a division of data will allow us to scale them individually <br>
 * Metadata storage: like users/accounts, pastes/blobs(pictures, videos, etc.), etc. can use Relational DB like MySQL, or distributed key-value DB like Dynamo or Cassandra <br>
 * Object Storage: like a text paste, an image, etc; use object storage like Amazon S3, or HDFS.  <br>
@@ -296,7 +324,9 @@ Common objects (e.g.) <br>
 * Location: latitude, longitude (int - 4 bytes, or 8 bytes) <br>
 * Numbers: num of likes/dislikes (int), num of comments, num of shares, num of views <br>
 * Rating (how many stars a place gets out of ten) <br>
-* Photo: PhotoID(int), UserID(int), PhotoPath(varchar 256), Photo Latitude & Longitude (int), User Latitude & Longitude (int), CreationDate(datetime) <br>
+* Photo: PhotoID(int, 8 bytes, 64 bits), UserID(int), Photo_Path(varchar 256), Photo Latitude & Longitude (int), User Latitude & Longitude (int), CreationDate(datetime), or Place_ID (8 bytes, foreign key) <br>
+* Place: ID (8 bytes, 64 bits), Name(256 bytes), Description(1,000 bytes), Category (8 bytes ???), Latitude (8 bytes), Longitude (8 bytes), Phone(the foreign key, 8 bytes), Rating, address, business hours, menu
+* Review: ID (8 bytes), Place_ID, User_ID, Description (512 bytes), Rating (1-5, 1 byte)
 
 Tags:  <br>
 category: (1 byte) <br>
@@ -318,7 +348,7 @@ In any index-based data, the partition is not allowed ??? <br>
 ## 4.2 Choose Database
 choosing the proper database is a critical decision that can significantly impact the performance, scalability, and reliability of the system. <br>
 
-Factors to consider (Data Model [structured, semi-structure, unstructed], Size and Volume, ACID, Join and Aggregate)
+Factors to consider (Data Model [structured/relational/columnar, semi-structure, unstructed], Size and Volume, ACID, Join and Aggregate)
 * Data Model: Determine the data model that best fits the application's requirements; relational (SQL), document-based (NoSQL), key-value store, graph database, or time-series database.
 * Data Size and Volume: Assess the expected data size and growth rate to choose a database that can handle the scale of data effectively
 * Query Requirements: Understand the types of queries the system needs to support and whether they are read-heavy, write-heavy, or balanced.
@@ -342,9 +372,10 @@ Factors to consider (Data Model [structured, semi-structure, unstructed], Size a
 * dynamic: workflow, how these components interact with each other, event/time sequences
   
 **Steps**
-* Outline a high level design with all important components and connections, 
+* Outline a high level design with all important components and connections 
   * Draw a block diagram with 5-6 core components of the system, which are enough to solve the actual problem from end to end.
   * Map features to modules
+  * Create micro-services based on features or APIs (e.g. which micro-service should handle request and reply with a response)
   * Sketch the main components and connections
   * Justify your ideas
 * involved in the request flow from the client until the response is passed to the client. Describe the workflow based on the required operations
@@ -353,16 +384,16 @@ Factors to consider (Data Model [structured, semi-structure, unstructed], Size a
 Usually, a scalable system include (The Single Responsibility Principle advocates for small and autonomous services that work together to allow scale and configure them independently)
 1. Client
 2. Load balancer
-3. WebServer (reverse proxy), Front-end servers
+3. WebServer (reverse proxy) / WebSocket / Front-end servers
 4. Services (application layer, aka. platform layer) (Service Partition; list different services required, micro-services) 
 5. Caching system
 6. Database (master/slave cluster, partition and replication)
 
 Others <br>
-7. VPCs (publics, privates)
-8. Rate limiter
-9. Manager node: access privilege, console
-10. Monitoring service
+7. VPCs (publics, privates)<br>
+8. Rate limiter<br>
+9. Manager node: access privilege, console<br>
+10. Monitoring service<br>
 
 NOTE: 
 Application layer will process all incoming and outgoing requests. 
@@ -492,8 +523,21 @@ How to map a particular piece of data to its node? How to move and minimize data
 
 Other consideration: evenly distribute the load, no hotspot
 
+## 6.3 Evaluation 
+* Goal: Evaluate how the system fulfilss the non-functional requirements, 
+* What to evaluate: 
+  * Avaliability
+  * Scalability
+  * Reliability
+  * Consistency
+  * Fraut detection
+  * anything in non-functional requirements
+* How to evaluate: 
+  * Evaluate each component from front to end, including web, application, database, storage, CDN, cache, load balancer
+  * Evaluate each non-functinal requirement
 
-# 7. Optimization
+# 7. Evaluation and Optimization
+Compare your design to the requirements, and acknowledge any trade-offs made and improving aspects of design 
 
 ## 7.1. Security and Permissions
 1. Privacy ???  
@@ -527,6 +571,35 @@ How is the average latency?
 * Alert when critical component fail or their performance degrade
 * Determine if we need more load balancing (scaling), or caching, or replication, or further partitioning. 
 
+# 8 trade-off 
+Explore competing solutions, speak to all their major tradeoffs, and make intelligent decisions about how to balance each of those tradeoffs <br>
+Every solutions comes with a trade-off. The gaol is to choose the solution with the most workable trade-off, which does not severely impact the most importatnt requirements of the system. <br>
+Considering the user's needs, business goald, constraints, and the prioritized user cases
+Trade-offs can occur between various requirements of a system: 
+* Performance vs Scalability
+* Consistency vs Availability
+* Data Integrity vs Performance
+* Short-Term vs Long-Term Goals (Immediate deliverables, potential technical debt vs Sustainable solutions, potential delays in short-term goals)
+* Reliability vs Cost
+* Security vs Usability
+* Real-time processing vs Batch Processing
+
+* Push vs Pull (or hybrid).e.g in notification, in CDN; (celebrity user) (online only); (not more than 10 from a single user to avoid spamming) in newsfeed 
+* Pull CDN: first client request is slower. Time-To-Live; suitable for serving dynamic content; favored for frequently changing content and a high traffic load; low storage consumption
+* Push CDN: full response to upload content to the servers and rewriting URLs to point to the servers; appropriate for static content delivery; need more replicas than pull CDN
+	* Traffic: heavy traffic works well with Pull CDN.  less traffic works well with Push CDN; 
+	* Configuration: Pull CDN is easier to configure than Push CDN: 
+	* Content Update: Sites with higher no of frequent updates work well with Pull CDN
+
+* Partition 
+	* based on user ID or Tweet/Status ID or Hybrid or based on creation time or combination of tweet id and creation time
+		* User ID; can do transaction; con: hotspot/high latency, unbalanced/uneven/non-uniform distribution, unavailability of all of the user's data;  
+		* Tweet ID; dedicate two separate database instances (with a load balancer), one even-numbered IDs and the other odd-numbered, to generate auto-incrementing IDs; con: no able to do batch operation; 
+		* Tweet Creation Time
+		* Combination of Tweet ID and its Creation Time (Encode the creation time into Tweet Id, e.g. Epoch Second || auto incrementing sequence)				
+	* range-based or hash based 
+* Database: RDBM SQL vs NoSQL
+* CAP - Availability vs Consistency; choose based on business requirements in case of network partition
 # Q&A
 
 ## 1. How to scale web servers (reverse proxy)? -> Load Balancers & its algorithms
@@ -702,28 +775,6 @@ https://www.youtube.com/watch?v=hykjbT5Z0oE&t=1041s
 
 ## Ranking
 a reference count, freshness, user location, language, personal history, demographics
-
-
-## trade-off 
-Explore competing solutions, speak to all their major tradeoffs, and make intelligent decisions about how to balance each of those tradeoffs
-
-* Push vs Pull (or hybrid).e.g in notification, in CDN; (celebrity user) (online only); (not more than 10 from a single user to avoid spamming) in newsfeed 
-* Pull CDN: first client request is slower. Time-To-Live; suitable for serving dynamic content; favored for frequently changing content and a high traffic load; low storage consumption
-* Push CDN: full response to upload content to the servers and rewriting URLs to point to the servers; appropriate for static content delivery; need more replicas than pull CDN
-	* Traffic: heavy traffic works well with Pull CDN.  less traffic works well with Push CDN; 
-	* Configuration: Pull CDN is easier to configure than Push CDN: 
-	* Content Update: Sites with higher no of frequent updates work well with Pull CDN
-
-* Partition 
-	* based on user ID or Tweet/Status ID or Hybrid or based on creation time or combination of tweet id and creation time
-		* User ID; can do transaction; con: hotspot/high latency, unbalanced/uneven/non-uniform distribution, unavailability of all of the user's data;  
-		* Tweet ID; dedicate two separate database instances (with a load balancer), one even-numbered IDs and the other odd-numbered, to generate auto-incrementing IDs; con: no able to do batch operation; 
-		* Tweet Creation Time
-		* Combination of Tweet ID and its Creation Time (Encode the creation time into Tweet Id, e.g. Epoch Second || auto incrementing sequence)				
-	* range-based or hash based 
-* Database: RDBM SQL vs NoSQL
-* CAP - Availability vs Consistency; choose based on business requirements in case of network partition
-
 
 
 ## Popular services: 
