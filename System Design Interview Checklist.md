@@ -42,7 +42,10 @@
 	- [7.1. Security and Permissions](#71-security-and-permissions)
 	- [7.2. Analytics - users behavior](#72-analytics---users-behavior)
 	- [7.3 Performance monitor - system performance (telemetry)](#73-performance-monitor---system-performance-telemetry)
-- [8 trade-off](#8-trade-off)
+- [8 Trade-off](#8-trade-off)
+	- [8.1 Common Trade-off](#81-common-trade-off)
+	- [8.2 CDN Push vs Pull](#82-cdn-push-vs-pull)
+	- [8.3 Parition](#83-parition)
 - [9 System Design Principles](#9-system-design-principles)
 - [10 System Design Best Practices](#10-system-design-best-practices)
 - [11 Scale](#11-scale)
@@ -593,19 +596,32 @@ How is the average latency?
 * Alert when critical component fail or their performance degrade
 * Determine if we need more load balancing (scaling), or caching, or replication, or further partitioning. 
 
-# 8 trade-off 
-Explore competing solutions, speak to all their major tradeoffs, and make intelligent decisions about how to balance each of those tradeoffs <br>
-Every solutions comes with a trade-off. The gaol is to choose the solution with the most workable trade-off, which does not severely impact the most importatnt requirements of the system. <br>
-Considering the user's needs, business goald, constraints, and the prioritized user cases
-Trade-offs can occur between various requirements of a system: 
-* Performance vs Scalability
-* Consistency vs Availability
-* Data Integrity vs Performance
-* Short-Term vs Long-Term Goals (Immediate deliverables, potential technical debt vs Sustainable solutions, potential delays in short-term goals)
-* Reliability vs Cost
-* Security vs Usability
-* Real-time processing vs Batch Processing
+# 8 Trade-off 
+* Goal
+Every solutions comes with a trade-off. The goal is to choose the solution with the most workable trade-off, which does not severely impact the most importatnt requirements of the system. <br>
 
+* Step
+  1. Explore competing solutions 
+  2. Speak to all their major tradeoffs
+  3. Make intelligent decisions about how to balance each of those tradeoffs
+
+* Considering 
+the user's needs, business goal, resource limitations, conflicting requirements, design constraints, and the prioritized user cases
+
+## 8.1 Common Trade-off
+  * Performance vs Scalability (complex algorithm and data structure vs simpler components)
+  * Consistency vs Availability (strong consistency can impact availability; prioritizing availability might result in eventual consistency)
+  * Data Integrity vs Performance
+  * Short-Term vs Long-Term Goals (Immediate deliverables, potential technical debt vs Sustainable solutions, potential delays in short-term goals)
+  * Reliability vs Cost
+  * Security vs Usability
+  * Monolithic vs Microservices Architecture (Monolithic is simpler to develop and deploy, but lack the scalability and fault isolation of microservices; microservices offer better scalability but introduce complexity in terms of communication and management)
+  * Real-time processing vs Batch Processing
+  * Data Normalization vs Denormalization (Normnalized database reduced data redundancy, but can be slower for certain query patterns; Denormalization can improve query performance, but might lead to data integrity issues)
+  * Caching vs Freshness
+  * Centralized Control vs Decentralized Autonomy (simplify management, but be a single point of failure; vs more autonomy, but lead to inconsistencies or conflicts)
+
+## 8.2 CDN Push vs Pull
 * Push vs Pull (or hybrid).e.g in notification, in CDN; (celebrity user) (online only); (not more than 10 from a single user to avoid spamming) in newsfeed 
 * Pull CDN: first client request is slower. Time-To-Live; suitable for serving dynamic content; favored for frequently changing content and a high traffic load; low storage consumption
 * Push CDN: full response to upload content to the servers and rewriting URLs to point to the servers; appropriate for static content delivery; need more replicas than pull CDN
@@ -613,6 +629,7 @@ Trade-offs can occur between various requirements of a system:
 	* Configuration: Pull CDN is easier to configure than Push CDN: 
 	* Content Update: Sites with higher no of frequent updates work well with Pull CDN
 
+## 8.3 Parition
 * Partition 
 	* based on user ID or Tweet/Status ID or Hybrid or based on creation time or combination of tweet id and creation time
 		* User ID; can do transaction; con: hotspot/high latency, unbalanced/uneven/non-uniform distribution, unavailability of all of the user's data;  
