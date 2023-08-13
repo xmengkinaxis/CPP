@@ -256,6 +256,7 @@ int fnMonotonicIncreasingStack(vector<int>& arr) {
 // 623. Add One Row to Tree; https://leetcode.com/problems/add-one-row-to-tree/description/; do logic for the node at the certain level
 // 1110. Delete Nodes And Return Forest; https://leetcode.com/problems/delete-nodes-and-return-forest/description/
 // 865. Smallest Subtree with all the Deepest Nodes; https://leetcode.com/problems/smallest-subtree-with-all-the-deepest-nodes/
+// 1123. Lowest Common Ancestor of Deepest Leaves; https://leetcode.com/problems/lowest-common-ancestor-of-deepest-leaves/description/
 int dfsTree(TreeNode *root) { // could return a tuple of a node and the depth
 	// 1. deal withing the special base cases;  could be more base cases
 	// when calculating the depth, it is 0 for nullptr and 1 for a leave; so the base case is still nullptr; 
@@ -424,6 +425,7 @@ int dfsIterative(vector<vector<int>> & graph) {
 // 1091. Shortest Path in Binary Matrix; https://leetcode.com/problems/shortest-path-in-binary-matrix/description/
 // 286. Walls and Gates; https://leetcode.com/problems/walls-and-gates/description/
 // 863. All Nodes Distance K in Binary Tree; https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/description/; reach a certain level
+// 200. Number of Islands; https://leetcode.com/problems/number-of-islands/description/
 int bfsGraph(vector<vector<int>>& graph) {
 	queue<int> queue; 
 	unordered_set<int> seen; 
@@ -484,6 +486,7 @@ int bfsGraphSteps(vector<vector<int>>& grid) {
 }
 
 // 973. K Closest Points to Origin; https://leetcode.com/problems/k-closest-points-to-origin/description/
+// 347. Top K Frequent Elements; https://leetcode.com/problems/top-k-frequent-elements/
 vector<int> fnTopK(vector<int>& arr, int k) {
 	priority_queue<int, vector<int>, greater<int>> minHeap; // priority_queue<int> heap; 
 	for (auto n : arr) {
@@ -494,7 +497,7 @@ vector<int> fnTopK(vector<int>& arr, int k) {
 	}
 
 	vector<int> ans; 
-	while (minHeap.size() > 0){
+	while (!minHeap.empty()){
 		ans.push_back(minHeap.top()); 
 		minHeap.pop(); 
 	}
@@ -837,6 +840,9 @@ sort by start or end; when merging, newEnd = max(newEnd, end); when overlapping,
 1216. Valid Palindrome III https://leetcode.com/problems/valid-palindrome-iii/?envType=list&envId=9kpcif56
 91. Decode Ways; https://leetcode.com/problems/decode-ways/description/
 139. Word Break; https://leetcode.com/problems/word-break/
+
+1D dp 
+2369. Check if There is a Valid Partition For The Array; https://leetcode.com/problems/check-if-there-is-a-valid-partition-for-the-array/description/
 
 2D dp
 63. Unique Paths II; https://leetcode.com/problems/unique-paths-ii/description/
