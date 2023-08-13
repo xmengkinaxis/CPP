@@ -45,7 +45,7 @@
 - [8 Trade-off](#8-trade-off)
 	- [8.1 Common Trade-off](#81-common-trade-off)
 	- [8.2 CDN Push vs Pull](#82-cdn-push-vs-pull)
-	- [8.3 Parition](#83-parition)
+	- [8.3 Partition](#83-partition)
 - [9 System Design Principles](#9-system-design-principles)
 - [10 System Design Best Practices](#10-system-design-best-practices)
 - [11 Scale](#11-scale)
@@ -61,6 +61,17 @@
 		- [cache result==\> low latency, high throughput and high available (if db server is down for a while)](#cache-result-low-latency-high-throughput-and-high-available-if-db-server-is-down-for-a-while)
 		- [Scalability result ==\> low-latency and fault-tolerant by replicate (deal with lower performance)](#scalability-result--low-latency-and-fault-tolerant-by-replicate-deal-with-lower-performance)
 		- [Shard result==\> high performance by destructing the load and high available, and latency-free](#shard-result-high-performance-by-destructing-the-load-and-high-available-and-latency-free)
+- [Components](#components)
+	- [Load Balancers](#load-balancers)
+	- [Key Value Stores](#key-value-stores)
+	- [Blob Storage](#blob-storage)
+	- [Database](#database)
+	- [Rate Limiters](#rate-limiters)
+	- [Monitoring Systems](#monitoring-systems)
+	- [Distributed messaging queues](#distributed-messaging-queues)
+	- [Distributed unique ID generators](#distributed-unique-id-generators)
+		- [Distributed search](#distributed-search)
+		- [Distributed logging services](#distributed-logging-services)
 - [Q\&A](#qa)
 	- [Single point of failure require--\> Redundancy and Replication](#single-point-of-failure-require---redundancy-and-replication)
 	- [Checkpointing \<-- Fault Tolerance](#checkpointing----fault-tolerance)
@@ -187,13 +198,17 @@ All nodes see the same data at the same time, no matter users read/write from/to
 * Storage, bandwidth, and the number of concurrent user request should NOT become bottleneck, or overwhelm any servers
 
 ### Reliability: 
-* keep delivering its service even when on or several of its software or hardware components fail; 
+* **Goal**: keep delivering its service even when one or several of its software or hardware components fail; handle faults, failures, and errors;  
+  * A **fault** is a defect or flaw in the system's components. A fault is a defect or flaw in the system's hardware or software that can potentially cause the system to deviate from its expected behavior.
+  * A **failure** is the visible manifestation of a system not performing as expected due to one or more faults.
+  * An **error** is a human action or decision that can introduce faults or lead to failures in the system.
 * **achieve** such resilience with a cost in order to eliminate every single point of failure (vulnerable), data lost, authentication(???)
-  * redundancy of the hardware, software components and data
-  * use local storage, and resend after reconnect <br>
-  * services are decoupled and isolated; 
-  * load balancer
-* Achieve with health check (heartbeat protocol, gossip protocol), and monitoring services with alerts. <br>
+  * client: 
+    * use local storage, and resend after reconnect 
+  * System: 
+    * redundancy of the hardware, software components and data
+    * load balancer: achieve with health check (heartbeat protocol, gossip protocol), and monitoring services with alerts.
+    * services are decoupled and isolated; 
 
 ### Concurrency:
 To maximize system's performance: high bandwidth and high throughput.
@@ -629,7 +644,7 @@ the user's needs, business goal, resource limitations, conflicting requirements,
 	* Configuration: Pull CDN is easier to configure than Push CDN: 
 	* Content Update: Sites with higher no of frequent updates work well with Pull CDN
 
-## 8.3 Parition
+## 8.3 Partition
 * Partition 
 	* based on user ID or Tweet/Status ID or Hybrid or based on creation time or combination of tweet id and creation time
 		* User ID; can do transaction; con: hotspot/high latency, unbalanced/uneven/non-uniform distribution, unavailability of all of the user's data;  
@@ -783,7 +798,20 @@ By following these best practices, you can create software systems that are more
 # 11 Scale
 
 ## 11.1 Load Balancers & its algorithms - How to scale web servers (reverse proxy)
-LB helps to spread the traffic across a cluster of servers to improve overall responsiveness and availability of application, websites or databases, prevent a single point of failures, and keeps tracks of the status of all the resources; optimize resource usage (avoid overload and under-load of any machine); achieve maximum throughput; minimize response time<br>
+LB helps to 
+* Scaling
+  1. spread the traffic across a cluster of servers; facilitate scaling either up or down
+* Availability
+  1. prevent a single point of failures,  
+  2. improve overall responsiveness and availability of application, websites or databases, 
+* Performance
+  1. achieve maximum throughput; 
+  2. minimize response time (latency)
+  3. improve overall responsiveness and availability of application, websites or databases, 
+* Others
+  1. optimize resource usage (avoid overload and under-load of any machine);  
+  2. keeps tracks of the status of all the resources; 
+   
 To utilize full scalability and redundancy, try to balance the load at each layer of the system;<br>
 faster, higher throughput, easier for administrators, predictive analytics to determine traffic bottlenecks, give actionable insights to automation and help drive business decisions.
 LB helps scale horizontally across an ever-increasing number of servers.<br>
@@ -898,6 +926,65 @@ Scalability methods—With the architecture, there are many techniques and metho
 Some of the most widely used are: redundancy, partitioning, caching, indexing, load balancing, and queues.<br>
 
 ### Shard result==> high performance by destructing the load and high available, and latency-free
+
+# Components
+## Load Balancers
+Evenly distributing the computational load allows for faster response times and the capacity for more web traffic.<br>
+* Scaling: Load balancers facilitate scaling, either up or down, by disguising changes made to the number of servers.
+* Availability: By dividing requests, load balancers maintain availability of the system even in the event of a server outage.
+* Performance: Directing requests to servers with low traffic decreases response time for the end user.
+
+## Key Value Stores
+Similar to Hash table or dictionaries. Store information as a pair in the Key and Value format, for easy retrieval. Distributed hash tables (DHT). <br>
+e.g. AWS DynamoDB, AWS ElastiCache (a managed in-memory data store serivce which supports caching, like Redis or Memcached) (Redis, in particular, supports advanced data structures and features that make it effective for caching.<br>
+When it comes to caching user information effectively, Amazon ElastiCache with Redis is often a preferred choice due to its advanced caching capabilities, data structures, and support for use cases like user sessions and frequently accessed data.  However, the choice of service will depend on factors such as the complexity of the data, required data structures, access patterns, and performance requirements. <br>
+
+## Blob Storage
+Blob: Binary Large Object; a storage solution for unstructured data, such as photos, audios, multimedia, executable code; uses flat data organization pattern without hierarchy<br> 
+The main rule: write once, read many or WORM. Ensure the important dat is protected since once the data is written, it can be read, but not changed. <br>
+e.g. AWS S3
+
+## Database
+A database is an organized collection of data that can be easily accessed and modified; make the process of storing, retrieving, modifying, and deleting data simpler. SQL vs NoSQL <br>
+
+## Rate Limiters
+It sets a limit for the numbers of requests a service will fulfill. It will throttle requests that cross this threshold.<br>
+It is an important line of defense for servies and system; prevent services beging flooded with requests; mitigate resource consumption.<br>
+e.g. AWS API Gateway(built-in rate limiting on request/API/method per second/minute/others), AWS WAF(Web Application Firewall, restrict requests from the specific IP address or IP address ranges); <br>
+AWS Lambda, AWS CloudFront (CDN, request rate limiting to prevent abus and ensure a smooth experience for users), AWS ELB(Elastic Load Balancing, configure specific rules as rate limiting)
+
+## Monitoring Systems
+It is a software that allow system administrators to monitor infrastructure. It creates one centralized location for observing the overall performance of a potentially large system of computers in real time. <br>
+It can monitor: CPU, memory, bandwidth, routers, switches, applications, etc. e.g. AWS CloudWatch; AWS CloudTrail, X-Ray, Inspector, Trusted Advisor, and Config
+
+## Distributed messaging queues
+A producer creates messages and consumers receive and process them. <br>
+* Improve performance through asynchronous communication since producers and consumers act independently of each other
+* Decouple or reduce dependency in the system
+* Improve reliablility and allow simpler and less cluttered system design 
+* Asynchronous messaging facilitates scalability, for more consumers can be added to compensate for the increased load
+  
+Usage: 
+ * Sending emails
+ * Data post-processing: It can reduce end-user latency, by enabling offline time-consuming and resource-intensive process, such as processing image, video, multimedia to different formrat or platforms<br>
+ * Recommender systems: use cookies to personalize a user’s content; retrieves the user data and processes it. A messaging queue can be incorporated to make this process more efficient as background data processing can be time consuming.
+
+## Distributed unique ID generators
+It is important to tag entities in a system with a unique identifier. Millions of events may occur every second in a large distributed system, so we need a method of distinguishing them. A unique ID generator performs this task and enables the logging and tracking of event flows for debugging or maintenance purposes.<br>
+In most cases this is a universal unique ID (UUID). These are 128 bit numbers<br>
+Range handlers feature multiple servers that each cover a range of ID values.<br>
+
+### Distributed search
+Search systems are composed of three main entities: <br>
+* Crawler: finds/fetches content and creates documents
+* Indexer: builds a searchable index
+* Searcher: runs the search query against the index
+Distributed search systems are reliable and ideal for horizontal scalability<br>
+E.g. Elasticsearch <br>
+
+### Distributed logging services
+Logging is the process of recording data, in particular the events that occur in a software system. A log file may document service actions, transactions, microservices, or any other data that may be helpful when debugging. <br>
+Logging in a microservice architecture is convenient because the logs can be traced along a flow of events from end-to-end. Since microservices can create interdependencies in a system, and a failure of one service can cascade to others, logging helps to determine the root cause of the failure.<br>
 
 # Q&A
 
