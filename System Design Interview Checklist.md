@@ -44,8 +44,10 @@
 	- [7.3 Performance monitor - system performance (telemetry)](#73-performance-monitor---system-performance-telemetry)
 - [8 Trade-off](#8-trade-off)
 	- [8.1 Common Trade-off](#81-common-trade-off)
-	- [8.2 CDN Push vs Pull](#82-cdn-push-vs-pull)
-	- [8.3 Partition](#83-partition)
+	- [8.2 Partition](#82-partition)
+	- [8.3 User connections](#83-user-connections)
+	- [8.4 CDN Push vs Pull](#84-cdn-push-vs-pull)
+	- [8.5 Newsfeed Push vs Pull](#85-newsfeed-push-vs-pull)
 - [9 System Design Principles](#9-system-design-principles)
 - [10 System Design Best Practices](#10-system-design-best-practices)
 - [11 Scale](#11-scale)
@@ -56,12 +58,11 @@
 		- [Cache eviction policies:](#cache-eviction-policies)
 		- [Cache strategy (Invalidation):](#cache-strategy-invalidation)
 	- [11.3 CDN -\> How to prepare our assets to deliver faster across the world?](#113-cdn---how-to-prepare-our-assets-to-deliver-faster-across-the-world)
-		- [real-time and low-latency require--\> Replication of servers and server's location close to users (CDN) (PULL vs PUSH)](#real-time-and-low-latency-require---replication-of-servers-and-servers-location-close-to-users-cdn-pull-vs-push)
 	- [11.4 Cache, Scale, and Shard result](#114-cache-scale-and-shard-result)
 		- [cache result==\> low latency, high throughput and high available (if db server is down for a while)](#cache-result-low-latency-high-throughput-and-high-available-if-db-server-is-down-for-a-while)
 		- [Scalability result ==\> low-latency and fault-tolerant by replicate (deal with lower performance)](#scalability-result--low-latency-and-fault-tolerant-by-replicate-deal-with-lower-performance)
 		- [Shard result==\> high performance by destructing the load and high available, and latency-free](#shard-result-high-performance-by-destructing-the-load-and-high-available-and-latency-free)
-- [Components](#components)
+- [12 Components](#12-components)
 	- [Load Balancers](#load-balancers)
 	- [Key Value Stores](#key-value-stores)
 	- [Blob Storage](#blob-storage)
@@ -70,9 +71,11 @@
 	- [Monitoring Systems](#monitoring-systems)
 	- [Distributed messaging queues](#distributed-messaging-queues)
 	- [Distributed unique ID generators](#distributed-unique-id-generators)
-		- [Distributed search](#distributed-search)
-		- [Distributed logging services](#distributed-logging-services)
-- [Q\&A](#qa)
+	- [Distributed search](#distributed-search)
+	- [Distributed logging services](#distributed-logging-services)
+	- [Distributed task schedulers](#distributed-task-schedulers)
+	- [Others](#others)
+- [13 Q\&A](#13-qa)
 	- [Single point of failure require--\> Redundancy and Replication](#single-point-of-failure-require---redundancy-and-replication)
 	- [Checkpointing \<-- Fault Tolerance](#checkpointing----fault-tolerance)
 	- [Fault Tolerance -\> Checkpointing, Load Balancer, Replication](#fault-tolerance---checkpointing-load-balancer-replication)
@@ -625,7 +628,7 @@ the user's needs, business goal, resource limitations, conflicting requirements,
 
 ## 8.1 Common Trade-off
   * Performance vs Scalability (complex algorithm and data structure vs simpler components)
-  * Consistency vs Availability (strong consistency can impact availability; prioritizing availability might result in eventual consistency)
+  * Consistency vs Availability (strong consistency can impact availability; prioritizing availability might result in eventual consistency); choose based on business requirements in case of network partition
   * Data Integrity vs Performance
   * Short-Term vs Long-Term Goals (Immediate deliverables, potential technical debt vs Sustainable solutions, potential delays in short-term goals)
   * Reliability vs Cost
@@ -636,15 +639,7 @@ the user's needs, business goal, resource limitations, conflicting requirements,
   * Caching vs Freshness
   * Centralized Control vs Decentralized Autonomy (simplify management, but be a single point of failure; vs more autonomy, but lead to inconsistencies or conflicts)
 
-## 8.2 CDN Push vs Pull
-* Push vs Pull (or hybrid).e.g in notification, in CDN; (celebrity user) (online only); (not more than 10 from a single user to avoid spamming) in newsfeed 
-* Pull CDN: first client request is slower. Time-To-Live; suitable for serving dynamic content; favored for frequently changing content and a high traffic load; low storage consumption
-* Push CDN: full response to upload content to the servers and rewriting URLs to point to the servers; appropriate for static content delivery; need more replicas than pull CDN
-	* Traffic: heavy traffic works well with Pull CDN.  less traffic works well with Push CDN; 
-	* Configuration: Pull CDN is easier to configure than Push CDN: 
-	* Content Update: Sites with higher no of frequent updates work well with Pull CDN
-
-## 8.3 Partition
+## 8.2 Partition
 * Partition 
 	* based on user ID or Tweet/Status ID or Hybrid or based on creation time or combination of tweet id and creation time
 		* User ID; can do transaction; con: hotspot/high latency, unbalanced/uneven/non-uniform distribution, unavailability of all of the user's data;  
@@ -653,8 +648,38 @@ the user's needs, business goal, resource limitations, conflicting requirements,
 		* Combination of Tweet ID and its Creation Time (Encode the creation time into Tweet Id, e.g. Epoch Second || auto incrementing sequence)				
 	* range-based or hash based 
 * Database: RDBM SQL vs NoSQL
-* CAP - Availability vs Consistency; choose based on business requirements in case of network partition
 
+## 8.3 User connections
+* use HTTP long polling or webSocket<br>
+* Poll (normal/Periodical poll): client <- bandwidth -> server
+  * have a delay on client, 
+  * waste bandwidth, 
+  * keep the server busy;
+* Push 
+  * can give a lot of improvement in latencies, throughput, and performances<br>
+
+## 8.4 CDN Push vs Pull
+* Pull CDN: first client request is slower. Time-To-Live; suitable for serving dynamic content; favored for frequently changing content and a high traffic load; low storage consumption
+* Push CDN: full response to upload content to the servers and rewriting URLs to point to the servers; appropriate for static content delivery; need more replicas than pull CDN
+	* Traffic: heavy traffic works well with Pull CDN.  less traffic works well with Push CDN; 
+	* Configuration: Pull CDN is easier to configure than Push CDN: 
+	* Content Update: Sites with higher no of frequent updates work well with Pull CDN
+
+## 8.5 Newsfeed Push vs Pull 
+* Push vs Pull (or hybrid).e.g in notification, in CDN; (celebrity user) (online only); (not more than 10 from a single user to avoid spamming) in newsfeed 
+* **Push**: The process of pushing a post to all the followers is called **fanout**. The push fanout is called **fanout-on-write**
+* **Pull**: while the pull fanout is called **fanout-on-load**. 
+* A combination of 'push to notify and 'pull for serving' <br>
+
+* Pull: 
+  * Pro: mobile does not waste data plan, 
+  * con: not real-time/in-time, most requests will result in an empty response<br>
+* Push: need main a long poll request; 
+  * Con: celebrity users who has millions of followers, the server pushes update too frequently<br>
+* Hybrid: 
+  * the users who have a high number of followers to a pull-based model 
+  * only push data to those who have a few hundred/thousand follows; 
+  * or the server pushes update to all the users not more than a certain frequency and letting users with a lot of updates to pull data regularly<br>
 
 # 9 System Design Principles
 System design principles are fundamental guidelines and concepts that help software engineers and architects create effective, efficient, and maintainable software systems. These principles provide **a framework for making decisions about the architecture, structure, and behavior of a system**. They aim to ensure that the resulting system meets both its functional and non-functional requirements while **being adaptable to changes and scalable**. Here are some key system design principles:
@@ -899,19 +924,9 @@ metrics: read-intensive vs write-intensive (write-write, write-reread); latency 
 * Write-back (write-behind)(cache only): the data is written to cache alone; asynchronously write entry to the data store. pros: low-latency and high-throughput for write-intensive applications. con: risk of data loss; more complex to implement, for its asynchronously writing.  <br> 
 
 ## 11.3 CDN -> How to prepare our assets to deliver faster across the world?
-
-### real-time and low-latency require--> Replication of servers and server's location close to users (CDN) (PULL vs PUSH)
-real-time (VOIP, video, notification system and real-time feeds) : push (message queue), not pull(expensive in bandwidth and unnecessary load on Servers and DB, not scalable)
-The process of pushing a post to all the followers is called fanout. The push fanout is called fanout-on-write, while the pull fanout is called fanout-on-load. A combination of 'push to notify and 'pull for serving' <br>
-
-use HTTP long polling or webSocket<br>
-(Normal/Periodical poll : have a delay on client , waste bandwidth, keep the server busy; client<-bandwidth->server)<br>
-Push can give a lot of improvement in latencies, throughput, and performances<br>
-
-News feed.<br> 
-Pull: Pro: mobile does not waste data plan, con: not real-time/in-time, most requests will result in an empty response<br>
-Push: need main a long poll request; Con: celebrity users who has millions of followers, the server pushes update too frequently<br>
-Hybrid: the users who have a high number of followers to a pull-based model and only push data to those who have a few hundred/thousand follows; or the server pushes update to all the users not more than a certain frequency and letting users with a lot of updates to pull data regularly<br>
+Real-time and low-latency require
+* Replication of servers and server's location close to users (CDN) 
+* PULL vs PUSH: real-time (VOIP, video, notification system and real-time feeds) : push (message queue), not pull(expensive in bandwidth and unnecessary load on Servers and DB, not scalable)
 
 ## 11.4 Cache, Scale, and Shard result
 ### cache result==> low latency, high throughput and high available (if db server is down for a while)
@@ -927,7 +942,9 @@ Some of the most widely used are: redundancy, partitioning, caching, indexing, l
 
 ### Shard result==> high performance by destructing the load and high available, and latency-free
 
-# Components
+# 12 Components
+every building block in system design has functional and nonfunctional requirements that must be met.
+
 ## Load Balancers
 Evenly distributing the computational load allows for faster response times and the capacity for more web traffic.<br>
 * Scaling: Load balancers facilitate scaling, either up or down, by disguising changes made to the number of servers.
@@ -974,7 +991,7 @@ It is important to tag entities in a system with a unique identifier. Millions o
 In most cases this is a universal unique ID (UUID). These are 128 bit numbers<br>
 Range handlers feature multiple servers that each cover a range of ID values.<br>
 
-### Distributed search
+## Distributed search
 Search systems are composed of three main entities: <br>
 * Crawler: finds/fetches content and creates documents
 * Indexer: builds a searchable index
@@ -982,11 +999,24 @@ Search systems are composed of three main entities: <br>
 Distributed search systems are reliable and ideal for horizontal scalability<br>
 E.g. Elasticsearch <br>
 
-### Distributed logging services
+## Distributed logging services
 Logging is the process of recording data, in particular the events that occur in a software system. A log file may document service actions, transactions, microservices, or any other data that may be helpful when debugging. <br>
 Logging in a microservice architecture is convenient because the logs can be traced along a flow of events from end-to-end. Since microservices can create interdependencies in a system, and a failure of one service can cascade to others, logging helps to determine the root cause of the failure.<br>
+e.g. AWS CloudWatch logs: Centralized Log Storage, Scalable and Distributed, Real-Time Monitoring, Search and Query, Retention and Archiving, Integration with Other AWS Services, Access Control and Security, CloudWatch Metrics Integration, Automated Actions <br>
 
-# Q&A
+## Distributed task schedulers
+A **task** is a unit of work that requires computational resources, like CPU time, memory, storage, and network bandwidth, for some specified amount of time.<br>
+It is important for tasks like image uploading or social media posting to be asynchronous as to not hold the user waiting for background tasks to end.<br>
+Task schedulers mediate the supply-demand balance between tasks and resources to control the workflow of the system. By allocating resources task schedulers can ensure that task-level and system-level goals are met in an efficient manner. It is widely used in systems like Cloud Computing Services, Large Distributed Systems, and Single-OS-base nodes<br>
+
+## Others
+* Domain Name System (DNS)
+* Content Delivery Network (CDN)
+* Distributed Caching
+* Publish-Subscribe System
+* Sharded Counters
+
+# 13 Q&A
 
 ## Single point of failure require--> Redundancy and Replication
 HA Architecture - Micro services 
