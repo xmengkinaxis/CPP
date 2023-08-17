@@ -118,10 +118,10 @@ int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
 // for the window with the fixed size, only need a single pointer to point to the end of the window
 // for the window with the fixed size, remove the start since the end >= the window size
 // must ensure the start is moved, otherwise, the inner loop would become a dead one.
-// 239. Sliding Window Maximum;  https://leetcode.com/problems/sliding-window-maximum/?envType=list&envId=9kpcif56
+// 239. Sliding Window Maximum;  https://leetcode.com/problems/sliding-window-maximum/?envType=list&envId=9kpcif56; a typical one
 // 1004. Max Consecutive Ones III; https://leetcode.com/problems/max-consecutive-ones-iii/?envType=list&envId=9kpcif56
 // 76. Minimum Window Substring; https://leetcode.com/problems/minimum-window-substring/description/
-int fnSlidingWindow(vector<int>& arr) {
+int fnSlidingWindow(vector<int>& arr, int size) {
 	int ans = 0; 
 	for (int start = 0, end = 0, curr = 0; end < arr.size(); ++end) {
 		// add arr[end] into curr; 
@@ -138,7 +138,7 @@ int fnSlidingWindow(vector<int>& arr) {
 			++start;  // it would be a dead loop if start is not moved
 		}
 		// do something for this valid window
-		// if the size is fixed, when end >= size - 1, do something
+		// if the size is fixed, when "size - 1 <= end", do something
 	}
 	return ans; 
 }
@@ -487,6 +487,7 @@ int bfsGraphSteps(vector<vector<int>>& grid) {
 
 // 973. K Closest Points to Origin; https://leetcode.com/problems/k-closest-points-to-origin/description/
 // 347. Top K Frequent Elements; https://leetcode.com/problems/top-k-frequent-elements/
+// 215. Kth Largest Element in an Array; https://leetcode.com/problems/kth-largest-element-in-an-array/
 vector<int> fnTopK(vector<int>& arr, int k) {
 	priority_queue<int, vector<int>, greater<int>> minHeap; // priority_queue<int> heap; 
 	for (auto n : arr) {
@@ -504,6 +505,7 @@ vector<int> fnTopK(vector<int>& arr, int k) {
 	return ans; 
 }
 
+// 81. Search in Rotated Sorted Array II; https://leetcode.com/problems/search-in-rotated-sorted-array-ii/
 int binarySearch(vector<int>& arr, int target) {
 	int low = 0, high = arr.size() - 1; 
 	while (low <= high) {
@@ -519,7 +521,7 @@ int binarySearch(vector<int>& arr, int target) {
 	return low; 
 }
 
-// e.g. 852. Peak Index in a Mountain Array, https://leetcode.com/problems/peak-index-in-a-mountain-array/description/
+// 852. Peak Index in a Mountain Array, https://leetcode.com/problems/peak-index-in-a-mountain-array/description/
 // 1870. Minimum Speed to Arrive on Time; https://leetcode.com/problems/minimum-speed-to-arrive-on-time/description/
 // 1539. Kth Missing Positive Number; https://leetcode.com/problems/kth-missing-positive-number/?envType=list&envId=9kpcif56
 // 778. Swim in Rising Water; https://leetcode.com/problems/swim-in-rising-water/description/?envType=list&envId=9kpcif56
@@ -837,7 +839,6 @@ sort by start or end; when merging, newEnd = max(newEnd, end); when overlapping,
 */
 
 /* dp
-1216. Valid Palindrome III https://leetcode.com/problems/valid-palindrome-iii/?envType=list&envId=9kpcif56
 91. Decode Ways; https://leetcode.com/problems/decode-ways/description/
 139. Word Break; https://leetcode.com/problems/word-break/
 
@@ -845,7 +846,9 @@ sort by start or end; when merging, newEnd = max(newEnd, end); when overlapping,
 2369. Check if There is a Valid Partition For The Array; https://leetcode.com/problems/check-if-there-is-a-valid-partition-for-the-array/description/
 
 2D dp
-63. Unique Paths II; https://leetcode.com/problems/unique-paths-ii/description/
+63. Unique Paths II; https://leetcode.com/problems/unique-paths-ii/description/ ; grid, up or left
+518. Coin Change II; https://leetcode.com/problems/coin-change-ii/ ; not adjacent 
+1216. Valid Palindrome III https://leetcode.com/problems/valid-palindrome-iii/?envType=list&envId=9kpcif56; upper triangular matrix; -/|
 */
 
 /* Palindrome
