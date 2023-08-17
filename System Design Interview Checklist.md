@@ -1,12 +1,16 @@
 # System Design Interviews checklist
 
 - [System Design Interviews checklist](#system-design-interviews-checklist)
-- [0. Time Allocation](#0-time-allocation)
-- [NOTE:](#note)
-- [Tips](#tips)
-	- [Expectations:](#expectations)
-- [1. Ask clarifying and high-level design Questions to scope the problem well](#1-ask-clarifying-and-high-level-design-questions-to-scope-the-problem-well)
+- [0 Interview Preparation](#0-interview-preparation)
+	- [0.1 Time Allocation](#01-time-allocation)
+	- [0.2 Tips on the process](#02-tips-on-the-process)
+	- [0.3 Interview Purpose](#03-interview-purpose)
+	- [0.4 Interview Expectations:](#04-interview-expectations)
+	- [0.5 Should do](#05-should-do)
+- [1 Ask clarifying and high-level design Questions to scope the problem well](#1-ask-clarifying-and-high-level-design-questions-to-scope-the-problem-well)
 	- [1.1 Functional Requirements (Product Features + User Requirements)](#11-functional-requirements-product-features--user-requirements)
+		- [1.1.1 Product Features](#111-product-features)
+		- [1.1.2 User requirements](#112-user-requirements)
 	- [1.2 Non-Functional Requirements (Product Properties + User Expectations) (PACELC + reliable + Scalability + Extensibility)](#12-non-functional-requirements-product-properties--user-expectations-pacelc--reliable--scalability--extensibility)
 		- [Availability:](#availability)
 		- [Consistency:](#consistency)
@@ -18,19 +22,19 @@
 		- [Durability](#durability)
 	- [1.3 Prioritize requirements](#13-prioritize-requirements)
 	- [1.4 Design Considerations (no do, or assumption)](#14-design-considerations-no-do-or-assumption)
-- [2. Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation.](#2-capacity-estimation-and-constraints-traffic-storage-networkbandwidth-memorycache-estimation)
+- [2 Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation.](#2-capacity-estimation-and-constraints-traffic-storage-networkbandwidth-memorycache-estimation)
 	- [2.1 Traffic in write/second, or read/second](#21-traffic-in-writesecond-or-readsecond)
 	- [2.2 Storage in TB or GB/year](#22-storage-in-tb-or-gbyear)
 	- [2.3 Bandwidth in KB/s or MB/s](#23-bandwidth-in-kbs-or-mbs)
 	- [2.4 Memory (cache) in GB or TB /day](#24-memory-cache-in-gb-or-tb-day)
 	- [2.5 Servers' capability](#25-servers-capability)
-- [3. System API design](#3-system-api-design)
-- [4. Database Design (Define Data Model and choose Database)](#4-database-design-define-data-model-and-choose-database)
+- [3 System API design](#3-system-api-design)
+- [4 Database Design (Define Data Model and choose Database)](#4-database-design-define-data-model-and-choose-database)
 	- [4.0 Data Model](#40-data-model)
 	- [4.1 Database Schema or components/classes and their relationship/connection (static)](#41-database-schema-or-componentsclasses-and-their-relationshipconnection-static)
 	- [4.2 Choose Database](#42-choose-database)
-- [5. High-Level Design — This is pretty much a template, you can put in front of interviewers.](#5-high-level-design--this-is-pretty-much-a-template-you-can-put-in-front-of-interviewers)
-- [6. Low-Level Design - Deep dive core components; detailed component design](#6-low-level-design---deep-dive-core-components-detailed-component-design)
+- [5 High-Level Design — This is pretty much a template, you can put in front of interviewers.](#5-high-level-design--this-is-pretty-much-a-template-you-can-put-in-front-of-interviewers)
+- [6 Low-Level Design - Deep dive core components; detailed component design](#6-low-level-design---deep-dive-core-components-detailed-component-design)
 	- [6.1 Scale the design](#61-scale-the-design)
 	- [6.2 Partition and Replication (core of a distributed system, to scale out the system)](#62-partition-and-replication-core-of-a-distributed-system-to-scale-out-the-system)
 		- [6.2.1 Replication](#621-replication)
@@ -38,7 +42,7 @@
 			- [6.2.2.1 Horizontal Partitioning](#6221-horizontal-partitioning)
 			- [6.2.2.2 Vertical Partitioning](#6222-vertical-partitioning)
 	- [6.3 Evaluation](#63-evaluation)
-- [7. Evaluation and Optimization](#7-evaluation-and-optimization)
+- [7 Evaluation and Optimization](#7-evaluation-and-optimization)
 	- [7.1. Security and Permissions](#71-security-and-permissions)
 	- [7.2. Analytics - users behavior](#72-analytics---users-behavior)
 	- [7.3 Performance monitor - system performance (telemetry)](#73-performance-monitor---system-performance-telemetry)
@@ -89,41 +93,28 @@
 
 <!-- TOC -->
 
-# 0. Time Allocation
-Clarify the problem, break down the complext problem into parts, discuss the overall design, and deep dive into some components; identify and analyze the tradeoffs, recover from the failures; 
+# 0 Interview Preparation
+## 0.1 Time Allocation
+Clarify the problem, break down the complext problem into parts, discuss the overall design, and deep dive into some components; identify and analyze the tradeoffs, recover from the failures; <br>
 1. understand the problem and establish design core: ~10 minutes (3 - 10 m)
 2. Propose high-level design and get buy-in; -10 minutes (10 - 15 m)
 3. Design deep dive; 20 minutes (10 - 25 m)
 4. Wrap / Evaluation / feedback / discusson / question : 5 minutes (3 - 5 m)
 
-
-# NOTE: 
-The key aspect of system design is to identify the problem area and trade off, and be able to justify a decision over another. <br>
-Get the skeleton in the place and then start optimizing (optimization is an evolutionary process) notch by notch; <br>
-Interviewrs are more interested in your thought process throughout the interview than in your final design. The success heavily depends on your ability to communicate your thought process and hold a discussion (collaborate). <br>
- assesses a candidate's ability to combine knowledge, theory, experience, and judgment toward solving a real-world engineering problem with significant ambiguity. <br>
-Demonstrate your thought process and domain-specific knowledge; Presentation matter.<br>
-It is critical to demonstrate your ability to recognize and evaluate trade-offs, as it reflects your understanding of various design aspects and their implications<br>
-
-* Lead and drive an Open-ended conversation as doing a demo or presentation;
-* Everything is a trade-off; Make points with justification; Defend your design;
-* Regularly monitor the time on track
-* Evaluate the solution, and engage in feedback, discussion and question;
-* Do NOT over-design or under-design;
-* No single-point failure (to achieve highly reliable, no data lost)
-* Identify potential bottlenecks and future problems (scale)
-* Describe failover and impacts on users and Service Level Agreements (SLAs)
-* Backup and disaster recovery
-* Usage patterns, and security
-
-* System design is similar to Object/Class Design. Why need such a class? Which method/function should it provide? Which information should it stores or manages?
-
-# Tips
+## 0.2 Tips on the process
 1. Discuss trade-offs with your interviewers
 2. Manage your time efficiently
 3. Start wide and end deep
 
-## Expectations: 
+## 0.3 Interview Purpose 
+* The key aspect of system design is to identify the problem area and trade off, and be able to justify a decision over another. <br>
+* assesses a candidate's ability to combine knowledge, theory, experience, and judgment toward solving a real-world engineering problem with significant ambiguity. <br>
+* Interviewrs are more interested in your thought process throughout the interview than in your final design. 
+* The success heavily depends on your ability to communicate your thought process and hold a discussion (collaborate). <br>
+* Demonstrate your thought process and domain-specific knowledge; Presentation matter.<br>
+* It is critical to demonstrate your ability to recognize and evaluate trade-offs, as it reflects your understanding of various design aspects and their implications<br>
+
+## 0.4 Interview Expectations: 
 * Mid-level System Designers 
   * Be able to identify and address performance, scalability, and reliablility issues
   * be well-versed in various architectural styles, design patterns, and their trade-off
@@ -138,7 +129,22 @@ It is critical to demonstrate your ability to recognize and evaluate trade-offs,
   * be recognized for designing and implementing complex and large-scale systems
   * have a deep and thorough understanding of trade-offs, performance optimizations, and long-term scalability
 
-# 1. Ask clarifying and high-level design Questions to scope the problem well
+## 0.5 Should do 
+* Get the skeleton in the place and then start optimizing (optimization is an evolutionary process) notch by notch; <br>
+* Lead and drive an Open-ended conversation as doing a demo or presentation; or as guide juniors, discuss with peer, and present to seniors
+* Everything is a trade-off; Make points with justification; Defend your design;
+* Regularly monitor the time on track
+* Evaluate the solution, and engage in feedback, discussion and question;
+* Do NOT over-design or under-design;
+* No single-point failure (to achieve highly reliable, no data lost)
+* Identify potential bottlenecks and future problems (scale)
+* Describe failover and impacts on users and Service Level Agreements (SLAs)
+* Backup and disaster recovery
+* Usage patterns, and security
+
+* System design is similar to Object/Class Design. Why need such a class? Which method/function should it provide? Which information should it stores or manages?
+
+# 1 Ask clarifying and high-level design Questions to scope the problem well
 what an interviewer is expecting from us; the interviewer is evaluating your investigative abilities<br>
 * to Gather requirements, and to scope the problem
 * to outline use cases, to gather constraints, and to validate our assumptions
@@ -147,11 +153,13 @@ Whenever you interact with a platform, think of the who, why, what, and how. Loo
 The functional requirements are the **features and functionalities** that the user will get, whereas the non-functional requirements are the **expectations in terms of performance** from the system. 
 
 ## 1.1 Functional Requirements (Product Features + User Requirements)
+### 1.1.1 Product Features
 What does the system do? <br>
 What is the goal? <br>
 What are the inputs and outputs of the system? <br>
 // What is the criticality of the system? <br>
 
+### 1.1.2 User requirements
 Who is going to use it? How many kinds of users are there? The categories of people. E.g.Creator, Viewer, and Advertiser.  <br>
 Why? Their incentives to use the system. We develop the whats (incentives/procedures) and the whys (why someone would interact with that kind of content). <br>
 How are they going to use it?  <br>
@@ -235,7 +243,7 @@ Break it down, to the most important, minimal features for your system.
   * add a rate limiter (prevent abuse behavior, provide a fair and reasonable use of the resource's capacity when sharing among many users, control the cost of operations and avoid excess costs) <br>
 * assumption: surge in traffic <br>
 
-# 2. Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation.
+# 2 Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation.
 The estimation will be helpful later when focusing on scaling, partitioning, load balancing, and caching <br>
 What are the constraints? <br>
 
@@ -293,7 +301,7 @@ Benefit: Low latency (real time)
 ## 2.5 Servers' capability
 Requests per second that a server can handle; used in estimating how many servers are required
 
-# 3. System API design
+# 3 System API design
 **Goal:**<br>
 The goal of the APIs is to make as much as clean & simple as possible to be simple to understand for everybody. A simple common way is making CRUDs. <br>
 Establish the exact contract expected from the system and ensure if we haven't gotten any requirements wrong.  <br>
@@ -325,7 +333,7 @@ SOAP or REST API <br>
 e.g. This process returns a JSON object that contains a list of all the possible items in the specified category that also fall within the specified radius. <br>
 Each entry has a place name, address, category, rating, and thumbnail.<br>
 
-# 4. Database Design (Define Data Model and choose Database)
+# 4 Database Design (Define Data Model and choose Database)
 
 ## 4.0 Data Model
 **Benefit:** Defining the data model in the early part of the interview will 
@@ -408,7 +416,7 @@ Factors to consider (Data Model [structured/relational/columnar, semi-structure,
 * Cost and Licensing: Factor in the cost of database licenses, cloud service charges, and hardware requirements.
 * Integration with Existing Tools and Systems: Assess whether the database integrates well with existing tools, frameworks, and systems used in the application.
 
-# 5. High-Level Design — This is pretty much a template, you can put in front of interviewers.
+# 5 High-Level Design — This is pretty much a template, you can put in front of interviewers.
 **Goal** 
 * The candidate should identify various system entities, how they will interact with each other, and how data would be flowing in the system
 * static: components, their relationship and connections
@@ -441,7 +449,7 @@ Others <br>
 NOTE: 
 Application layer will process all incoming and outgoing requests. 
 
-# 6. Low-Level Design - Deep dive core components; detailed component design
+# 6 Low-Level Design - Deep dive core components; detailed component design
 Dig deeper into details of two or three major/core components; <br>
 Pick or ask for; The interviewers' feedback should always guide us to what specific parts need focus, elaborate on, and further discussion.  <br>
 (self choose some core components which are critical in performance)  <br>
@@ -579,7 +587,7 @@ Other consideration: evenly distribute the load, no hotspot
   * Evaluate each component from front to end, including web, application, database, storage, CDN, cache, load balancer
   * Evaluate each non-functinal requirement
 
-# 7. Evaluation and Optimization
+# 7 Evaluation and Optimization
 Compare your design to the requirements, and acknowledge any trade-offs made and improving aspects of design 
 
 ## 7.1. Security and Permissions
