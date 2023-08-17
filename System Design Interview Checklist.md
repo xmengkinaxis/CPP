@@ -154,17 +154,19 @@ The functional requirements are the **features and functionalities** that the us
 
 ## 1.1 Functional Requirements (Product Features + User Requirements)
 ### 1.1.1 Product Features
-What does the system do? <br>
-What is the goal? <br>
-What are the inputs and outputs of the system? <br>
-// What is the criticality of the system? <br>
+* Goal: What is the goal? <br>
+* Functions: What does the system do? <br>
+* Input and output: What are the inputs and outputs of the system? <br>
+* Criticality: What is the criticality of the system? <br>
 
 ### 1.1.2 User requirements
-Who is going to use it? How many kinds of users are there? The categories of people. E.g.Creator, Viewer, and Advertiser.  <br>
-Why? Their incentives to use the system. We develop the whats (incentives/procedures) and the whys (why someone would interact with that kind of content). <br>
-How are they going to use it?  <br>
-What are the use cases? <br>
-What kind of operations does the system support? <br>
+* User types: Who is going to use it? How many kinds of users are there? The categories of people. E.g.Creator, Viewer, and Advertiser.  <br>
+* Purpose: Why? Their incentives to use the system. We develop the whats (incentives/procedures) and the whys (why someone would interact with that kind of content). <br>
+* User cases: 
+  * What are the use cases? <br>
+  * How are they going to use it?  <br>
+  * What kind of operations does the system support? <br>
+  * Read-Heavery vs Write-Heavy
 
 ## 1.2 Non-Functional Requirements (Product Properties + User Expectations) (PACELC + reliable + Scalability + Extensibility)
 CAP theory. CP or AP? PACELC (When Partition, Availability or Consistency, Else Latency or Consistency); High reliable and high scalable;  <br>
@@ -679,10 +681,11 @@ the user's needs, business goal, resource limitations, conflicting requirements,
 * **Pull**: while the pull fanout is called **fanout-on-load**. 
 * A combination of 'push to notify and 'pull for serving' <br>
 
-* Pull: 
+* Pull: regularly or manually on demand
   * Pro: mobile does not waste data plan, 
-  * con: not real-time/in-time, most requests will result in an empty response<br>
+  * con: not real-time/in-time, feeds becomes stale, most requests will result in an empty response and waste resources (bandwidth, server CPUs)<br>
 * Push: need main a long poll request; 
+  * Pro: immediately get the updates
   * Con: celebrity users who has millions of followers, the server pushes update too frequently<br>
 * Hybrid: 
   * the users who have a high number of followers to a pull-based model 
