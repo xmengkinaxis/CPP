@@ -263,7 +263,7 @@ int dfsTree(TreeNode *root) { // could return a tuple of a node and the depth
 	if (!root) { return 0; }
 
 	int ans = 0; 
-	// 2. do logic for this node
+	// 2. do logic for this node if it is preOrder
 	// sometime check if the root is the special target, such as a leave, do the logic for leaf and then return; 
 
 	// 3. iterate all branches/candidates/choices/;
@@ -271,6 +271,8 @@ int dfsTree(TreeNode *root) { // could return a tuple of a node and the depth
 	//  or depending on if other branches exist or not
 	dfsTree(root->left); 
 	dfsTree(root->right); 
+	
+	// 5. do logic for this node if it is postOrder
 	return ans; 	
 }
 
@@ -383,6 +385,7 @@ int dfsGraph2(int node, vector<vector<int>>& graph) {
 // 490. The Maze; https://leetcode.com/problems/the-maze/description/
 // 778. Swim in Rising Water; https://leetcode.com/problems/swim-in-rising-water/description/?envType=list&envId=9kpcif56
 // 79. Word Search; https://leetcode.com/problems/word-search/
+// 721. Accounts Merge; https://leetcode.com/problems/accounts-merge/description/
 bool dfsGraph3(int node, vector<vector<int>>& graph) {	
 	if (seen2.find(node) == seen2.end()) {
 		return false; 
@@ -426,6 +429,7 @@ int dfsIterative(vector<vector<int>> & graph) {
 // 286. Walls and Gates; https://leetcode.com/problems/walls-and-gates/description/
 // 863. All Nodes Distance K in Binary Tree; https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/description/; reach a certain level
 // 200. Number of Islands; https://leetcode.com/problems/number-of-islands/description/
+// 1293. Shortest Path in a Grid with Obstacles Elimination; https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination/description/
 int bfsGraph(vector<vector<int>>& graph) {
 	queue<int> queue; 
 	unordered_set<int> seen; 
@@ -809,6 +813,54 @@ public:
     }
     void merge(int a, int b) {
         parent[find(b)] = find(a);
+    }
+};
+
+// or  Disjoint Set Union (DSU)
+// 721. Accounts Merge; https://leetcode.com/problems/accounts-merge/description/
+class DSU {
+public:
+    vector<int> representative;
+    vector<int> size;
+    
+    DSU(int sz) : representative(sz), size(sz) {
+        for (int i = 0; i < sz; ++i) {
+            // Initially each group is its own representative
+            representative[i] = i;
+            // Initialize the size of all groups to 1
+            size[i] = 1;
+        }
+    }
+    
+    // Finds the representative of group x
+    int findRepresentative(int x) {
+        if (x == representative[x]) {
+            return x;
+        }
+        
+        // This is path compression
+        return representative[x] = findRepresentative(representative[x]);
+    }
+    
+    // Unite the group that contains "a" with the group that contains "b"
+    void unionBySize(int a, int b) {
+        int representativeA = findRepresentative(a);
+        int representativeB = findRepresentative(b);
+        
+        // If nodes a and b already belong to the same group, do nothing.
+        if (representativeA == representativeB) {
+            return;
+        }
+        
+        // Union by size: point the representative of the smaller
+        // group to the representative of the larger group.
+        if (size[representativeA] >= size[representativeB]) {
+            size[representativeA] += size[representativeB];
+            representative[representativeB] = representativeA;
+        } else {
+            size[representativeB] += size[representativeA];
+            representative[representativeA] = representativeB;
+        }
     }
 };
 
