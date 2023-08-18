@@ -61,6 +61,14 @@ Sliding Window Technique: start and end
 Binary Search: low and high if the array is strictly increased, or use left and right if there are some duplications
 */
 
+/* useful coding skills
+1. Use unordered_set to speed up the lookup if the input is an array
+2. Change the grid value in place as used as seen/visit
+3. Can use unordered_set or vector<bool> as seen/visit
+4. Use a local variable to store and restore a value before and after recursively invoking backtrack
+5. Use a value instead of a reference in recursively invoking backtrack; passing by value will act as if do and undo for the original value is unchanged
+*/
+
 // ??? sort all problems of meta once a week into different algorithms, whose numbers are less than 23 and after 29
 
 // two pointers with opposite directions
@@ -241,22 +249,26 @@ int fnMonotonicIncreasingStack(vector<int>& arr) {
 	}
 }
 
-// inorder, preorder, postorder;
-// 987. Vertical Order Traversal of a Binary Tree; https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/?envType=list&envId=9kpcif56
+// dfs on a Tree: preOrder, inOrder, postorder;
+// preOrder
+// 623. Add One Row to Tree; https://leetcode.com/problems/add-one-row-to-tree/description/; do logic for the node at the certain level
+// inOrder
+// 426. Convert Binary Search Tree to Sorted Doubly Linked List; https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/
+// 987. Vertical Order Traversal of a Binary Tree; https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/
+// postOrder
 // 543. Diameter of Binary Tree; https://leetcode.com/problems/diameter-of-binary-tree/description/
-// 1382. Balance a Binary Search Tree; https://leetcode.com/problems/balance-a-binary-search-tree/?envType=list&envId=9kpcif56
-// 536. Construct Binary Tree from String; https://leetcode.com/problems/construct-binary-tree-from-string/?envType=list&envId=9kpcif56
+// 536. Construct Binary Tree from String; https://leetcode.com/problems/construct-binary-tree-from-string/
 // 938. Range Sum of BST; https://leetcode.com/problems/range-sum-of-bst/description/
 // 236. Lowest Common Ancestor of a Binary Tree; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/
-// 1644. Lowest Common Ancestor of a Binary Tree II; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-ii/description/
-// 1676. Lowest Common Ancestor of a Binary Tree IV; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iv/description/
-// 426. Convert Binary Search Tree to Sorted Doubly Linked List; https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/description/
-// 95. Unique Binary Search Trees II; https://leetcode.com/problems/unique-binary-search-trees-ii/description/
-// 129. Sum Root to Leaf Numbers; https://leetcode.com/problems/sum-root-to-leaf-numbers/description/; // leave is one of the base cases 
-// 623. Add One Row to Tree; https://leetcode.com/problems/add-one-row-to-tree/description/; do logic for the node at the certain level
-// 1110. Delete Nodes And Return Forest; https://leetcode.com/problems/delete-nodes-and-return-forest/description/
+// 1644. Lowest Common Ancestor of a Binary Tree II; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-ii/
+// 1676. Lowest Common Ancestor of a Binary Tree IV; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iv/
+// 95. Unique Binary Search Trees II; https://leetcode.com/problems/unique-binary-search-trees-ii/
+// 129. Sum Root to Leaf Numbers; https://leetcode.com/problems/sum-root-to-leaf-numbers/; // leave is one of the base cases 
+// 1123. Lowest Common Ancestor of Deepest Leaves; https://leetcode.com/problems/lowest-common-ancestor-of-deepest-leaves/
 // 865. Smallest Subtree with all the Deepest Nodes; https://leetcode.com/problems/smallest-subtree-with-all-the-deepest-nodes/
-// 1123. Lowest Common Ancestor of Deepest Leaves; https://leetcode.com/problems/lowest-common-ancestor-of-deepest-leaves/description/
+// 1110. Delete Nodes And Return Forest; https://leetcode.com/problems/delete-nodes-and-return-forest/; must update root and add it if still valid
+// inOrder + postOrder
+// 1382. Balance a Binary Search Tree; https://leetcode.com/problems/balance-a-binary-search-tree/
 int dfsTree(TreeNode *root) { // could return a tuple of a node and the depth
 	// 1. deal withing the special base cases;  could be more base cases
 	// when calculating the depth, it is 0 for nullptr and 1 for a leave; so the base case is still nullptr; 
