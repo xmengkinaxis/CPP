@@ -2,93 +2,101 @@
 
 - [System Design Interviews checklist](#system-design-interviews-checklist)
 - [0 Interview Preparation](#0-interview-preparation)
-	- [0.1 Time Allocation](#01-time-allocation)
-	- [0.2 Tips on the process](#02-tips-on-the-process)
-	- [0.3 Interview Purpose](#03-interview-purpose)
-	- [0.4 Interview Expectations:](#04-interview-expectations)
-	- [0.5 Should do](#05-should-do)
+  - [0.1 Time Allocation](#01-time-allocation)
+  - [0.2 Tips on the process](#02-tips-on-the-process)
+  - [0.3 Communicate through process](#03-communicate-through-process)
+  - [0.4 Goal and Purpose](#04-goal-and-purpose)
+  - [0.5 Expectations](#05-expectations)
+  - [0.6 Should do](#06-should-do)
 - [1 Ask clarifying and high-level design Questions to scope the problem well](#1-ask-clarifying-and-high-level-design-questions-to-scope-the-problem-well)
-	- [1.1 Functional Requirements (Product Features + User Requirements)](#11-functional-requirements-product-features--user-requirements)
-		- [1.1.1 Product Features](#111-product-features)
-		- [1.1.2 User requirements](#112-user-requirements)
-	- [1.2 Non-Functional Requirements (Product Properties + User Expectations) (PACELC + reliable + Scalability + Extensibility)](#12-non-functional-requirements-product-properties--user-expectations-pacelc--reliable--scalability--extensibility)
-		- [Availability:](#availability)
-		- [Consistency:](#consistency)
-		- [Efficiency (Latency and throughput):](#efficiency-latency-and-throughput)
-		- [Scalability:](#scalability)
-		- [Reliability:](#reliability)
-		- [Concurrency:](#concurrency)
-		- [Serviceability or Manageability (simplicity):](#serviceability-or-manageability-simplicity)
-		- [Durability](#durability)
-	- [1.3 Prioritize requirements](#13-prioritize-requirements)
-	- [1.4 Design Considerations (no do, or assumption)](#14-design-considerations-no-do-or-assumption)
+  - [1.1 Functional Requirements (Product Features + User Requirements)](#11-functional-requirements-product-features--user-requirements)
+    - [1.1.1 Product Features](#111-product-features)
+    - [1.1.2 User requirements](#112-user-requirements)
+  - [1.2 Non-Functional Requirements (Product Properties + User Expectations) (PACELC + reliable + Scalability + Extensibility)](#12-non-functional-requirements-product-properties--user-expectations-pacelc--reliable--scalability--extensibility)
+    - [Availability:](#availability)
+    - [Consistency:](#consistency)
+    - [Efficiency (Latency and throughput):](#efficiency-latency-and-throughput)
+    - [Scalability:](#scalability)
+    - [Reliability:](#reliability)
+    - [Concurrency:](#concurrency)
+    - [Serviceability or Manageability (simplicity):](#serviceability-or-manageability-simplicity)
+    - [Durability](#durability)
+  - [1.3 Prioritize requirements](#13-prioritize-requirements)
+  - [1.4 Design Considerations (no do, or assumption)](#14-design-considerations-no-do-or-assumption)
 - [2 Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation.](#2-capacity-estimation-and-constraints-traffic-storage-networkbandwidth-memorycache-estimation)
-	- [2.1 Traffic in write/second, or read/second](#21-traffic-in-writesecond-or-readsecond)
-	- [2.2 Storage in TB or GB/year](#22-storage-in-tb-or-gbyear)
-	- [2.3 Bandwidth in KB/s or MB/s](#23-bandwidth-in-kbs-or-mbs)
-	- [2.4 Memory (cache) in GB or TB /day](#24-memory-cache-in-gb-or-tb-day)
-	- [2.5 Servers' capability](#25-servers-capability)
+  - [2.1 Traffic in write/second, or read/second](#21-traffic-in-writesecond-or-readsecond)
+  - [2.2 Storage in TB or GB/year](#22-storage-in-tb-or-gbyear)
+  - [2.3 Bandwidth in KB/s or MB/s](#23-bandwidth-in-kbs-or-mbs)
+  - [2.4 Memory (cache) in GB or TB /day](#24-memory-cache-in-gb-or-tb-day)
+  - [2.5 Servers' capability](#25-servers-capability)
 - [3 System API design](#3-system-api-design)
 - [4 Database Design (Define Data Model and choose Database)](#4-database-design-define-data-model-and-choose-database)
-	- [4.0 Data Model](#40-data-model)
-	- [4.1 Database Schema or components/classes and their relationship/connection (static)](#41-database-schema-or-componentsclasses-and-their-relationshipconnection-static)
-	- [4.2 Choose Database](#42-choose-database)
+  - [4.0 Data Model](#40-data-model)
+  - [4.1 Database Schema or components/classes and their relationship/connection (static)](#41-database-schema-or-componentsclasses-and-their-relationshipconnection-static)
+  - [4.2 Choose Database](#42-choose-database)
 - [5 High-Level Design — This is pretty much a template, you can put in front of interviewers.](#5-high-level-design--this-is-pretty-much-a-template-you-can-put-in-front-of-interviewers)
 - [6 Low-Level Design - Deep dive core components; detailed component design](#6-low-level-design---deep-dive-core-components-detailed-component-design)
-	- [6.1 Scale the design](#61-scale-the-design)
-	- [6.2 Partition and Replication (core of a distributed system, to scale out the system)](#62-partition-and-replication-core-of-a-distributed-system-to-scale-out-the-system)
-		- [6.2.1 Replication](#621-replication)
-		- [6.2.2 Partition](#622-partition)
-			- [6.2.2.1 Horizontal Partitioning](#6221-horizontal-partitioning)
-			- [6.2.2.2 Vertical Partitioning](#6222-vertical-partitioning)
-	- [6.3 Evaluation](#63-evaluation)
+  - [6.1 Scale the design](#61-scale-the-design)
+  - [6.2 Partition and Replication (core of a distributed system, to scale out the system)](#62-partition-and-replication-core-of-a-distributed-system-to-scale-out-the-system)
+    - [6.2.1 Replication](#621-replication)
+    - [6.2.2 Partition](#622-partition)
+      - [6.2.2.1 Horizontal Partitioning](#6221-horizontal-partitioning)
+      - [6.2.2.2 Vertical Partitioning](#6222-vertical-partitioning)
+  - [6.3 Evaluation](#63-evaluation)
 - [7 Evaluation and Optimization](#7-evaluation-and-optimization)
-	- [7.1. Security and Permissions](#71-security-and-permissions)
-	- [7.2. Analytics - users behavior](#72-analytics---users-behavior)
-	- [7.3 Performance monitor - system performance (telemetry)](#73-performance-monitor---system-performance-telemetry)
+  - [7.1. Security and Permissions](#71-security-and-permissions)
+  - [7.2. Analytics - users behavior](#72-analytics---users-behavior)
+  - [7.3 Performance monitor - system performance (telemetry)](#73-performance-monitor---system-performance-telemetry)
 - [8 Trade-off](#8-trade-off)
-	- [8.1 Common Trade-off](#81-common-trade-off)
-	- [8.2 Partition](#82-partition)
-	- [8.3 User connections](#83-user-connections)
-	- [8.4 CDN Push vs Pull](#84-cdn-push-vs-pull)
-	- [8.5 Newsfeed Push vs Pull](#85-newsfeed-push-vs-pull)
+  - [8.1 Common Trade-off](#81-common-trade-off)
+  - [8.2 Partition](#82-partition)
+  - [8.3 User connections](#83-user-connections)
+  - [8.4 CDN Push vs Pull](#84-cdn-push-vs-pull)
+  - [8.5 Newsfeed Push vs Pull](#85-newsfeed-push-vs-pull)
 - [9 System Design Principles](#9-system-design-principles)
 - [10 System Design Best Practices](#10-system-design-best-practices)
 - [11 Scale](#11-scale)
-	- [11.1 Load Balancers \& its algorithms - How to scale web servers (reverse proxy)](#111-load-balancers--its-algorithms---how-to-scale-web-servers-reverse-proxy)
-		- [metrics:](#metrics)
-		- [algorithms:](#algorithms)
-	- [11.2 Caching - How to scale database?  Caching or vertically and horizontally](#112-caching---how-to-scale-database--caching-or-vertically-and-horizontally)
-		- [Cache eviction policies:](#cache-eviction-policies)
-		- [Cache strategy (Invalidation):](#cache-strategy-invalidation)
-	- [11.3 CDN -\> How to prepare our assets to deliver faster across the world?](#113-cdn---how-to-prepare-our-assets-to-deliver-faster-across-the-world)
-	- [11.4 Cache, Scale, and Shard result](#114-cache-scale-and-shard-result)
-		- [cache result==\> low latency, high throughput and high available (if db server is down for a while)](#cache-result-low-latency-high-throughput-and-high-available-if-db-server-is-down-for-a-while)
-		- [Scalability result ==\> low-latency and fault-tolerant by replicate (deal with lower performance)](#scalability-result--low-latency-and-fault-tolerant-by-replicate-deal-with-lower-performance)
-		- [Shard result==\> high performance by destructing the load and high available, and latency-free](#shard-result-high-performance-by-destructing-the-load-and-high-available-and-latency-free)
+  - [11.1 Load Balancers \& its algorithms - How to scale web servers (reverse proxy)](#111-load-balancers--its-algorithms---how-to-scale-web-servers-reverse-proxy)
+    - [metrics:](#metrics)
+    - [algorithms:](#algorithms)
+  - [11.2 Caching - How to scale database?  Caching or vertically and horizontally](#112-caching---how-to-scale-database--caching-or-vertically-and-horizontally)
+    - [Cache eviction policies:](#cache-eviction-policies)
+    - [Cache strategy (Invalidation):](#cache-strategy-invalidation)
+  - [11.3 CDN -\> How to prepare our assets to deliver faster across the world?](#113-cdn---how-to-prepare-our-assets-to-deliver-faster-across-the-world)
+  - [11.4 Cache, Scale, and Shard result](#114-cache-scale-and-shard-result)
+    - [cache result==\> low latency, high throughput and high available (if db server is down for a while)](#cache-result-low-latency-high-throughput-and-high-available-if-db-server-is-down-for-a-while)
+    - [Scalability result ==\> low-latency and fault-tolerant by replicate (deal with lower performance)](#scalability-result--low-latency-and-fault-tolerant-by-replicate-deal-with-lower-performance)
+    - [Shard result==\> high performance by destructing the load and high available, and latency-free](#shard-result-high-performance-by-destructing-the-load-and-high-available-and-latency-free)
 - [12 Components](#12-components)
-	- [Load Balancers](#load-balancers)
-	- [Key Value Stores](#key-value-stores)
-	- [Blob Storage](#blob-storage)
-	- [Database](#database)
-	- [Rate Limiters](#rate-limiters)
-	- [Monitoring Systems](#monitoring-systems)
-	- [Distributed messaging queues](#distributed-messaging-queues)
-	- [Distributed unique ID generators](#distributed-unique-id-generators)
-	- [Distributed search](#distributed-search)
-	- [Distributed logging services](#distributed-logging-services)
-	- [Distributed task schedulers](#distributed-task-schedulers)
-	- [Others](#others)
-- [13 Q\&A](#13-qa)
-	- [Single point of failure require--\> Redundancy and Replication](#single-point-of-failure-require---redundancy-and-replication)
-	- [Checkpointing \<-- Fault Tolerance](#checkpointing----fault-tolerance)
-	- [Fault Tolerance -\> Checkpointing, Load Balancer, Replication](#fault-tolerance---checkpointing-load-balancer-replication)
-	- [Asynchronism](#asynchronism)
-	- [Extensibility](#extensibility)
-	- [Ranking](#ranking)
-	- [Popular services:](#popular-services)
-	- [Interview tool](#interview-tool)
-	- [Questions:](#questions)
+  - [Load Balancers](#load-balancers)
+  - [Key Value Stores](#key-value-stores)
+  - [Blob Storage](#blob-storage)
+  - [Database](#database)
+  - [Rate Limiters](#rate-limiters)
+  - [Monitoring Systems](#monitoring-systems)
+  - [Distributed messaging queues](#distributed-messaging-queues)
+  - [Distributed unique ID generators](#distributed-unique-id-generators)
+  - [Distributed search](#distributed-search)
+  - [Distributed logging services](#distributed-logging-services)
+  - [Distributed task schedulers](#distributed-task-schedulers)
+  - [Others](#others)
+- [13 Common Design patterns](#13-common-design-patterns)
+  - [13.1 Microservices](#131-microservices)
+  - [13.2 Event Sourcing](#132-event-sourcing)
+  - [13.3 CQRS (Command Query Responsibility Segregation)](#133-cqrs-command-query-responsibility-segregation)
+  - [13.4 Circuit Breaker:](#134-circuit-breaker)
+  - [13.5 Backpressure](#135-backpressure)
+  - [13.6 Object Pool](#136-object-pool)
+  - [14 Q\&A](#14-qa)
+  - [Single point of failure require--\> Redundancy and Replication](#single-point-of-failure-require---redundancy-and-replication)
+  - [Checkpointing \<-- Fault Tolerance](#checkpointing----fault-tolerance)
+  - [Fault Tolerance -\> Checkpointing, Load Balancer, Replication](#fault-tolerance---checkpointing-load-balancer-replication)
+  - [Asynchronism](#asynchronism)
+  - [Extensibility](#extensibility)
+  - [Ranking](#ranking)
+  - [Popular services:](#popular-services)
+  - [Interview tool](#interview-tool)
+  - [Questions:](#questions)
 
 
 <!-- TOC -->
@@ -106,7 +114,23 @@ Clarify the problem, break down the complext problem into parts, discuss the ove
 2. Manage your time efficiently
 3. Start wide and end deep
 
-## 0.3 Interview Purpose 
+## 0.3 Communicate through process
+1. Start with the problem statement: clearly explain the problem and the requirements for the system; then explain your approach and how you plan to tackle the problem
+2. Break down the problem: divide the problem into smaller parts and explain how you will solve each part individually
+3. Use diagrams and sketches to help explain your design 
+4. Explain the trade-offs you made and the constraints you considered; demonstrate you understanding of the problem and your ability to make informed decisions
+5. Explain your reasoning: Clearly explain why you made certain design decisions and how they address the problem and requirements.  how you arrived at your solution.
+6. Be prepared to answer questions and provide alternatives: 
+7. Be open to feedback:  be prepared to revise your design based on feedback from the interviewer. This will demonstrate your ability to iterate and improve your design based on feedback.
+
+Demonstrate your ability to anticipate and address potential issues in your design<br>
+* Anticipate edge cases: high traffic, low memory, and high user concurrency
+* Plan for failure: how to maintain availability and consistency
+* Consider scalability
+* Consider security: protect sensitive data and ensure security
+* Be prepared to explain why you made certain design decisions and how they address edge cases and constraints.
+
+## 0.4 Goal and Purpose 
 * The key aspect of system design is to identify the problem area and trade off, and be able to justify a decision over another. <br>
 * assesses a candidate's ability to combine knowledge, theory, experience, and judgment toward solving a real-world engineering problem with significant ambiguity. <br>
 * Interviewrs are more interested in your thought process throughout the interview than in your final design. 
@@ -114,9 +138,9 @@ Clarify the problem, break down the complext problem into parts, discuss the ove
 * Demonstrate your thought process and domain-specific knowledge; Presentation matter.<br>
 * It is critical to demonstrate your ability to recognize and evaluate trade-offs, as it reflects your understanding of various design aspects and their implications<br>
 
-## 0.4 Interview Expectations: 
+## 0.5 Expectations 
 * Mid-level System Designers 
-  * Be able to identify and address performance, scalability, and reliablility issues
+  * Be able to identify and address performance, scalability, and reliability issues
   * be well-versed in various architectural styles, design patterns, and their trade-off
 * Senior System Designer
   * strong expertise on System Design
@@ -129,7 +153,7 @@ Clarify the problem, break down the complext problem into parts, discuss the ove
   * be recognized for designing and implementing complex and large-scale systems
   * have a deep and thorough understanding of trade-offs, performance optimizations, and long-term scalability
 
-## 0.5 Should do 
+## 0.6 Should do 
 * Get the skeleton in the place and then start optimizing (optimization is an evolutionary process) notch by notch; <br>
 * Lead and drive an Open-ended conversation as doing a demo or presentation; or as guide juniors, discuss with peer, and present to seniors
 * Everything is a trade-off; Make points with justification; Defend your design;
@@ -1027,7 +1051,34 @@ Task schedulers mediate the supply-demand balance between tasks and resources to
 * Publish-Subscribe System
 * Sharded Counters
 
-# 13 Q&A
+# 13 Common Design patterns
+
+## 13.1 Microservices
+An application is broken down into a collection of small, independent services that communicate with each other over a network. Each service is responsible for a specific functionality and is developed, deployed, and scaled independently. <br>
+Pro: increased scalability, improved fault tolerance, and faster deployment cycles. <br>
+Con: additional complexity, such as service discovery and inter-service communication; <br>
+
+## 13.2 Event Sourcing 
+the state of an application is represented as a stream of events, rather than a snapshot of its current state. This pattern is often used in systems that need to handle a large number of concurrent updates, such as financial systems and gaming platforms. <br>
+Pro: easy replay of events, which can be useful for debugging and auditing<br>
+Con: requires additional storage and computational resources to maintain the event stream<br>
+
+## 13.3 CQRS (Command Query Responsibility Segregation)
+separates the read and write operations of a system into separate models, allowing for optimized performance and scalability. This pattern can be useful in systems that handle a high volume of read and write operations, such as e-commerce websites<br>
+Pro: allows for different data stores and caching strategies to be used for read and write operations, improving the performance of both <br>
+Con: requires more complex design and more effort to maintain two separate models of the data. <br>
+
+## 13.4 Circuit Breaker: 
+can be used to prevent cascading failures in a distributed system. It works by monitoring the health of a service and, when it detects an issue, it “trips” and prevents further requests from being sent to that service. <br> 
+Pro: This helps to prevent a single point of failure from bringing down the entire system. <br>
+
+## 13.5 Backpressure
+used to control the rate at which data is processed in a system, preventing it from being overwhelmed. This can be done by buffering incoming data and only processing it at a specific rate, or by rejecting incoming data if the system is unable to handle it.
+
+## 13.6 Object Pool
+is used to improve the performance of a system by reusing objects, rather than creating new ones. Object pools are often used to manage the lifecycle of expensive resources, such as database connections or threads.
+
+## 14 Q&A
 
 ## Single point of failure require--> Redundancy and Replication
 HA Architecture - Micro services 
