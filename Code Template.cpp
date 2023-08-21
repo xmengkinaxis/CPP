@@ -201,6 +201,7 @@ ListNode* fnReverse(ListNode* head) {
 // 523. Continuous Subarray Sum; https://leetcode.com/problems/continuous-subarray-sum/description/?envType=list&envId=9kpcif56 
 // 560. Subarray Sum Equals K; https://leetcode.com/problems/subarray-sum-equals-k/description/
 // similar e.g. 219. Contains Duplicate II; https://leetcode.com/problems/contains-duplicate-ii/description/
+// 525. Contiguous Array; https://leetcode.com/problems/contiguous-array/
 int fnFindSubarrays(vector<int>& arr, int k) {
 	// 0. define the map and initialize it properly
 	// using a map to look up quickly; and it serves as a memo/dp, so it needs the initialization
@@ -904,9 +905,9 @@ sort by start or end; when merging, newEnd = max(newEnd, end); when overlapping,
 
 /* dp
 91. Decode Ways; https://leetcode.com/problems/decode-ways/description/
-139. Word Break; https://leetcode.com/problems/word-break/
 
 1D dp 
+139. Word Break; https://leetcode.com/problems/word-break/
 2369. Check if There is a Valid Partition For The Array; https://leetcode.com/problems/check-if-there-is-a-valid-partition-for-the-array/description/
 
 2D dp
@@ -932,6 +933,7 @@ sort by start or end; when merging, newEnd = max(newEnd, end); when overlapping,
 /* stack
 71. Simplify Path; https://leetcode.com/problems/simplify-path/description/
 1209. Remove All Adjacent Duplicates in String II; https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string-ii/
+1047. Remove All Adjacent Duplicates In String; https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/
 */
 
 /* Divide and conquer
