@@ -13,7 +13,7 @@
     - [1.1.1 Product Features](#111-product-features)
     - [1.1.2 User requirements](#112-user-requirements)
   - [1.2 Non-Functional Requirements (Product Properties + User Expectations) (PACELC + reliable + Scalability + Extensibility)](#12-non-functional-requirements-product-properties--user-expectations-pacelc--reliable--scalability--extensibility)
-    - [Availability:](#availability)
+    - [Availability](#availability)
     - [Consistency:](#consistency)
     - [Efficiency (Latency and throughput):](#efficiency-latency-and-throughput)
     - [Scalability:](#scalability)
@@ -42,11 +42,11 @@
     - [6.2.2 Partition](#622-partition)
       - [6.2.2.1 Horizontal Partitioning](#6221-horizontal-partitioning)
       - [6.2.2.2 Vertical Partitioning](#6222-vertical-partitioning)
-  - [6.3 Evaluation](#63-evaluation)
 - [7 Evaluation and Optimization](#7-evaluation-and-optimization)
-  - [7.1. Security and Permissions](#71-security-and-permissions)
-  - [7.2. Analytics - users behavior](#72-analytics---users-behavior)
-  - [7.3 Performance monitor - system performance (telemetry)](#73-performance-monitor---system-performance-telemetry)
+  - [7.1 Evaluation](#71-evaluation)
+  - [7.2 Security and Permissions](#72-security-and-permissions)
+  - [7.3 Analytics - users behavior](#73-analytics---users-behavior)
+  - [7.4 Performance monitor - system performance (telemetry)](#74-performance-monitor---system-performance-telemetry)
 - [8 Trade-off](#8-trade-off)
   - [8.1 Common Trade-off](#81-common-trade-off)
   - [8.2 Partition](#82-partition)
@@ -87,7 +87,7 @@
   - [13.4 Circuit Breaker:](#134-circuit-breaker)
   - [13.5 Backpressure](#135-backpressure)
   - [13.6 Object Pool](#136-object-pool)
-  - [14 Q\&A](#14-qa)
+- [14 Q\&A](#14-qa)
   - [Single point of failure require--\> Redundancy and Replication](#single-point-of-failure-require---redundancy-and-replication)
   - [Checkpointing \<-- Fault Tolerance](#checkpointing----fault-tolerance)
   - [Fault Tolerance -\> Checkpointing, Load Balancer, Replication](#fault-tolerance---checkpointing-load-balancer-replication)
@@ -103,7 +103,7 @@
 
 # 0 Interview Preparation
 ## 0.1 Time Allocation
-Clarify the problem, break down the complext problem into parts, discuss the overall design, and deep dive into some components; identify and analyze the tradeoffs, recover from the failures; <br>
+Clarify the problem, break down the complex problem into parts, discuss the overall design, and deep dive into some components; identify and analyze the tradeoffs, recover from the failures; <br>
 1. understand the problem and establish design core: ~10 minutes (3 - 10 m)
 2. Propose high-level design and get buy-in; -10 minutes (10 - 15 m)
 3. Design deep dive; 20 minutes (10 - 25 m)
@@ -198,7 +198,8 @@ Reliability, Redundant, Stable, Security, Availability 100 up-time?, Simplicity 
 
 Need enough resources to handle the increasing load; the system must be simple so that it is easy to scale at any point in time; performance should always be increased with scalability. <br> 
 
-### Availability: 
+### Availability 
+* System must be highly available to keep the users engaged with the platform
 * the percentage of the time that a system remains operational to perform its required function in a specific period under normal conditions; if a system is reliable, it is available. However, if it is available, it is not necessarily reliable.  <br>
 * Every request received by a non-failing node in the system must result in a response. Refers to the system's ability to remain accessible even if one or more nodes in the system to go down. 
 * Measured in a number of 9s, three 9s - 99.9%, four 9s - 99.99% <br>
@@ -389,7 +390,7 @@ Consideration for objects <br>
 2. for each object, Is the object small (less than 1KB) or medium (a few MB, separated to object storage)? <br>
 3. What is the relationship between records? <br>
 
-Storage:  <br>~~~~
+Storage:  <br>
 * Storage layer = **Metadata** storage + **Object** storage; such a division of data will allow us to scale them individually <br>
 * Metadata storage: like users/accounts, pastes/blobs(pictures, videos, etc.), etc. can use Relational DB like MySQL, or distributed key-value DB like Dynamo or Cassandra <br>
 * Object Storage: like a text paste, an image, etc; use object storage like Amazon S3, or HDFS.  <br>
@@ -397,7 +398,7 @@ Storage:  <br>~~~~
 Common objects (e.g.) <br>
 * User: id (primary key, int), name (varchar 20), email (varchar 32), CreationDate (datetime, 4 byte?), LastLogin (datetime), Birthday (datetime) <br>
 * Description (512 or 256), phone (12), path(256, path to the object storage) <br>
-* Item/Object (picture, video, comment, etc): CreationData, ExpirationDate, type (int), Description (varchar 512), Category: (smallint), UserId(int, creator), contents(varchar 256), Path(varchar 256) <br>
+* Item/Object (picture, video, comment, etc): CreationData, ExpirationDate, type (int), Description (varchar 512), Category: (smallint), UserId(int, creator), contents(varchar 256), Path(varchar 256), likes_count, view_count <br>
 * Location: latitude, longitude (int - 4 bytes, or 8 bytes) <br>
 * Numbers: num of likes/dislikes (int), num of comments, num of shares, num of views <br>
 * Rating (how many stars a place gets out of ten) <br>
@@ -505,7 +506,7 @@ Identify, address, and mitigate bottlenecks and single point of failures using p
 5. Index the database/tables to speed up list or search operations <br>
 
 ## 6.2 Partition and Replication (core of a distributed system, to scale out the system)
-To mitigate the single point of failure and bottleneck:  <br>
+To mitigate the single point of failure and the performance bottleneck:  <br>
 1. single point of failure: backup (snapshot periodically and add logs) or failover (fault tolerance)
 2. bottleneck: improve load balancing and performance by creating duplicates/replication
 3. consistency: The new problem introduced by replication
@@ -529,14 +530,14 @@ the concepts of replication and partitioning go together; comes with the complex
   * pro: all secondary nodes are update to date; 
   * con: high latency if a secondary crashed without any acknowledge
 * **Asynchronous:** report success after primary node updating itself; 
-  * replicate accross data centers and regions
+  * replicate across data centers and regions
   * pro: the primary can continue its work even if all secondary node are down; 
   * con: written data might be lost if the primary node is down
 
 **Data replication models** (dimension #2 leadership)
-* Single leader or primary-secondary replication; appropriate for read-heavy and read resilient, but not for write-heavy; primary is the bottleneck and the single point of failure; 
-* Multi-leader replication; conflict when concurrent writes on the same data on the leaders; avoid conflicts, last-write-wins, or custom logic to handle conflicts
-* Peer-to-peer or leaderless replication; quorums to solve the write-write inconsistency; 
+* Single leader or primary-secondary (master-slave) replication; appropriate for read-heavy and read resilient, but not for write-heavy; primary is the bottleneck and the single point of failure; 
+* Multi-leader (multi-master) replication;multiple servers can write data and are responsible for replicating data to each other. conflict when concurrent writes on the same data on the leaders; avoid conflicts, last-write-wins, or custom logic to handle conflicts
+* Peer-to-peer or leaderless replication; all servers can both read and write data and are responsible for replicating data to other servers. quorums to solve the write-write inconsistency; Pro: more flexibility and improve performance for write-heavy workloads; Con: more complex to setup and manage;
 
 ### 6.2.2 Partition
 **Partitioning (Horizontal or Vertical):** the technique to break a big Database into many smaller parts, and the process of distributing/splitting up a database/table across a set of servers. So that each database can only manage a subset of the data. <br> 
@@ -600,24 +601,24 @@ How to map a particular piece of data to its node? How to move and minimize data
 
 Other consideration: evenly distribute the load, no hotspot
 
-## 6.3 Evaluation 
-* Goal: Evaluate how the system fulfilss the non-functional requirements, 
-* What to evaluate: 
-  * Avaliability
-  * Scalability
-  * Reliability
-  * Consistency
-  * Fraut detection
-  * anything in non-functional requirements
-* How to evaluate: 
-  * Evaluate each component from front to end, including web, application, database, storage, CDN, cache, load balancer
-  * Evaluate each non-functinal requirement
-
 # 7 Evaluation and Optimization
 Compare your design to the requirements, and acknowledge any trade-offs made and improving aspects of design 
 
-## 7.1. Security and Permissions
-1. Privacy ???  
+## 7.1 Evaluation 
+* Goal: Evaluate how the system fulfill the non-functional requirements, 
+* What to evaluate: 
+  * Availability
+  * Scalability
+  * Reliability
+  * Consistency
+  * Fraud detection
+  * anything in non-functional requirements
+* How to evaluate: 
+  * Evaluate each component from front to end, including load balancer, CDN, web servers, application servers, database, blob storage, Cache
+  * Evaluate each non-functional requirement
+
+## 7.2 Security and Permissions
+1. Privacy  
 2. Security (certification and authentication)
 3. Throttle (API rate limiting) (against abusive behaviors, misbehavior, spikiness in traffic) 
 	* Rate Limiting is limiting the amount of operation that can be done in a limited amount of time. e.g. security ramification, performance ramification. 
@@ -625,7 +626,7 @@ Compare your design to the requirements, and acknowledge any trade-offs made and
 	* types: Hard throttling (hard limit, discard when exceed), Soft throttling (can exceed by a certain percentage), Elastic or dynamic throttling (can cross the predefined limit if the system has excess resources available)
 4. International Law (e.g. restriction on video contents)
 
-## 7.2. Analytics - users behavior 
+## 7.3 Analytics - users behavior 
 Purpose: Get some insight on how users use the system 
 a. Collect information on user behaviors from where ???
 b. Analyze
@@ -634,7 +635,7 @@ d. Adjust based on the user's usage/login pattern (when and frequency)
 
 logging request and response ???
 
-## 7.3 Performance monitor - system performance (telemetry)
+## 7.4 Performance monitor - system performance (telemetry)
 Performance: low latency (for single request) and high throughput (most/overall requests) for the clients; <br>
 Purpose: Get an instant insight on how our system is doing (get an understanding of the performance of the service); address latency and throughput; 
 Is the visibility to system health, system performance, and general statics; gather meaningful matrix (metrics/counters) and have tools to monitor these matrix;
@@ -901,6 +902,7 @@ algorithm categories:
 	* tier - 3: layer 7 LB; enable scalability and provide high availability; offload TLS/SSL
 
 ### algorithms: 
+* The choice of algorithm depends on the specific needs and characteristics of the system and the workload being handled<br>
 * Least connection Method, LCM (servers with fewest active connections)<br>
 * Least Response Time Method, LRM (servers with lowest average response time)<br>
 * Least Bandwidth Method, LBM (lowest MB/s traffic)<br>
@@ -1078,7 +1080,7 @@ used to control the rate at which data is processed in a system, preventing it f
 ## 13.6 Object Pool
 is used to improve the performance of a system by reusing objects, rather than creating new ones. Object pools are often used to manage the lifecycle of expensive resources, such as database connections or threads.
 
-## 14 Q&A
+# 14 Q&A
 
 ## Single point of failure require--> Redundancy and Replication
 HA Architecture - Micro services 
@@ -1136,8 +1138,12 @@ Facebook System Design
 https://www.youtube.com/watch?v=hykjbT5Z0oE&t=1041s
 
 ## Ranking
-a reference count, freshness, user location, language, personal history, demographics
-
+* Involves multiple advanced ranking and recommendation algorithms; it is a computationally intensive task
+* Consist of big-data processing systems that might utilize specialized hardware like graphics processing units (GPUs) and tensor processing units (TPUs)
+* Factor: a reference count, freshness, user's previous history, likes, dislikes, shares, comments, clicks, user location, language, personal history, demographics
+* Consider all these factors to predict relevant and important posts for a user
+* Select out a few top posts from a group of candidate posts based on the assigned scores
+* Sort and display these selected posts in decreasing order of the assigned scores 
 
 ## Popular services: 
 Distributed cache: Redis<br>
@@ -1153,7 +1159,7 @@ BlueJeans Whiteboard, or ScreenShare your choice
 
 ## Questions: 
 https://www.youtube.com/watch?v=hykjbT5Z0oE&list=PLCfguwhZH5DnHl2yldI781yR6FAgky0Np&index=1
-1. Design Facebook NewsFeed - x
+1. Design Facebook NewsFeed - xx
 2. Design Facebook Status Search - x
 3. Design Live Commenting at Facebook
 4. Design Facebook Messenger or WhatsApp - x
