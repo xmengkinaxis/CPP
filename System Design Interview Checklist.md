@@ -14,13 +14,14 @@
     - [1.1.2 User requirements](#112-user-requirements)
   - [1.2 Non-Functional Requirements (Product Properties + User Expectations) (PACELC + reliable + Scalability + Extensibility)](#12-non-functional-requirements-product-properties--user-expectations-pacelc--reliable--scalability--extensibility)
     - [Availability](#availability)
-    - [Consistency:](#consistency)
-    - [Efficiency (Latency and throughput):](#efficiency-latency-and-throughput)
-    - [Scalability:](#scalability)
-    - [Reliability:](#reliability)
-    - [Concurrency:](#concurrency)
+    - [Consistency](#consistency)
+    - [Efficiency (Latency and throughput)](#efficiency-latency-and-throughput)
+    - [Scalability](#scalability)
+    - [Reliability](#reliability)
+    - [Concurrency](#concurrency)
     - [Serviceability or Manageability (simplicity):](#serviceability-or-manageability-simplicity)
     - [Durability](#durability)
+    - [Security](#security)
   - [1.3 Prioritize requirements](#13-prioritize-requirements)
   - [1.4 Design Considerations (no do, or assumption)](#14-design-considerations-no-do-or-assumption)
 - [2 Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation.](#2-capacity-estimation-and-constraints-traffic-storage-networkbandwidth-memorycache-estimation)
@@ -50,7 +51,7 @@
 - [8 Trade-off](#8-trade-off)
   - [8.1 Common Trade-off](#81-common-trade-off)
   - [8.2 Partition](#82-partition)
-  - [8.3 User connections](#83-user-connections)
+  - [8.3 User connections (HTTP vs WebSocket)](#83-user-connections-http-vs-websocket)
   - [8.4 CDN Push vs Pull](#84-cdn-push-vs-pull)
   - [8.5 Newsfeed Push vs Pull](#85-newsfeed-push-vs-pull)
 - [9 System Design Principles](#9-system-design-principles)
@@ -61,6 +62,7 @@
     - [algorithms:](#algorithms)
   - [11.2 Caching - How to scale database?  Caching or vertically and horizontally](#112-caching---how-to-scale-database--caching-or-vertically-and-horizontally)
     - [Cache eviction policies:](#cache-eviction-policies)
+    - [Cache expiration](#cache-expiration)
     - [Cache strategy (Invalidation):](#cache-strategy-invalidation)
   - [11.3 CDN -\> How to prepare our assets to deliver faster across the world?](#113-cdn---how-to-prepare-our-assets-to-deliver-faster-across-the-world)
   - [11.4 Cache, Scale, and Shard result](#114-cache-scale-and-shard-result)
@@ -208,34 +210,35 @@ Need enough resources to handle the increasing load; the system must be simple s
 * **Mean Time to Repair (MTTR)**: total downtime / # of failures. This is the average time taken to recover from a failure. <br>
 * Availability can be **achieved** through CDN (Cache), redundancy (replica of servers and data) , load balancing (distribute the requests only to the active healthy nodes by local LB and to different locations by global LB), choosing high availability databases <br>
 
-### Consistency: 
+### Consistency
 All nodes see the same data at the same time, no matter users read/write from/to any node. Equivalent to having a single up-to-date copy of the data. is the agreement between multiple nodes in a distributed system to achieve a certain value. <br>
 * **Strong consistency**: the data in all nodes is the same at any time; offers up-to-date data, but at the cost of high latency. <br>
 * **Weak consistency:** no guarantee that all nodes have the same data at any time.  <br>
 * **Eventual consistency:** ensure data of each node of the database get consistent eventually; offers low latency at the risk of returning stale data. <br>
+* high consistency on messages can be achieved with the help of a FIFO messaging queue with strict ordering
 
-### Efficiency (Latency and throughput): 
+### Efficiency (Latency and throughput)
 * Two standard measures of its efficiency are **the response time(or latency)** that denotes the delay to obtain the first item and **the throughput (or bandwidth)** with denotes the number of items delivered in a given time unit. (Metrics: Latency/Response Time, throughput/Bandwidth)
 * **Response Time**: the time difference between request and response
 * **Latency**: how long a system takes to transmit data from one point to another point in the system;
 * **Throughput** is the amount of work done by the system in a given particular time. partition and split data, so they are served by different machines in the parallel read or write; cache at the different layers, including the client side, front-end servers, and databases
 * **Bandwidth** is the maximum data that can be transferred on the different networks.
 * Request Per Second;
-* can be **achieved** by using multiple machines to parallel process
+* can be **achieved** by using multiple machines to parallel process; minimize the latency by geographically distributing servers and their caches, adding cache clusters on top of database clusters, and using CDNs for frequently sharing documents and media content
 * video streaming should be smooth
 * Performance can be achieved by Caching at each layer (web server, application server, cluster, data base, file system, storage units), CDN, Index, the appropriate programming language
 
-### Scalability: 
+### Scalability
 * a distributed system can continuously evolve in order to support the growing amount of work; 
 * increase resources and performance with increasing load and traffic over the existing system without affecting the complexity and performance; need enough resources to handle the increasing load, for it would be increased at any point in time; should be simple and easy to scale; performance should always be increased with scalability <br>
 * A system can be called scalable if adding more resources in the system results in performance increases. Performance is directly proportional to resources added. <br>
 * Horizontal (scaling out) vs Vertical Scaling (scaling up) <br>
 * The system should be able to scale up and down, depending on the number of requests; Auto-scaling policies are crucial for maintaining the desired level of performance, availability, and cost efficiency <br>
-* Scalability can be **achieved** through CDN (Cache which bring the content closer to user and remove the requirement of high bandwith), reading replicas, partitioning data/files, horizontal sharding of database,  the isolation of different services (micro-services), load balancer, separate read/write operations on different servers <br> 
+* Scalability can be **achieved** through CDN (Cache which bring the content closer to user and remove the requirement of high bandwidth), reading replicas, partitioning data/files, horizontal sharding of database,  the isolation of different services (micro-services), load balancer, separate read/write operations on different server; optimize a general-purpose server for special tasks by carefull performance engineering of the full software stack <br> 
 * Partition and split the big file/blobs into small-sized chunks to scale the requests, served by different partition servers; maybe range-based partition; need a partition mapping
 * Storage, bandwidth, and the number of concurrent user request should NOT become bottleneck, or overwhelm any servers
 
-### Reliability: 
+### Reliability
 * **Goal**: keep delivering its service even when one or several of its software or hardware components fail; handle faults, failures, and errors;  
   * A **fault** is a defect or flaw in the system's components. A fault is a defect or flaw in the system's hardware or software that can potentially cause the system to deviate from its expected behavior.
   * A **failure** is the visible manifestation of a system not performing as expected due to one or more faults.
@@ -248,7 +251,7 @@ All nodes see the same data at the same time, no matter users read/write from/to
     * load balancer: achieve with health check (heartbeat protocol, gossip protocol), and monitoring services with alerts.
     * services are decoupled and isolated; 
 
-### Concurrency:
+### Concurrency
 To maximize system's performance: high bandwidth and high throughput.
 
 ### Serviceability or Manageability (simplicity): 
@@ -257,6 +260,9 @@ is the simplicity and speed with which a a system can be repaired or maintained.
 ### Durability
 The data, once uploaded, shouldn't be lost unless users explicitly delete that data. <br>
 The replication and monitoring services ensure the durability of the data. <br>
+
+### Security
+Be secure via end-to-end encryption
 
 ## 1.3 Prioritize requirements
 Break it down, to the most important, minimal features for your system.
@@ -274,13 +280,16 @@ Break it down, to the most important, minimal features for your system.
 The estimation will be helpful later when focusing on scaling, partitioning, load balancing, and caching <br>
 What are the constraints? <br>
 
-Among which based on the read-heavy or write-heavy machine we can apply the 80–20 rule.  <br>
-if this is a read-heavy, estimate read throughput. <br>
-If a system is write-heavy then we need to estimate the Storage requirements per day, per year, and for 5–10 years. <br>
+**Read-heavy vs Write-heavy**
+* based on the read-heavy or write-heavy machine we can apply the 80–20 rule.  <br>
+* If this is a **read-heavy**, estimate **read throughput**. <br>
+* If a system is **write-heavy** then we need to estimate the **Storage** requirements per day, per year, and for 5–10 years. <br>
 
-// traffic is the user request from users to servers, storage is the user data or user-request data on disk, bandwidth is traffic from servers to users. <br>
-// memory is the cache capacity in order to improve the performance, esp. for read-heavy <br>
-// Estimation of the scale of the system, is helpful when we focus on scaling, partitioning, load balancing, and caching.  <br>
+
+* **traffic** is the user request from users to servers
+* **storage** is the user data or user-request data on disk 
+* **bandwidth**  is traffic from servers to users
+* **memory** is the cache capacity in order to improve the performance, esp. for read-heavy
 
 ## 2.1 Traffic in write/second, or read/second
 **Users** <br>
@@ -662,15 +671,16 @@ Every solutions comes with a trade-off. The goal is to choose the solution with 
 the user's needs, business goal, resource limitations, conflicting requirements, design constraints, and the prioritized user cases
 
 ## 8.1 Common Trade-off
+  * Consistency vs Availability (strong consistency can impact availability; prioritizing availability might result in eventual consistency); choose based on business requirements in case of network partition; e.g. consistency rather than availability for WhatsApp; 
   * Performance vs Scalability (complex algorithm and data structure vs simpler components)
-  * Consistency vs Availability (strong consistency can impact availability; prioritizing availability might result in eventual consistency); choose based on business requirements in case of network partition
   * Data Integrity vs Performance
   * Short-Term vs Long-Term Goals (Immediate deliverables, potential technical debt vs Sustainable solutions, potential delays in short-term goals)
   * Reliability vs Cost
   * Security vs Usability
+  * Security vs Latency (secure with encryption, vs real-time experience); e.g. Security rather than latency for WhatsApp
   * Monolithic vs Microservices Architecture (Monolithic is simpler to develop and deploy, but lack the scalability and fault isolation of microservices; microservices offer better scalability but introduce complexity in terms of communication and management)
   * Real-time processing vs Batch Processing
-  * Data Normalization vs Denormalization (Normnalized database reduced data redundancy, but can be slower for certain query patterns; Denormalization can improve query performance, but might lead to data integrity issues)
+  * Data Normalization vs Denormalization (Normalized database reduced data redundancy, but can be slower for certain query patterns; Denormalization can improve query performance, but might lead to data integrity issues)
   * Caching vs Freshness
   * Centralized Control vs Decentralized Autonomy (simplify management, but be a single point of failure; vs more autonomy, but lead to inconsistencies or conflicts)
 
@@ -684,8 +694,10 @@ the user's needs, business goal, resource limitations, conflicting requirements,
 	* range-based or hash based 
 * Database: RDBM SQL vs NoSQL
 
-## 8.3 User connections
+## 8.3 User connections (HTTP vs WebSocket)
 * use HTTP long polling or webSocket<br>
+  * HTTP(S) does not keep the connection open for servers to send frequent data to a client. It uses polling. 
+  * WebSocket maintains a persistent bidirectional connection between the client and a server, and can send asynchronous updates from a server to a client. 
 * Poll (normal/Periodical poll): client <- bandwidth -> server
   * have a delay on client, 
   * waste bandwidth, 
@@ -936,8 +948,8 @@ What should be cached? long-running queries on databases; high-latency network r
 **CDN (Content Delivery Network)** are a kind of cache that comes into play for sites serving large amounts of static media. Can replicate content in multiple places, based on user's geographic location and the original of the webpage; security improvement, increase in content availability and redundancy, better load times, low bandwidth cost.  <br>
 * type: Push and Pull, referring the data streaming upload and download???<br>
 
-
 ### Cache eviction policies:
+Eviction policy determines how the cache handles the replacement of old data with new data when the cache is full
 Policies: Order (first vs last), Recently (time: least vs most), Frequency (least), Random;<br>
 * Order
 	* First In First Out (FIFO), time-serious ???<br>
@@ -948,6 +960,10 @@ Policies: Order (first vs last), Recently (time: least vs most), Frequency (leas
 * Frequency
 	* Least Frequently Used (LFU)<br>
 * Random Replacement (RR)<br>
+
+### Cache expiration
+Determine how long data is kept in the cache before it is considered stale and is removed.<br>
+A shorter expiration time can improve the freshness of the data, but increase the number of accesses to the underlying data source
 
 ### Cache strategy (Invalidation): 
 Cache Invalidation: keep the cache coherent with the source of data (e.g. database);  <br>
@@ -1003,9 +1019,9 @@ A database is an organized collection of data that can be easily accessed and mo
 
 ## Rate Limiters
 It sets a limit for the numbers of requests a service will fulfill. It will throttle requests that cross this threshold.<br>
-It is an important line of defense for servies and system; prevent services beging flooded with requests; mitigate resource consumption.<br>
+It is an important line of defense for servies and system; prevent services being flooded with requests; mitigate resource consumption.<br>
 e.g. AWS API Gateway(built-in rate limiting on request/API/method per second/minute/others), AWS WAF(Web Application Firewall, restrict requests from the specific IP address or IP address ranges); <br>
-AWS Lambda, AWS CloudFront (CDN, request rate limiting to prevent abus and ensure a smooth experience for users), AWS ELB(Elastic Load Balancing, configure specific rules as rate limiting)
+AWS Lambda, AWS CloudFront (CDN, request rate limiting to prevent abuse and ensure a smooth experience for users), AWS ELB(Elastic Load Balancing, configure specific rules as rate limiting)
 
 ## Monitoring Systems
 It is a software that allow system administrators to monitor infrastructure. It creates one centralized location for observing the overall performance of a potentially large system of computers in real time. <br>
@@ -1015,7 +1031,7 @@ It can monitor: CPU, memory, bandwidth, routers, switches, applications, etc. e.
 A producer creates messages and consumers receive and process them. <br>
 * Improve performance through asynchronous communication since producers and consumers act independently of each other
 * Decouple or reduce dependency in the system
-* Improve reliablility and allow simpler and less cluttered system design 
+* Improve reliability and allow simpler and less cluttered system design 
 * Asynchronous messaging facilitates scalability, for more consumers can be added to compensate for the increased load
   
 Usage: 
