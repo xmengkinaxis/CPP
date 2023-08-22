@@ -3,7 +3,7 @@
 #include <iostream> // cout, cin
 #include <cctype> // isalnum, isalpha, isdigit, islower, isupper, isspace; toupper, tolower
 #include <sstream> // stringstream
-#include <String> // substr, getline, strlen, string(n, char), append(n, char), find(str, pos), strcpy, strncpy, strcmp, stryncmp
+#include <String> // substr, getline, strlen, string(n, char), append(n, char), find(str, pos), erase(first, last), strcpy, strncpy, strcmp, stryncmp
 #include <vector>
 #include <unordered_map> 
 #include <unordered_set>
@@ -11,7 +11,7 @@
 #include <stack>
 #include <queue> // riority_queue
 #include <deque> // deque
-#include <algorithm> // sort, min, max, 
+#include <algorithm> // sort, min, max, remove(first, last, value)
 
 using namespace std; 
 
@@ -73,9 +73,9 @@ Binary Search: low and high if the array is strictly increased, or use left and 
 
 // two pointers with opposite directions
 // e.g. Palindrome problems (odd or even, two pointers with the opposite directions): 
-// 647. Palindromic Substrings https://leetcode.com/problems/palindromic-substrings/?envType=list&envId=9kpcif56
-// 15. 3Sum; https://leetcode.com/problems/3sum/description/
-// 125. Valid Palindrome; https://leetcode.com/problems/valid-palindrome/description/
+// 647. Palindromic Substrings https://leetcode.com/problems/palindromic-substrings/
+// 15. 3Sum; https://leetcode.com/problems/3sum/
+// 125. Valid Palindrome; https://leetcode.com/problems/valid-palindrome/
 // 557. Reverse Words in a String III; https://leetcode.com/problems/reverse-words-in-a-string-iii/
 int fnTwoPointers(vector<int>& arr) {
 	int left = 0, right = arr.size() - 1; 
@@ -94,12 +94,14 @@ int fnTwoPointers(vector<int>& arr) {
 }
 
 
-// two pointers for two arrays with the same direction; to merge rather to to intersect 
-// 408. Valid Word Abbreviation https://leetcode.com/problems/valid-word-abbreviation/?envType=list&envId=9kpcif56
-// 21. Merge Two Sorted Lists; https://leetcode.com/problems/merge-two-sorted-lists/
-// 234. Palindrome Linked List; https://leetcode.com/problems/palindrome-linked-list/description/
-// 1570. Dot Product of Two Sparse Vectors; https://leetcode.com/problems/dot-product-of-two-sparse-vectors/
-// 1650. Lowest Common Ancestor of a Binary Tree III; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iii/description/
+/* two pointers for two arrays with the same direction; to merge rather to to intersect 
+408. Valid Word Abbreviation https://leetcode.com/problems/valid-word-abbreviation/
+21. Merge Two Sorted Lists; https://leetcode.com/problems/merge-two-sorted-lists/
+234. Palindrome Linked List; https://leetcode.com/problems/palindrome-linked-list/
+1570. Dot Product of Two Sparse Vectors; https://leetcode.com/problems/dot-product-of-two-sparse-vectors/
+1650. Lowest Common Ancestor of a Binary Tree III; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iii/
+88. Merge Sorted Array; https://leetcode.com/problems/merge-sorted-array/ 3 pointers in fact
+*/
 int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
 	int i = 0, j = 0, ans = 0; 
 
@@ -121,14 +123,16 @@ int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
 }
 
 
-// sliding window
-// for the window with the various size, need two pointers to indicate the start and the end of the window
-// for the window with the fixed size, only need a single pointer to point to the end of the window
-// for the window with the fixed size, remove the start since the end >= the window size
-// must ensure the start is moved, otherwise, the inner loop would become a dead one.
-// 239. Sliding Window Maximum;  https://leetcode.com/problems/sliding-window-maximum/?envType=list&envId=9kpcif56; a typical one
-// 1004. Max Consecutive Ones III; https://leetcode.com/problems/max-consecutive-ones-iii/?envType=list&envId=9kpcif56
-// 76. Minimum Window Substring; https://leetcode.com/problems/minimum-window-substring/description/
+/* sliding window
+	for the window with the various size, need two pointers to indicate the start and the end of the window
+	for the window with the fixed size, only need a single pointer to point to the end of the window
+	for the window with the fixed size, remove the start since the end >= the window size
+	must ensure the start is moved, otherwise, the inner loop would become a dead one.
+239. Sliding Window Maximum;  https://leetcode.com/problems/sliding-window-maximum/; a typical one
+1004. Max Consecutive Ones III; https://leetcode.com/problems/max-consecutive-ones-iii/
+76. Minimum Window Substring; https://leetcode.com/problems/minimum-window-substring/
+713. Subarray Product Less Than K; https://leetcode.com/problems/subarray-product-less-than-k/
+*/
 int fnSlidingWindow(vector<int>& arr, int size) {
 	int ans = 0; 
 	for (int start = 0, end = 0, curr = 0; end < arr.size(); ++end) {
@@ -170,8 +174,8 @@ string fnString(vector<char>& arr) {
 // fast and slow pointers; a case of two pointers with the same direction
 // odd number of items: fast is valid, but fast->next is nullptr, slow points to the exact middle node of list
 // even number of items: fast is nullptr, and slow points to the second middle (right-middle) node 
-// 283. Move Zeroes; https://leetcode.com/problems/move-zeroes/description/
-// 234. Palindrome Linked List; https://leetcode.com/problems/palindrome-linked-list/description/
+// 283. Move Zeroes; https://leetcode.com/problems/move-zeroes/
+// 234. Palindrome Linked List; https://leetcode.com/problems/palindrome-linked-list/
 int fnFastAndSlowPointers(ListNode* head) {
 	int ans = 0;
 	ListNode *slow = head, *fast = head; 
@@ -183,7 +187,7 @@ int fnFastAndSlowPointers(ListNode* head) {
 }
 
 // reverse a linked list 
-// 234. Palindrome Linked List; https://leetcode.com/problems/palindrome-linked-list/description/
+// 234. Palindrome Linked List; https://leetcode.com/problems/palindrome-linked-list/
 ListNode* fnReverse(ListNode* head) {
 	ListNode *prev = nullptr; 
 	for (auto curr = head; curr; ) {
@@ -197,10 +201,10 @@ ListNode* fnReverse(ListNode* head) {
 
 // Find numbers of subarrays that fit an exact criteria
 // this like a fixed-left-side sliding window and process as a length-increasing-forever window, sharing the similar code template
-// 325. Maximum Size Subarray Sum Equals k; https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/description/?envType=list&envId=9kpcif56
-// 523. Continuous Subarray Sum; https://leetcode.com/problems/continuous-subarray-sum/description/?envType=list&envId=9kpcif56 
-// 560. Subarray Sum Equals K; https://leetcode.com/problems/subarray-sum-equals-k/description/
-// similar e.g. 219. Contains Duplicate II; https://leetcode.com/problems/contains-duplicate-ii/description/
+// 325. Maximum Size Subarray Sum Equals k; https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/
+// 523. Continuous Subarray Sum; https://leetcode.com/problems/continuous-subarray-sum/ 
+// 560. Subarray Sum Equals K; https://leetcode.com/problems/subarray-sum-equals-k/
+// similar e.g. 219. Contains Duplicate II; https://leetcode.com/problems/contains-duplicate-ii/
 // 525. Contiguous Array; https://leetcode.com/problems/contiguous-array/
 int fnFindSubarrays(vector<int>& arr, int k) {
 	// 0. define the map and initialize it properly
@@ -231,9 +235,9 @@ int fnFindSubarrays(vector<int>& arr, int k) {
 // < and > is opposite to the order decreasing and increasing
 // 	increase: >
 // 	decrease: <
-// 1944. Number of Visible People in a Queue https://leetcode.com/problems/number-of-visible-people-in-a-queue/description/?envType=list&envId=9kpcif56
-// 1762. Buildings With an Ocean View https://leetcode.com/problems/buildings-with-an-ocean-view/description/ 
-// 316. Remove Duplicate Letters; https://leetcode.com/problems/remove-duplicate-letters/?envType=list&envId=9kpcif56
+// 1944. Number of Visible People in a Queue https://leetcode.com/problems/number-of-visible-people-in-a-queue/
+// 1762. Buildings With an Ocean View https://leetcode.com/problems/buildings-with-an-ocean-view/ 
+// 316. Remove Duplicate Letters; https://leetcode.com/problems/remove-duplicate-letters/
 int fnMonotonicIncreasingStack(vector<int>& arr) {
 	stack<int> stack; 
 	int ans = 0;
@@ -252,14 +256,14 @@ int fnMonotonicIncreasingStack(vector<int>& arr) {
 
 // dfs on a Tree: preOrder, inOrder, postorder;
 // preOrder
-// 623. Add One Row to Tree; https://leetcode.com/problems/add-one-row-to-tree/description/; do logic for the node at the certain level
+// 623. Add One Row to Tree; https://leetcode.com/problems/add-one-row-to-tree/; do logic for the node at the certain level
 // inOrder
 // 426. Convert Binary Search Tree to Sorted Doubly Linked List; https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/
 // 987. Vertical Order Traversal of a Binary Tree; https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/
 // postOrder
-// 543. Diameter of Binary Tree; https://leetcode.com/problems/diameter-of-binary-tree/description/
+// 543. Diameter of Binary Tree; https://leetcode.com/problems/diameter-of-binary-tree/
 // 536. Construct Binary Tree from String; https://leetcode.com/problems/construct-binary-tree-from-string/
-// 938. Range Sum of BST; https://leetcode.com/problems/range-sum-of-bst/description/
+// 938. Range Sum of BST; https://leetcode.com/problems/range-sum-of-bst/
 // 236. Lowest Common Ancestor of a Binary Tree; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/
 // 1644. Lowest Common Ancestor of a Binary Tree II; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-ii/
 // 1676. Lowest Common Ancestor of a Binary Tree IV; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iv/
@@ -289,7 +293,7 @@ int dfsTree(TreeNode *root) { // could return a tuple of a node and the depth
 	return ans; 	
 }
 
-// 173. Binary Search Tree Iterator; https://leetcode.com/problems/binary-search-tree-iterator/description/
+// 173. Binary Search Tree Iterator; https://leetcode.com/problems/binary-search-tree-iterator/
 // dfsTreeStack is much similar to bfsTree; the only difference is stack vs queue
 int dfsTreeStack(TreeNode* root) {
 	if (!root) { return 0; 	}
@@ -312,7 +316,7 @@ int dfsTreeStack(TreeNode* root) {
 
 
 // 314. Binary Tree Vertical Order Traversal, https://leetcode.com/problems/binary-tree-vertical-order-traversal/
-// 199. Binary Tree Right Side View; https://leetcode.com/problems/binary-tree-right-side-view/description/
+// 199. Binary Tree Right Side View; https://leetcode.com/problems/binary-tree-right-side-view/
 int bfsTree(TreeNode* root) {
 	if (!root) { return 0; }
 
@@ -345,9 +349,9 @@ int bfsTree(TreeNode* root) {
 // * for BFS, the order might be 4, 5, 1, 2, 3
 // * if changing the original value instead of using seen/visited, the 2 and 3 are merged into one of checking value
 
-// 317. Shortest Distance from All Buildings;  https://leetcode.com/problems/shortest-distance-from-all-buildings/description/?envType=list&envId=9kpcif56
-// 339. Nested List Weight Sum; https://leetcode.com/problems/nested-list-weight-sum/description/
-// 529. Minesweeper; https://leetcode.com/problems/minesweeper/description/; acton 2 and 3 are separated
+// 317. Shortest Distance from All Buildings;  https://leetcode.com/problems/shortest-distance-from-all-buildings/
+// 339. Nested List Weight Sum; https://leetcode.com/problems/nested-list-weight-sum/
+// 529. Minesweeper; https://leetcode.com/problems/minesweeper/; acton 2 and 3 are separated
 unordered_set<int> seen; 
 int dfsGraph1(vector<vector<int>>& graph) {
 	seen.insert(START_NODE); // #1. must do insert before visiting it in order to avoid the dead loop
@@ -372,7 +376,7 @@ int dfsGraph1(int node, vector<vector<int>>& graph) {
 }
 
 
-// 490. The Maze; https://leetcode.com/problems/the-maze/description/
+// 490. The Maze; https://leetcode.com/problems/the-maze/
 unordered_set<int> seen2; 
 int dfsGraph2(vector<vector<int>>& graph) {
 	return dfsGraph2(START_NODE, graph);
@@ -395,10 +399,14 @@ int dfsGraph2(int node, vector<vector<int>>& graph) {
 	return ans; 
 }
 
-// 490. The Maze; https://leetcode.com/problems/the-maze/description/
-// 778. Swim in Rising Water; https://leetcode.com/problems/swim-in-rising-water/description/?envType=list&envId=9kpcif56
-// 79. Word Search; https://leetcode.com/problems/word-search/
-// 721. Accounts Merge; https://leetcode.com/problems/accounts-merge/description/
+/*
+490. The Maze; https://leetcode.com/problems/the-maze/
+778. Swim in Rising Water; https://leetcode.com/problems/swim-in-rising-water/
+79. Word Search; https://leetcode.com/problems/word-search/
+721. Accounts Merge; https://leetcode.com/problems/accounts-merge/
+200. Number of Islands; https://leetcode.com/problems/number-of-islands/
+694. Number of Distinct Islands; https://leetcode.com/problems/number-of-distinct-islands/
+*/
 bool dfsGraph3(int node, vector<vector<int>>& graph) {	
 	if (seen2.find(node) == seen2.end()) {
 		return false; 
@@ -435,14 +443,15 @@ int dfsIterative(vector<vector<int>> & graph) {
 	return ans; 
 }
 
-// when do Topological Sort, no need to keep the seen set, 
-// for it is DAG, and a node is added into queue only when only its in/out degree reach zero
-// 317. Shortest Distance from All Buildings; https://leetcode.com/problems/shortest-distance-from-all-buildings/?envType=list&envId=9kpcif56
-// 1091. Shortest Path in Binary Matrix; https://leetcode.com/problems/shortest-path-in-binary-matrix/description/
-// 286. Walls and Gates; https://leetcode.com/problems/walls-and-gates/description/
-// 863. All Nodes Distance K in Binary Tree; https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/description/; reach a certain level
-// 200. Number of Islands; https://leetcode.com/problems/number-of-islands/description/
-// 1293. Shortest Path in a Grid with Obstacles Elimination; https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination/description/
+/* when do Topological Sort, no need to keep the seen set, 
+	for it is DAG, and a node is added into queue only when only its in/out degree reach zero
+317. Shortest Distance from All Buildings; https://leetcode.com/problems/shortest-distance-from-all-buildings/
+1091. Shortest Path in Binary Matrix; https://leetcode.com/problems/shortest-path-in-binary-matrix/
+286. Walls and Gates; https://leetcode.com/problems/walls-and-gates/
+863. All Nodes Distance K in Binary Tree; https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/; reach a certain level
+1293. Shortest Path in a Grid with Obstacles Elimination; https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination/
+785. Is Graph Bipartite? https://leetcode.com/problems/is-graph-bipartite/; return a bool ; 
+*/
 int bfsGraph(vector<vector<int>>& graph) {
 	queue<int> queue; 
 	unordered_set<int> seen; 
@@ -502,7 +511,7 @@ int bfsGraphSteps(vector<vector<int>>& grid) {
 	return -1; 
 }
 
-// 973. K Closest Points to Origin; https://leetcode.com/problems/k-closest-points-to-origin/description/
+// 973. K Closest Points to Origin; https://leetcode.com/problems/k-closest-points-to-origin/
 // 347. Top K Frequent Elements; https://leetcode.com/problems/top-k-frequent-elements/
 // 215. Kth Largest Element in an Array; https://leetcode.com/problems/kth-largest-element-in-an-array/
 vector<int> fnTopK(vector<int>& arr, int k) {
@@ -538,10 +547,10 @@ int binarySearch(vector<int>& arr, int target) {
 	return low; 
 }
 
-// 852. Peak Index in a Mountain Array, https://leetcode.com/problems/peak-index-in-a-mountain-array/description/
-// 1870. Minimum Speed to Arrive on Time; https://leetcode.com/problems/minimum-speed-to-arrive-on-time/description/
-// 1539. Kth Missing Positive Number; https://leetcode.com/problems/kth-missing-positive-number/?envType=list&envId=9kpcif56
-// 778. Swim in Rising Water; https://leetcode.com/problems/swim-in-rising-water/description/?envType=list&envId=9kpcif56
+// 852. Peak Index in a Mountain Array, https://leetcode.com/problems/peak-index-in-a-mountain-array/
+// 1870. Minimum Speed to Arrive on Time; https://leetcode.com/problems/minimum-speed-to-arrive-on-time/
+// 1539. Kth Missing Positive Number; https://leetcode.com/problems/kth-missing-positive-number/
+// 778. Swim in Rising Water; https://leetcode.com/problems/swim-in-rising-water/
 // Binary search: duplicate elements, left-most insertion point
 int binaryLeftMost(vector<int>& arr, int target) {
 	int left = 0;
@@ -579,7 +588,7 @@ int minSpeedOnTime(vector<int>& dist, double hour) {
 }
 */
 // Binary search: duplicate elements, right-most insertion point
-// 1060. Missing Element in Sorted Array; https://leetcode.com/problems/missing-element-in-sorted-array/?envType=list&envId=9kpcif56
+// 1060. Missing Element in Sorted Array; https://leetcode.com/problems/missing-element-in-sorted-array/
 int binaryRightMost(vector<int>& arr, int target) {
 	int left = 0;
 	for (int right = arr.size(); left < right; )  {
@@ -592,7 +601,7 @@ int binaryRightMost(vector<int>& arr, int target) {
 	}
 	return left; 
 }
-// e.g. 1060. Missing Element in Sorted Array https://leetcode.com/problems/missing-element-in-sorted-array/description/?envType=list&envId=9kpcif56 
+// e.g. 1060. Missing Element in Sorted Array https://leetcode.com/problems/missing-element-in-sorted-array/ 
 /* in this example, its right and left are similar to the normal left and right; in other words, these two pointers are swapped
 int missingElement(vector<int>& nums, int k) {
 	int left = 0; 
@@ -721,7 +730,7 @@ int binaryMinimum(vector<int>& arr) {
 	return low; 
 }
 
-// 1891. Cutting Ribbons https://leetcode.com/problems/cutting-ribbons/description/?envType=list&envId=9kpcif56 
+// 1891. Cutting Ribbons https://leetcode.com/problems/cutting-ribbons/ 
 // Binary search: for greedy problems
 // If looking for a maximum:
 int binaryMaximum(vector<int>& arr) {
@@ -739,13 +748,13 @@ int binaryMaximum(vector<int>& arr) {
 	return high; 
 }
 
-// 17. Letter Combinations of a Phone Number; https://leetcode.com/problems/letter-combinations-of-a-phone-number/description/
-// 78. Subsets https://leetcode.com/problems/subsets/description/
-// 301. Remove Invalid Parentheses; https://leetcode.com/problems/remove-invalid-parentheses/?envType=list&envId=9kpcif56
+// 17. Letter Combinations of a Phone Number; https://leetcode.com/problems/letter-combinations-of-a-phone-number/
+// 78. Subsets https://leetcode.com/problems/subsets/
+// 301. Remove Invalid Parentheses; https://leetcode.com/problems/remove-invalid-parentheses/
 // 46. Permutations; https://leetcode.com/problems/permutations/
 // 77. Combinations; https://leetcode.com/problems/combinations/
-// 140. Word Break II; https://leetcode.com/problems/word-break-ii/description/?envType=list&envId=9kpcif56 
-// 282. Expression Add Operators; https://leetcode.com/problems/expression-add-operators/?envType=list&envId=9kpcif56
+// 140. Word Break II; https://leetcode.com/problems/word-break-ii/ 
+// 282. Expression Add Operators; https://leetcode.com/problems/expression-add-operators/
 int backtrack(STATE curr, OTHERS) {
 	if (BASE_CASE) { // startId, or curr state size, or both
 		// modify the answer
@@ -764,7 +773,7 @@ int backtrack(STATE curr, OTHERS) {
 	return ans; 
 }
 
-// 212. Word Search II; https://leetcode.com/problems/word-search-ii/description/
+// 212. Word Search II; https://leetcode.com/problems/word-search-ii/
 struct TrieNode {
 	int data; 
 	unordered_map<char, TrieNode*> children; 
@@ -830,7 +839,7 @@ public:
 };
 
 // or  Disjoint Set Union (DSU)
-// 721. Accounts Merge; https://leetcode.com/problems/accounts-merge/description/
+// 721. Accounts Merge; https://leetcode.com/problems/accounts-merge/
 class DSU {
 public:
     vector<int> representative;
@@ -879,7 +888,7 @@ public:
 
 
 /* Parentheses
-921. Minimum Add to Make Parentheses Valid; https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/?envType=list&envId=9kpcif56
+921. Minimum Add to Make Parentheses Valid; https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/
 1249. Minimum Remove to Make Valid Parentheses; https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/
 301. Remove Invalid Parentheses; https://leetcode.com/problems/remove-invalid-parentheses/
 */
@@ -892,7 +901,10 @@ sort by start or end; when merging, newEnd = max(newEnd, end); when overlapping,
 986. Interval List Intersections; https://leetcode.com/problems/interval-list-intersections/
 */
 
-// combine data structures
+/* combine data structures
+unordered_map + list
+146. LRU Cache; https://leetcode.com/problems/lru-cache/
+*/
 
 // sell and buy stocks
 
@@ -904,43 +916,45 @@ sort by start or end; when merging, newEnd = max(newEnd, end); when overlapping,
 */
 
 /* dp
-91. Decode Ways; https://leetcode.com/problems/decode-ways/description/
-
+91. Decode Ways; https://leetcode.com/problems/decode-ways/
+sliding
 1D dp 
 139. Word Break; https://leetcode.com/problems/word-break/
-2369. Check if There is a Valid Partition For The Array; https://leetcode.com/problems/check-if-there-is-a-valid-partition-for-the-array/description/
+2369. Check if There is a Valid Partition For The Array; https://leetcode.com/problems/check-if-there-is-a-valid-partition-for-the-array/
 
 2D dp
-63. Unique Paths II; https://leetcode.com/problems/unique-paths-ii/description/ ; grid, up or left
+63. Unique Paths II; https://leetcode.com/problems/unique-paths-ii/ ; grid, up or left
 518. Coin Change II; https://leetcode.com/problems/coin-change-ii/ ; not adjacent 
-1216. Valid Palindrome III https://leetcode.com/problems/valid-palindrome-iii/?envType=list&envId=9kpcif56; upper triangular matrix; -/|
+1216. Valid Palindrome III https://leetcode.com/problems/valid-palindrome-iii/; upper triangular matrix; -/|
 */
 
 /* Palindrome
 680. Valid Palindrome II; https://leetcode.com/problems/valid-palindrome-ii/
-1216. Valid Palindrome III https://leetcode.com/problems/valid-palindrome-iii/?envType=list&envId=9kpcif56 ; 2D DP
+1216. Valid Palindrome III https://leetcode.com/problems/valid-palindrome-iii/ ; 2D DP
 */
 
 /* Heap
 215. Kth Largest Element in an Array; https://leetcode.com/problems/kth-largest-element-in-an-array/
 253. Meeting Rooms II; https://leetcode.com/problems/meeting-rooms-ii/
+767. Reorganize String; https://leetcode.com/problems/reorganize-string/
 */
 
 /* unordered_map and map
 249. Group Shifted Strings; https://leetcode.com/problems/group-shifted-strings/
+146. LRU Cache; https://leetcode.com/problems/lru-cache/
 */
 
 /* stack
-71. Simplify Path; https://leetcode.com/problems/simplify-path/description/
+71. Simplify Path; https://leetcode.com/problems/simplify-path/
 1209. Remove All Adjacent Duplicates in String II; https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string-ii/
 1047. Remove All Adjacent Duplicates In String; https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/
 */
 
 /* Divide and conquer
-779. K-th Symbol in Grammar; https://leetcode.com/problems/k-th-symbol-in-grammar/description/
+779. K-th Symbol in Grammar; https://leetcode.com/problems/k-th-symbol-in-grammar/
 50. Pow(x, n); https://leetcode.com/problems/powx-n/
 */
 
 /* Multiset
-218. The Skyline Problem; https://leetcode.com/problems/the-skyline-problem/description/
+218. The Skyline Problem; https://leetcode.com/problems/the-skyline-problem/
 */
