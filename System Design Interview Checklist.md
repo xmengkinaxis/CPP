@@ -22,8 +22,9 @@
     - [Serviceability or Manageability (simplicity):](#serviceability-or-manageability-simplicity)
     - [Durability](#durability)
     - [Security](#security)
-  - [1.3 Prioritize requirements](#13-prioritize-requirements)
-  - [1.4 Design Considerations (no do, or assumption)](#14-design-considerations-no-do-or-assumption)
+  - [1.3 Achieve NFR (Non Functional Requirement)](#13-achieve-nfr-non-functional-requirement)
+  - [1.4 Prioritize requirements](#14-prioritize-requirements)
+  - [1.5 Design Considerations (no do, or assumption)](#15-design-considerations-no-do-or-assumption)
 - [2 Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation.](#2-capacity-estimation-and-constraints-traffic-storage-networkbandwidth-memorycache-estimation)
   - [2.1 Traffic in write/second, or read/second](#21-traffic-in-writesecond-or-readsecond)
   - [2.2 Storage in TB or GB/year](#22-storage-in-tb-or-gbyear)
@@ -264,10 +265,27 @@ The replication and monitoring services ensure the durability of the data. <br>
 ### Security
 Be secure via end-to-end encryption
 
-## 1.3 Prioritize requirements
+## 1.3 Achieve NFR (Non Functional Requirement)
+The table summarizing how to achieve various important attributes in system design:
+
+| Attribute           | Strategies to Achieve                                                                                 |
+|---------------------|------------------------------------------------------------------------------------------------------|
+| High Availability   | - Redundancy and failover<br>- Load balancing<br>- Automated scaling<br>- Isolation<br>- Geographic distribution<br>- Disaster recovery planning<br>- Zero-downtime deployments<br>- Multi-region active-active architecture |
+| Scalability        | - Horizontal scaling<br>- Microservices architecture<br>- Auto-scaling<br>- Distributed databases<br>- Caching<br>- Asynchronous processing<br>- Content delivery networks (CDNs) |
+| Reliability         | - Redundancy<br>- Failover<br>- Monitoring and alerting<br>- Automated testing<br>- Backups and data replication<br>- Disaster recovery planning |
+| Low Latency         | - Use of Content Delivery Networks (CDNs)<br>- Edge computing<br>- Distributed caching<br>- Efficient algorithms<br>- Optimized network architecture |
+| High Throughput     | - Load balancing<br>- Horizontal scaling<br>- Distributed databases<br>- Use of asynchronous messaging<br>- Optimized data processing pipelines |
+| Consistency         | - Strong consistency models<br>- Distributed transactions<br>- ACID compliance<br>- Event sourcing<br>- Eventual consistency for specific use cases |
+| Concurrency         | - Proper locking mechanisms<br>- Isolation of critical sections<br>- Use of distributed locks<br>- Optimistic concurrency control |
+| Security            | - Authentication and authorization mechanisms<br>- Encryption<br>- Firewalls<br>- Intrusion detection systems<br>- Regular security audits<br>- Least privilege principle |
+
+
+Remember that achieving these attributes often involves trade-offs, and the strategies you choose will depend on your specific application requirements, budget, and the complexity you're willing to manage.
+
+## 1.4 Prioritize requirements
 Break it down, to the most important, minimal features for your system.
 
-## 1.4 Design Considerations (no do, or assumption)
+## 1.5 Design Considerations (no do, or assumption)
 * Security: No user authentication or authorization; both are already completed <br>
 * Result: get all or nothing, not a partial result;  <br>
 * Fairness and ethical <br>
@@ -356,9 +374,9 @@ SOAP or REST API <br>
 * Registration or authentication
 
 **Parameters:** <br>
-* user_id/api_dev_key : the API developer key of a registered account. throttle users based on their allocated quota <br>
-* All kinds of information about the file/video/picture/like/dislike/comments/etc, like name/title, user/place ID, category, description, latitude, longitude, rating, tags, channel, language, privacy<br>
-* Search Query: category, user_location, radius, name_of_place  <br>
+* user_id: uniquely specified th user performing the action;  throttle users based on their allocated quota <br>
+* All kinds of information about the file/video/picture/like/dislike/comments/etc, like name/title, user/place ID, category/type, description, latitude, longitude, rating, hashtags, channel, language, privacy<br>
+* Search Query: category/type(videos, images, comments), keywords, user_location, radius, name_of_place  <br>
 * maximum Results to Return:  <br>
 * sort(number) Optional sort mode: 0 - latest first, 1 - best matched, 2 - most liked <br>
 * page_token(string) specify a page in the result set that should be returned <br>
