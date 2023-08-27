@@ -100,6 +100,8 @@
   - [Popular services:](#popular-services)
   - [Interview tool](#interview-tool)
   - [Questions:](#questions)
+- [15 Future + ML](#15-future--ml)
+- [16 Review, Evaluate, and Evovle](#16-review-evaluate-and-evovle)
 
 
 <!-- TOC -->
@@ -148,12 +150,13 @@ Demonstrate your ability to anticipate and address potential issues in your desi
 * Senior System Designer
   * strong expertise on System Design
   * tackle some of the most challenging design issues
-  * have the insight to address long-term issues that may affect a system over its lifetime
+  * have the insight to address **long-term issues** that may affect a system over its lifetime
   * speak toward bottlenecks and long-term scalability of the system
   * feel confident enough to lead and mentor other designers in regard to system design principles, concepts, and best practices; 
+  * Can review, evaluate, and evolve a system desgin
 * Principle/Lead System Designer
-  * extensive knowledge of System Design, its history, and industry trends; 
-  * be recognized for designing and implementing complex and large-scale systems
+  * extensive knowledge of System Design, **its history, and industry trends**; (past, current, and future)
+  * be **recognized** for designing and implementing complex and large-scale systems; (have a good reputation)
   * have a deep and thorough understanding of trade-offs, performance optimizations, and long-term scalability
 
 ## 0.6 Should do 
@@ -279,7 +282,6 @@ The table summarizing how to achieve various important attributes in system desi
 | Concurrency         | - Proper locking mechanisms<br>- Isolation of critical sections<br>- Use of distributed locks<br>- Optimistic concurrency control |
 | Security            | - Authentication and authorization mechanisms<br>- Encryption<br>- Firewalls<br>- Intrusion detection systems<br>- Regular security audits<br>- Least privilege principle |
 
-
 Remember that achieving these attributes often involves trade-offs, and the strategies you choose will depend on your specific application requirements, budget, and the complexity you're willing to manage.
 
 ## 1.4 Prioritize requirements
@@ -369,13 +371,13 @@ SOAP or REST API <br>
 
 **Operations:** <br>
 * CRUD (Create/paste/post, Read/get, Update/put, Delete) 
-* Others (Search, list, store, stream, request)
+* Others (Search, list, store, stream, request, like or unlike, reply, follow or unfollow, retweet or re-post? or share? )
 * these operations might work on different objects/levels/scopes
 * Registration or authentication
 
 **Parameters:** <br>
 * user_id: uniquely specified th user performing the action;  throttle users based on their allocated quota <br>
-* All kinds of information about the file/video/picture/like/dislike/comments/etc, like name/title, user/place ID, category/type, description, latitude, longitude, rating, hashtags, channel, language, privacy<br>
+* All kinds of information about the file/video/picture/like/dislike/comments/etc, like name/title, user/place ID, category/type, description, latitude, longitude, rating, hashtags, channel, language, privacy (private or public)<br>
 * Search Query: category/type(videos, images, comments), keywords, user_location, radius, name_of_place  <br>
 * maximum Results to Return:  <br>
 * sort(number) Optional sort mode: 0 - latest first, 1 - best matched, 2 - most liked <br>
@@ -1213,3 +1215,70 @@ Design Twitter - x
 Design Ticketmaster - x
 Design an API rate limiter - x 
 Design YouTube - x
+
+# 15 Future + ML 
+1. Use two demansions time and space for a topic. e.g. Netflex
+2. Sychronize post by topics
+3. Allow to take a deep dive into the particular topic. e.g. Netflex
+4. Create an audio narrator based on AI + ML 
+5. Offer the suggestion or possibility on true or false for the news/source
+6. Provider both positive and negative on the same topic; can configure the percentage
+7. Can follow up some topics a few days after first reviewing and get more new information about it
+
+# 16 Review, Evaluate, and Evovle
+Reviewing, evaluating, and evolving a system design is a crucial ongoing process to ensure that the design meets requirements, performs effectively, and can adapt to changing needs. Here's a step-by-step approach to achieve this:
+
+1. **Initial Review**:
+   - Conduct an initial review of the system design with stakeholders and team members to ensure alignment with requirements and goals.
+
+2. **Peer Reviews**:
+   - Engage in peer reviews where team members with diverse expertise examine the design for potential issues, inconsistencies, or improvements.
+
+3. **Performance Evaluation**:
+   - Test the system design with realistic workloads to assess its performance, scalability, and response times.
+   - Identify potential bottlenecks, latency issues, or areas requiring optimization.
+
+4. **Security Assessment**:
+   - Evaluate the design's security mechanisms, authentication, authorization, and data protection strategies.
+   - Conduct security audits and penetration testing to identify vulnerabilities.
+
+5. **Scalability Test**:
+   - Validate whether the system can handle increased load and user concurrency as intended.
+   - Implement load testing to identify potential performance degradation under heavy traffic.
+
+6. **User Acceptance Testing**:
+   - Involve end-users or stakeholders to perform user acceptance testing.
+   - Gather feedback on usability, functionality, and user experience.
+
+7. **Feedback Incorporation**:
+   - Incorporate feedback from various reviews, evaluations, and testing phases.
+   - Address identified issues, revise design documents, and make necessary adjustments.
+
+8. **Documentation Update**:
+   - Keep design documentation up-to-date with any changes, improvements, or refinements.
+   - Ensure that the documentation accurately represents the current state of the system.
+
+9. **Evolution Planning**:
+   - Anticipate future requirements and potential changes to the system.
+   - Plan for how the system design can accommodate new features, technologies, and scalability needs.
+
+10. **Technology Assessment**:
+    - Regularly assess emerging technologies and frameworks that could enhance or replace components in the system.
+    - Evaluate the impact of adopting new technologies on the overall architecture.
+
+11. **Continuous Monitoring**:
+    - Implement monitoring and logging to gather data on system performance and usage patterns.
+    - Analyze this data to identify areas for optimization and improvements.
+
+12. **Regular Review Cycles**:
+    - Establish a regular cadence for design reviews and evaluations to ensure the system remains aligned with changing requirements and industry best practices.
+
+13. **Feedback Loops**:
+    - Maintain open channels of communication with users, stakeholders, and team members.
+    - Use feedback loops to continuously gather insights and suggestions for enhancements.
+
+14. **Iterative Improvement**:
+    - Embrace an iterative approach to system design.
+    - Continuously evolve the design to address issues, adapt to new needs, and incorporate lessons learned from previous iterations.
+
+By following these steps, you can create a systematic process for reviewing, evaluating, and evolving your system design, leading to a more robust, effective, and adaptable solution over time.
