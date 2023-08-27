@@ -12,6 +12,8 @@
 #include <queue> // riority_queue
 #include <deque> // deque
 #include <algorithm> // sort, min, max, remove(first, last, value)
+#include <numeric> // accumulate(begin, end, 0) to calculate the sum in a range, max_element, partial_sum(begin, end, begin) to calculate the partial sum in a range, 
+					// iota(begin, end, initial) to fill a range with the consecutive increasing values
 
 using namespace std; 
 
@@ -67,16 +69,18 @@ Binary Search: low and high if the array is strictly increased, or use left and 
 3. Can use unordered_set or vector<bool> as seen/visit
 4. Use a local variable to store and restore a value before and after recursively invoking backtrack
 5. Use a value instead of a reference in recursively invoking backtrack; passing by value will act as if do and undo for the original value is unchanged
+6. Start with top-right toward bottom-left for a sorted matrix (2D vector). e.g. 378. Kth Smallest Element in a Sorted Matrix
 */
 
 // ??? sort all problems of meta once a week into different algorithms, whose numbers are less than 23 and after 29
 
-// two pointers with opposite directions
-// e.g. Palindrome problems (odd or even, two pointers with the opposite directions): 
-// 647. Palindromic Substrings https://leetcode.com/problems/palindromic-substrings/
-// 15. 3Sum; https://leetcode.com/problems/3sum/
-// 125. Valid Palindrome; https://leetcode.com/problems/valid-palindrome/
-// 557. Reverse Words in a String III; https://leetcode.com/problems/reverse-words-in-a-string-iii/
+/* two pointers with opposite directions
+e.g. Palindrome problems (odd or even, two pointers with the opposite directions): 
+647. Palindromic Substrings https://leetcode.com/problems/palindromic-substrings/
+15. 3Sum; https://leetcode.com/problems/3sum/
+125. Valid Palindrome; https://leetcode.com/problems/valid-palindrome/
+557. Reverse Words in a String III; https://leetcode.com/problems/reverse-words-in-a-string-iii/
+*/
 int fnTwoPointers(vector<int>& arr) {
 	int left = 0, right = arr.size() - 1; 
 	int ans = 0;
@@ -101,6 +105,7 @@ int fnTwoPointers(vector<int>& arr) {
 1570. Dot Product of Two Sparse Vectors; https://leetcode.com/problems/dot-product-of-two-sparse-vectors/
 1650. Lowest Common Ancestor of a Binary Tree III; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iii/
 88. Merge Sorted Array; https://leetcode.com/problems/merge-sorted-array/ 3 pointers in fact
+67. Add Binary; https://leetcode.com/problems/add-binary/
 */
 int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
 	int i = 0, j = 0, ans = 0; 
@@ -129,7 +134,7 @@ int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
 	for the window with the fixed size, remove the start since the end >= the window size
 	must ensure the start is moved, otherwise, the inner loop would become a dead one.
 239. Sliding Window Maximum;  https://leetcode.com/problems/sliding-window-maximum/; a typical one
-1004. Max Consecutive Ones III; https://leetcode.com/problems/max-consecutive-ones-iii/
+1004. Max Consecutive Ones III; https://leetcode.com/problems/max-consecutive-ones-iii/; the window size can be zero
 76. Minimum Window Substring; https://leetcode.com/problems/minimum-window-substring/
 713. Subarray Product Less Than K; https://leetcode.com/problems/subarray-product-less-than-k/
 */
@@ -144,7 +149,7 @@ int fnSlidingWindow(vector<int>& arr, int size) {
 		// depend on if the window size is fixed or not, 
 		// if fixed, when end >= size, remove the start by moving it towards end by one
 		// if not fixed, depend on the loop condition to remove the start
-		while (CONDITION && start <= end ) { // the condition "start <= end" is critical to ensure it is still a valid window
+		while (CONDITION && start <= end ) { // the condition "start <= end" is critical to ensure it is still a valid window; it can be omitted if window size can be zero
 			// can do something for the valid window here as the window is shrinking
 			// remove arr[start] from curr; 
 			++start;  // it would be a dead loop if start is not moved
@@ -171,11 +176,12 @@ string fnString(vector<char>& arr) {
 	return string(arr.begin(), arr.end()); 
 }
 
-// fast and slow pointers; a case of two pointers with the same direction
-// odd number of items: fast is valid, but fast->next is nullptr, slow points to the exact middle node of list
-// even number of items: fast is nullptr, and slow points to the second middle (right-middle) node 
-// 283. Move Zeroes; https://leetcode.com/problems/move-zeroes/
-// 234. Palindrome Linked List; https://leetcode.com/problems/palindrome-linked-list/
+/* fast and slow pointers; a case of two pointers with the same direction
+odd number of items: fast is valid, but fast->next is nullptr, slow points to the exact middle node of list
+even number of items: fast is nullptr, and slow points to the second middle (right-middle) node 
+283. Move Zeroes; https://leetcode.com/problems/move-zeroes/
+234. Palindrome Linked List; https://leetcode.com/problems/palindrome-linked-list/
+*/
 int fnFastAndSlowPointers(ListNode* head) {
 	int ans = 0;
 	ListNode *slow = head, *fast = head; 
@@ -254,26 +260,28 @@ int fnMonotonicIncreasingStack(vector<int>& arr) {
 	}
 }
 
-// dfs on a Tree: preOrder, inOrder, postorder;
-// preOrder
-// 623. Add One Row to Tree; https://leetcode.com/problems/add-one-row-to-tree/; do logic for the node at the certain level
-// inOrder
-// 426. Convert Binary Search Tree to Sorted Doubly Linked List; https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/
-// 987. Vertical Order Traversal of a Binary Tree; https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/
-// postOrder
-// 543. Diameter of Binary Tree; https://leetcode.com/problems/diameter-of-binary-tree/
-// 536. Construct Binary Tree from String; https://leetcode.com/problems/construct-binary-tree-from-string/
-// 938. Range Sum of BST; https://leetcode.com/problems/range-sum-of-bst/
-// 236. Lowest Common Ancestor of a Binary Tree; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/
-// 1644. Lowest Common Ancestor of a Binary Tree II; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-ii/
-// 1676. Lowest Common Ancestor of a Binary Tree IV; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iv/
-// 95. Unique Binary Search Trees II; https://leetcode.com/problems/unique-binary-search-trees-ii/
-// 129. Sum Root to Leaf Numbers; https://leetcode.com/problems/sum-root-to-leaf-numbers/; // leave is one of the base cases 
-// 1123. Lowest Common Ancestor of Deepest Leaves; https://leetcode.com/problems/lowest-common-ancestor-of-deepest-leaves/
-// 865. Smallest Subtree with all the Deepest Nodes; https://leetcode.com/problems/smallest-subtree-with-all-the-deepest-nodes/
-// 1110. Delete Nodes And Return Forest; https://leetcode.com/problems/delete-nodes-and-return-forest/; must update root and add it if still valid
-// inOrder + postOrder
-// 1382. Balance a Binary Search Tree; https://leetcode.com/problems/balance-a-binary-search-tree/
+/* dfs on a Tree: preOrder, inOrder, postorder;
+preOrder
+623. Add One Row to Tree; https://leetcode.com/problems/add-one-row-to-tree/; do logic for the node at the certain level
+inOrder
+426. Convert Binary Search Tree to Sorted Doubly Linked List; https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/
+987. Vertical Order Traversal of a Binary Tree; https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/
+1161. Maximum Level Sum of a Binary Tree; https://leetcode.com/problems/maximum-level-sum-of-a-binary-tree/
+postOrder
+543. Diameter of Binary Tree; https://leetcode.com/problems/diameter-of-binary-tree/
+536. Construct Binary Tree from String; https://leetcode.com/problems/construct-binary-tree-from-string/
+938. Range Sum of BST; https://leetcode.com/problems/range-sum-of-bst/
+236. Lowest Common Ancestor of a Binary Tree; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/
+1644. Lowest Common Ancestor of a Binary Tree II; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-ii/
+1676. Lowest Common Ancestor of a Binary Tree IV; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iv/
+95. Unique Binary Search Trees II; https://leetcode.com/problems/unique-binary-search-trees-ii/
+129. Sum Root to Leaf Numbers; https://leetcode.com/problems/sum-root-to-leaf-numbers/; // leave is one of the base cases 
+1123. Lowest Common Ancestor of Deepest Leaves; https://leetcode.com/problems/lowest-common-ancestor-of-deepest-leaves/
+865. Smallest Subtree with all the Deepest Nodes; https://leetcode.com/problems/smallest-subtree-with-all-the-deepest-nodes/
+1110. Delete Nodes And Return Forest; https://leetcode.com/problems/delete-nodes-and-return-forest/; must update root and add it if still valid
+inOrder + postOrder
+1382. Balance a Binary Search Tree; https://leetcode.com/problems/balance-a-binary-search-tree/
+*/
 int dfsTree(TreeNode *root) { // could return a tuple of a node and the depth
 	// 1. deal withing the special base cases;  could be more base cases
 	// when calculating the depth, it is 0 for nullptr and 1 for a leave; so the base case is still nullptr; 
@@ -315,8 +323,11 @@ int dfsTreeStack(TreeNode* root) {
 }
 
 
-// 314. Binary Tree Vertical Order Traversal, https://leetcode.com/problems/binary-tree-vertical-order-traversal/
-// 199. Binary Tree Right Side View; https://leetcode.com/problems/binary-tree-right-side-view/
+/*
+314. Binary Tree Vertical Order Traversal, https://leetcode.com/problems/binary-tree-vertical-order-traversal/
+199. Binary Tree Right Side View; https://leetcode.com/problems/binary-tree-right-side-view/
+1161. Maximum Level Sum of a Binary Tree; https://leetcode.com/problems/maximum-level-sum-of-a-binary-tree/
+*/
 int bfsTree(TreeNode* root) {
 	if (!root) { return 0; }
 
@@ -333,7 +344,7 @@ int bfsTree(TreeNode* root) {
 			if (node->left) { queue.push(node->left); }
 			if (node->right) { queue.push(node->right); }
 		}
-		// do some actions for this layer, e.g. calculating steps/time
+		// do some actions for this layer, e.g. calculating steps/time/sum
 		// or this action can be merged with the while loop and change it into a for loop
 	}
 	return ans; 
@@ -406,6 +417,7 @@ int dfsGraph2(int node, vector<vector<int>>& graph) {
 721. Accounts Merge; https://leetcode.com/problems/accounts-merge/
 200. Number of Islands; https://leetcode.com/problems/number-of-islands/
 694. Number of Distinct Islands; https://leetcode.com/problems/number-of-distinct-islands/
+827. Making A Large Island; https://leetcode.com/problems/making-a-large-island/
 */
 bool dfsGraph3(int node, vector<vector<int>>& graph) {	
 	if (seen2.find(node) == seen2.end()) {
@@ -447,7 +459,7 @@ int dfsIterative(vector<vector<int>> & graph) {
 	for it is DAG, and a node is added into queue only when only its in/out degree reach zero
 317. Shortest Distance from All Buildings; https://leetcode.com/problems/shortest-distance-from-all-buildings/
 1091. Shortest Path in Binary Matrix; https://leetcode.com/problems/shortest-path-in-binary-matrix/
-286. Walls and Gates; https://leetcode.com/problems/walls-and-gates/
+286. Walls and Gates; https://leetcode.com/problems/walls-and-gates/; min() for shortest
 863. All Nodes Distance K in Binary Tree; https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/; reach a certain level
 1293. Shortest Path in a Grid with Obstacles Elimination; https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination/
 785. Is Graph Bipartite? https://leetcode.com/problems/is-graph-bipartite/; return a bool ; 
@@ -712,9 +724,11 @@ Just make sure to be consistent with the loop condition and handle boundary case
 	auto last = binarySearch(cmpRightMost) - 1; 
 }
 
-// Binary search: for greedy problems
-// If looking for a minimum:
-// e.g. 1011. Capacity To Ship Packages Within D Days; https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/
+/* Binary search: for greedy problems
+If looking for a minimum:
+1011. Capacity To Ship Packages Within D Days; https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/
+378. Kth Smallest Element in a Sorted Matrix; https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/
+*/
 int binaryMinimum(vector<int>& arr) {
 	int low = MINIMUM_POSSIBLE_ANSWER; 
 	int high = MAXIMUM_POSSIBLE_ANSWER; 
@@ -730,9 +744,10 @@ int binaryMinimum(vector<int>& arr) {
 	return low; 
 }
 
-// 1891. Cutting Ribbons https://leetcode.com/problems/cutting-ribbons/ 
-// Binary search: for greedy problems
-// If looking for a maximum:
+/* Binary search: for greedy problems
+If looking for a maximum:
+1891. Cutting Ribbons https://leetcode.com/problems/cutting-ribbons/
+*/
 int binaryMaximum(vector<int>& arr) {
 	int low = MINIMUM_POSSIBLE_ANSWER; 
 	int high = MAXIMUM_POSSIBLE_ANSWER;
@@ -902,8 +917,14 @@ sort by start or end; when merging, newEnd = max(newEnd, end); when overlapping,
 */
 
 /* combine data structures
+1. The critical and essential parts are to keep these combined data structures consistent, esp. when they refers each other
+2. The quick lookup demands unordered_map
+3. The random access needs a vector
+4. LRU needs a list
 unordered_map + list
 146. LRU Cache; https://leetcode.com/problems/lru-cache/
+unordered_map + vector
+380. Insert Delete GetRandom O(1); https://leetcode.com/problems/insert-delete-getrandom-o1/
 */
 
 // sell and buy stocks
@@ -921,11 +942,13 @@ sliding
 1D dp 
 139. Word Break; https://leetcode.com/problems/word-break/
 2369. Check if There is a Valid Partition For The Array; https://leetcode.com/problems/check-if-there-is-a-valid-partition-for-the-array/
+646. Maximum Length of Pair Chain; https://leetcode.com/problems/maximum-length-of-pair-chain/
 
 2D dp
 63. Unique Paths II; https://leetcode.com/problems/unique-paths-ii/ ; grid, up or left
 518. Coin Change II; https://leetcode.com/problems/coin-change-ii/ ; not adjacent 
 1216. Valid Palindrome III https://leetcode.com/problems/valid-palindrome-iii/; upper triangular matrix; -/|
+97. Interleaving String; https://leetcode.com/problems/interleaving-string/
 */
 
 /* Palindrome
@@ -948,6 +971,7 @@ sliding
 71. Simplify Path; https://leetcode.com/problems/simplify-path/
 1209. Remove All Adjacent Duplicates in String II; https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string-ii/
 1047. Remove All Adjacent Duplicates In String; https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/
+20. Valid Parentheses; https://leetcode.com/problems/valid-parentheses/
 */
 
 /* Divide and conquer
