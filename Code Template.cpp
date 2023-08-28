@@ -3,13 +3,13 @@
 #include <iostream> // cout, cin
 #include <cctype> // isalnum, isalpha, isdigit, islower, isupper, isspace; toupper, tolower
 #include <sstream> // stringstream
-#include <String> // substr, getline, strlen, string(n, char), append(n, char), find(str, pos), erase(first, last), strcpy, strncpy, strcmp, stryncmp
+#include <string> // substr, getline, strlen, string(n, char), append(n, char), find(str, pos), erase(first, last), strcpy, strncpy, strcmp, stryncmp
 #include <vector>
 #include <unordered_map> 
 #include <unordered_set>
 #include <set> // multiset
 #include <stack>
-#include <queue> // riority_queue
+#include <queue> // priority_queue
 #include <deque> // deque
 #include <algorithm> // sort, min, max, remove(first, last, value)
 #include <numeric> // accumulate(begin, end, 0) to calculate the sum in a range, max_element, partial_sum(begin, end, begin) to calculate the partial sum in a range, 
@@ -78,6 +78,7 @@ Binary Search: low and high if the array is strictly increased, or use left and 
 e.g. Palindrome problems (odd or even, two pointers with the opposite directions): 
 647. Palindromic Substrings https://leetcode.com/problems/palindromic-substrings/
 15. 3Sum; https://leetcode.com/problems/3sum/
+16. 3Sum Closest; https://leetcode.com/problems/3sum-closest/
 125. Valid Palindrome; https://leetcode.com/problems/valid-palindrome/
 557. Reverse Words in a String III; https://leetcode.com/problems/reverse-words-in-a-string-iii/
 */
@@ -350,19 +351,21 @@ int bfsTree(TreeNode* root) {
 	return ans; 
 }
 
-// for DFS, the core actions are: 
-// 1. check if the node is valid, e.g. it must be in the grid when the problem is a grid,
-// 2. check if the node should be visited, e.g. the original value/attribute of this node makes it as a valid candidate. 
-// 3. check if the node is already visited, e.g. seen/visited already contains it 
-// 4. do something for this node; this is a real visit on this node
-// 5. visit all its neighbors; 
-// * these core actions is the core of DFS and the block of the BFS while loop
-// * for BFS, the order might be 4, 5, 1, 2, 3
-// * if changing the original value instead of using seen/visited, the 2 and 3 are merged into one of checking value
+/* for DFS, the core actions are: 
+1. check if the node is valid, e.g. it must be in the grid when the problem is a grid,
+2. check if the node should be visited, e.g. the original value/attribute of this node makes it as a valid candidate. 
+3. check if the node is already visited, e.g. seen/visited already contains it 
+4. do something for this node; this is a real visit on this node
+5. visit all its neighbors; 
+* these core actions is the core of DFS and the block of the BFS while loop
+* for BFS, the order might be 4, 5, 1, 2, 3
+* if changing the original value instead of using seen/visited, the 2 and 3 are merged into one of checking value
+* for DFS, the seen/visit must be set/inserted before visiting its neighbors; and it could be the first step checking if the current is seen or visited already
 
-// 317. Shortest Distance from All Buildings;  https://leetcode.com/problems/shortest-distance-from-all-buildings/
-// 339. Nested List Weight Sum; https://leetcode.com/problems/nested-list-weight-sum/
-// 529. Minesweeper; https://leetcode.com/problems/minesweeper/; acton 2 and 3 are separated
+317. Shortest Distance from All Buildings;  https://leetcode.com/problems/shortest-distance-from-all-buildings/
+339. Nested List Weight Sum; https://leetcode.com/problems/nested-list-weight-sum/
+529. Minesweeper; https://leetcode.com/problems/minesweeper/; acton 2 and 3 are separated
+*/
 unordered_set<int> seen; 
 int dfsGraph1(vector<vector<int>>& graph) {
 	seen.insert(START_NODE); // #1. must do insert before visiting it in order to avoid the dead loop
