@@ -282,6 +282,41 @@ The table summarizing how to achieve various important attributes in system desi
 | Concurrency         | - Proper locking mechanisms<br>- Isolation of critical sections<br>- Use of distributed locks<br>- Optimistic concurrency control |
 | Security            | - Authentication and authorization mechanisms<br>- Encryption<br>- Firewalls<br>- Intrusion detection systems<br>- Regular security audits<br>- Least privilege principle |
 
+| Strategy                                         | Attributes Achieved                                     |
+|--------------------------------------------------|---------------------------------------------------------|
+| Redundancy and failover                         | High Availability, Reliability                         |
+| Load balancing                                 | High Availability, High Throughput                     |
+| Automated scaling                              | High Availability, Scalability                         |
+| Isolation                                       | High Availability, Scalability                         |
+| Geographic distribution                        | High Availability                                    |
+| Disaster recovery planning                     | High Availability, Reliability                         |
+| Zero-downtime deployments                      | High Availability                                   |
+| Multi-region active-active architecture        | High Availability                                   |
+| Horizontal scaling                             | Scalability, High Throughput                           |
+| Microservices architecture                     | Scalability, High Throughput                           |
+| Auto-scaling                                   | Scalability, High Throughput                           |
+| Distributed databases                          | Scalability, High Throughput, Consistency             |
+| Caching                                        | Scalability, Low Latency                             |
+| Asynchronous processing                        | Scalability, High Throughput                         |
+| Content delivery networks (CDNs)               | Scalability, Low Latency                             |
+| Automated testing                              | Reliability                                           |
+| Backups and data replication                  | Reliability                                          |
+| Strong consistency models                      | Consistency                                          |
+| Distributed transactions                       | Consistency                                          |
+| ACID compliance                                | Consistency                                          |
+| Event sourcing                                 | Consistency                                          |
+| Eventual consistency for specific use cases    | Consistency                                          |
+| Proper locking mechanisms                     | Concurrency                                          |
+| Isolation of critical sections                 | Concurrency                                          |
+| Use of distributed locks                       | Concurrency                                          |
+| Optimistic concurrency control                 | Concurrency                                          |
+| Authentication and authorization mechanisms   | Security                                             |
+| Encryption                                     | Security                                             |
+| Firewalls                                      | Security                                             |
+| Intrusion detection systems                    | Security                                             |
+| Regular security audits                        | Security                                             |
+| Least privilege principle                      | Security                                             |
+
 Remember that achieving these attributes often involves trade-offs, and the strategies you choose will depend on your specific application requirements, budget, and the complexity you're willing to manage.
 
 ## 1.4 Prioritize requirements
