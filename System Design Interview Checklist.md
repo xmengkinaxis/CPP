@@ -97,11 +97,12 @@
   - [Asynchronism](#asynchronism)
   - [Extensibility](#extensibility)
   - [Ranking](#ranking)
+  - [Recommendation](#recommendation)
   - [Popular services:](#popular-services)
   - [Interview tool](#interview-tool)
   - [Questions:](#questions)
 - [15 Future + ML](#15-future--ml)
-- [16 Review, Evaluate, and Evovle](#16-review-evaluate-and-evovle)
+- [16 Review, Evaluate, and Evolve](#16-review-evaluate-and-evolve)
 
 
 <!-- TOC -->
@@ -109,10 +110,10 @@
 # 0 Interview Preparation
 ## 0.1 Time Allocation
 Clarify the problem, break down the complex problem into parts, discuss the overall design, and deep dive into some components; identify and analyze the tradeoffs, recover from the failures; <br>
-1. understand the problem and establish design core: ~10 minutes (3 - 10 m)
+1. Understand the problem and establish design core: ~10 minutes (3 - 10 m)
 2. Propose high-level design and get buy-in; -10 minutes (10 - 15 m)
 3. Design deep dive; 20 minutes (10 - 25 m)
-4. Wrap / Evaluation / feedback / discusson / question : 5 minutes (3 - 5 m)
+4. Wrap / Evaluation / feedback / discussion / question : 5 minutes (3 - 5 m)
 
 ## 0.2 Tips on the process
 1. Discuss trade-offs with your interviewers
@@ -228,9 +229,8 @@ All nodes see the same data at the same time, no matter users read/write from/to
 * **Throughput** is the amount of work done by the system in a given particular time. partition and split data, so they are served by different machines in the parallel read or write; cache at the different layers, including the client side, front-end servers, and databases
 * **Bandwidth** is the maximum data that can be transferred on the different networks.
 * Request Per Second;
-* can be **achieved** by using multiple machines to parallel process; minimize the latency by geographically distributing servers and their caches, adding cache clusters on top of database clusters, and using CDNs for frequently sharing documents and media content
+* can be **achieved** by using multiple machines to parallel process; minimize the latency by geographically distributing servers and their caches, adding cache clusters on top of database clusters, and using CDNs for frequently sharing documents and media content; can be **achieved** by Caching at each layer (web server, application server, cluster, data base, file system, storage units), CDN, Index, the appropriate programming language
 * video streaming should be smooth
-* Performance can be achieved by Caching at each layer (web server, application server, cluster, data base, file system, storage units), CDN, Index, the appropriate programming language
 
 ### Scalability
 * a distributed system can continuously evolve in order to support the growing amount of work; 
@@ -1068,13 +1068,12 @@ When it comes to caching user information effectively, Amazon ElastiCache with R
 Blob: Binary Large Object; a storage solution for unstructured data, such as photos, audios, multimedia, executable code; uses flat data organization pattern without hierarchy<br> 
 The main rule: write once, read many or WORM. Ensure the important dat is protected since once the data is written, it can be read, but not changed. <br>
 e.g. AWS S3
-
 ## Database
 A database is an organized collection of data that can be easily accessed and modified; make the process of storing, retrieving, modifying, and deleting data simpler. SQL vs NoSQL <br>
 
 ## Rate Limiters
 It sets a limit for the numbers of requests a service will fulfill. It will throttle requests that cross this threshold.<br>
-It is an important line of defense for servies and system; prevent services being flooded with requests; mitigate resource consumption.<br>
+It is an important line of defense for services and system; prevent services being flooded with requests; mitigate resource consumption.<br>
 e.g. AWS API Gateway(built-in rate limiting on request/API/method per second/minute/others), AWS WAF(Web Application Firewall, restrict requests from the specific IP address or IP address ranges); <br>
 AWS Lambda, AWS CloudFront (CDN, request rate limiting to prevent abuse and ensure a smooth experience for users), AWS ELB(Elastic Load Balancing, configure specific rules as rate limiting)
 
@@ -1202,6 +1201,22 @@ A script would do this job and would be called by cronjob every hour. This was o
 If a user requests for a computation-intensive task, the front end of the website sends the job to the job queue and signals back to the user and lets the user browse the website meanwhile.<br> 
 As soon as the frontend is signaled about “job is done”, the frontend notifies the user about it.<br>
 
+Synchronous Communication
+* Immediate response is crucial
+* Low latency is required
+* Services are tightly coupled
+* Simplicity in control flow is preferred
+* Asynchronous Communication
+
+Services need to work independently
+* Decoupling is necessary to ensure fault tolerance
+* Scalability and responsiveness are crucial
+* Latency can be tolerated
+
+Synchronous and asynchronous communication patterns play vital roles in microservices architecture. 
+* While synchronous communication offers simplicity and immediate results, it can also introduce potential blocking and performance issues. 
+* On the other hand, asynchronous communication provides decoupling, better fault tolerance, and scalability, albeit at the cost of increased complexity.
+
 ## Extensibility 
 Our service should be designed to in a modular way with the expectation that new functionality will be added to it.<br> 
 
@@ -1215,6 +1230,10 @@ https://www.youtube.com/watch?v=hykjbT5Z0oE&t=1041s
 * Consider all these factors to predict relevant and important posts for a user
 * Select out a few top posts from a group of candidate posts based on the assigned scores
 * Sort and display these selected posts in decreasing order of the assigned scores 
+
+## Recommendation
+* Base on users' profiles, and also consider their interests, view and search history, subscribed channels, related topics, and activities such as comments and likes
+* Use machine learning in choosing/generating/filtering the candidates and ranking them according to user's interests and history. 
 
 ## Popular services: 
 Distributed cache: Redis<br>
@@ -1252,15 +1271,15 @@ Design an API rate limiter - x
 Design YouTube - x
 
 # 15 Future + ML 
-1. Use two demansions time and space for a topic. e.g. Netflex
-2. Sychronize post by topics
-3. Allow to take a deep dive into the particular topic. e.g. Netflex
+1. Use two dimensions time and space for a topic. e.g. Netflix
+2. Synchronize post by topics
+3. Allow to take a deep dive into the particular topic. e.g. Netflix
 4. Create an audio narrator based on AI + ML 
 5. Offer the suggestion or possibility on true or false for the news/source
 6. Provider both positive and negative on the same topic; can configure the percentage
 7. Can follow up some topics a few days after first reviewing and get more new information about it
 
-# 16 Review, Evaluate, and Evovle
+# 16 Review, Evaluate, and Evolve
 Reviewing, evaluating, and evolving a system design is a crucial ongoing process to ensure that the design meets requirements, performs effectively, and can adapt to changing needs. Here's a step-by-step approach to achieve this:
 
 1. **Initial Review**:
