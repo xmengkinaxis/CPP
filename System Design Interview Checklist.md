@@ -103,6 +103,13 @@
   - [Questions:](#questions)
 - [15 Future + ML](#15-future--ml)
 - [16 Review, Evaluate, and Evolve](#16-review-evaluate-and-evolve)
+- [17 Intervew Framework](#17-intervew-framework)
+  - [17.1 Framework:](#171-framework)
+  - [17.2 Strategy for NFR](#172-strategy-for-nfr)
+  - [17.3 API Gateway](#173-api-gateway)
+  - [17.4 Common Single Points of Failure (SPOFs):](#174-common-single-points-of-failure-spofs)
+  - [17.5 Common Bottlenecks:](#175-common-bottlenecks)
+  - [17.6 Mitgation SPOFs and addressing bottlenecks involves](#176-mitgation-spofs-and-addressing-bottlenecks-involves)
 
 
 <!-- TOC -->
@@ -1336,3 +1343,105 @@ Reviewing, evaluating, and evolving a system design is a crucial ongoing process
     - Continuously evolve the design to address issues, adapt to new needs, and incorporate lessons learned from previous iterations.
 
 By following these steps, you can create a systematic process for reviewing, evaluating, and evolving your system design, leading to a more robust, effective, and adaptable solution over time.
+
+# 17 Intervew Framework 
+## 17.1 Framework:
+1. Functional req (10m)
+	System
+	User
+2. Non-functional req
+	1. Availability
+	2. Scalability
+	3. Consistency
+	4. Latency
+	5. Reliability
+	6. Security
+	
+3. Quantitative analysis
+	1. Users & DAU
+	2. Read vs Write
+	2. QPS / TPS
+	3. Storage
+	4. Bandwidth
+	
+4. High level design + Data Flow (5-10m)
+
+5. APIs Design
+6. Data Schema + Data Store
+	1. SQL vs NoSQL
+	2. Object storage
+	3. DB Partitioning / sharding
+
+7. Deep Dive (10m)
+
+8. Evolve and Optimize (5m)
+	1. Single point of failure
+	2. Monitoring and logging (daignosing and debugging)
+	3. Bottleneck 
+	4. Performance
+	5. Testability, Usability, Extensibility, Security
+	5. long-term 
+	6. Authentication
+	7. Containerization
+	8. Portability (Infrastruture as Code)
+
+## 17.2 Strategy for NFR
+2. Non-functional req
+	1. Availability (LB, ASG, Micro)
+	2. Scalability (ASG, Cache, CDN, Async, Micro)
+	3. Consistency (ACID, Eventual Consistency)
+	4. Latency (Cache, CDN, Edge)
+	5. Reliability (Redundancy, Backup, Replication, Failover)
+	6. Security (Authentication, Authorization, Encryption, Firewallm, VPC, Security Group)
+
+## 17.3 API Gateway
+API Gateway: 
+* Authentication and Authorization
+* Request and Response Transformation
+* Rate Limiting and Throttling
+* Caching
+* Monitoring and Logging
+* Scalability and Load Balancing
+
+Why the API Gateway in front of ELB is often the preferred architecture:
+
+1. API Management: The API Gateway is purpose-built for API management. It offers features like request/response transformation, authentication, authorization, rate limiting, caching, monitoring, and documentation that are crucial for efficiently exposing and managing APIs.
+2. Abstraction Layer: The API Gateway acts as an abstraction layer between clients and backend services. This abstraction allows you to evolve your backend services without affecting the API interface exposed to clients.
+3. Fine-Grained Control: API Gateway provides fine-grained control over how API requests are handled, authenticated, authorized, and routed to backend resources.
+4. Protocol Translation: API Gateway supports multiple protocols and allows you to translate protocols if needed, while ELB primarily deals with network-level load balancing.
+5. Serverless Integration: API Gateway seamlessly integrates with AWS Lambda for serverless computing, allowing you to build APIs that directly invoke Lambda functions.
+6. Security and Access Control: API Gateway offers extensive security features for API endpoints, including IAM roles, custom authorizers, and OAuth integration, enhancing the overall security posture.
+7. Multiple Backend Resources: API Gateway allows integration with various backend resources beyond just ELB, such as Lambda, HTTP endpoints, and AWS services.
+
+## 17.4 Common Single Points of Failure (SPOFs):
+* Load Balancer: If a load balancer is the only entry point to a service and it fails, users can't access the service.
+* Authentication Services: A central authentication service that fails can prevent users from accessing multiple systems.
+* Database Server: A single database server can become a bottleneck or single point of failure if it experiences downtime or data corruption.
+* External Services or APIs: Depending on a single external service or API can cause failures if that service experiences issues.
+
+* Hardware Failure: If a critical hardware component, such as a server or storage device, fails, it can disrupt the entire system.
+* Network Dependency: Relying on a single network connection or router can result in connectivity issues if it fails.
+
+## 17.5 Common Bottlenecks:
+
+* Database Performance: Inefficient database queries, lack of indexing, or high database contention can lead to slow responses.
+* Sequential Processing: When tasks must be executed sequentially, it can create a bottleneck and slow down the overall process.
+* Synchronization and Locking: Excessive locking or synchronization can lead to contention and reduce performance in multithreaded applications.
+
+* Contention for Resources: Multiple components competing for the same resources (e.g., CPU, memory) can cause contention and slowdowns.
+* Inefficient Algorithms: Poorly optimized algorithms can lead to excessive processing times and inefficient resource usage.
+
+* CPU Utilization: High CPU usage can slow down processing and response times for applications.
+* Memory Constraints: Insufficient memory can lead to performance degradation and crashes due to excessive swapping.
+* Disk I/O: Slow disk I/O can cause delays in reading and writing data, affecting application performance.
+* Network Congestion: Heavy network traffic or limited bandwidth can result in delays and data transfer issues.
+
+## 17.6 Mitgation SPOFs and addressing bottlenecks involves 
+* redundancy,
+
+* capacity planning. 
+* load balancing, 
+* efficient resource allocation, 
+* performance optimization
+
+A well-designed system considers these factors to ensure reliability, availability, and optimal performance.
