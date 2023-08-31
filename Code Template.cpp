@@ -70,6 +70,21 @@ Binary Search: low and high if the array is strictly increased, or use left and 
 4. Use a local variable to store and restore a value before and after recursively invoking backtrack
 5. Use a value instead of a reference in recursively invoking backtrack; passing by value will act as if do and undo for the original value is unchanged
 6. Start with top-right toward bottom-left for a sorted matrix (2D vector). e.g. 378. Kth Smallest Element in a Sorted Matrix
+7. If the first character is '0' in a string of presenting a number, this string is invalid
+8. When paring a sting as a number, n = n * 10 + (ch - '0') by iterating each char in the string; always check if isdigit(ch) and reaching the string length
+9. When verifying if two adjacent words are ordered, if the length of the first word is larger than that of the second one, this is invalid (not order);
+	if two characters at the same index are same, move to compare the next one; if these two characters are different, reach the comparison result and break the loop
+10. Use -1 and 1 in counting two different things/numbers and judge if their occurrences are same; e.g. 525. Contiguous Array; 348. Design Tic-Tac-Toe
+11. if more than one data structures are used in the algorithm, any action must update all data structures at the same time in order to keep them synchronized and consistent;
+	the updates, such as pop and erase, must be done after all adjustments among these data structures, such as swap; 
+	e.g. 316. Remove Duplicate Letters; 146. LRU Cache; 380. Insert Delete GetRandom O(1); https://leetcode.com/problems/insert-delete-getrandom-o1/
+12. In matching a string, can set up an unordered_map to count the frequencies of characters in the string and the total, and use them as a budget to decrease both; 
+	when the total is zero, it means that the whole string is matched. e.g. 76. Minimum Window Substring
+13. It is not easy to define unordered_set<pair<int, int>>, instead, can use unordered_set<string> by encoding a pair as a string
+	e.g. 489. Robot Room Cleaner
+14. The short cut might be needed and dealt in the normal DFS/BFS on a tree/graph or backtrack, for it is unnecessary to browse all, when the answer is found. 
+	As a result, DFS/BFS/backtrack ends earlier than the normal cases
+	e.g.  236. Lowest Common Ancestor of a Binary Tree, 285. Inorder Successor in BST
 */
 
 // ??? sort all problems of meta once a week into different algorithms, whose numbers are less than 23 and after 29
@@ -83,9 +98,8 @@ e.g. Palindrome problems (odd or even, two pointers with the opposite directions
 557. Reverse Words in a String III; https://leetcode.com/problems/reverse-words-in-a-string-iii/
 */
 int fnTwoPointers(vector<int>& arr) {
-	int left = 0, right = arr.size() - 1; 
 	int ans = 0;
-	while (left < right)  {
+	for (int left = 0, right = arr.size() - 1; left < right; )  {
 		// do some logic here with left and right for ans
 		if (CONDITION) {
 			++left;
@@ -100,6 +114,7 @@ int fnTwoPointers(vector<int>& arr) {
 
 
 /* two pointers for two arrays with the same direction; to merge rather to to intersect 
+Can start from front to back or from back to front
 408. Valid Word Abbreviation https://leetcode.com/problems/valid-word-abbreviation/
 21. Merge Two Sorted Lists; https://leetcode.com/problems/merge-two-sorted-lists/
 234. Palindrome Linked List; https://leetcode.com/problems/palindrome-linked-list/
@@ -134,7 +149,7 @@ int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
 	for the window with the fixed size, only need a single pointer to point to the end of the window
 	for the window with the fixed size, remove the start since the end >= the window size
 	must ensure the start is moved, otherwise, the inner loop would become a dead one.
-239. Sliding Window Maximum;  https://leetcode.com/problems/sliding-window-maximum/; a typical one
+239. Sliding Window Maximum;  https://leetcode.com/problems/sliding-window-maximum/; a very typical one; need a deque to maintain the values within the window
 1004. Max Consecutive Ones III; https://leetcode.com/problems/max-consecutive-ones-iii/; the window size can be zero
 76. Minimum Window Substring; https://leetcode.com/problems/minimum-window-substring/
 713. Subarray Product Less Than K; https://leetcode.com/problems/subarray-product-less-than-k/
@@ -142,13 +157,13 @@ int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
 int fnSlidingWindow(vector<int>& arr, int size) {
 	int ans = 0; 
 	for (int start = 0, end = 0, curr = 0; end < arr.size(); ++end) {
-		// add arr[end] into curr; 
+		// add arr[end] into curr (the window); 
 		// the curr might be a complex one, 
 		// 	such as a monotonic deque, and need some preprocess before adding
 		// 	or a unordered_map to represent the frequency of characters in the window
 
 		// depend on if the window size is fixed or not, 
-		// if fixed, when end >= size, remove the start by moving it towards end by one
+		// if fixed, when size <= end, remove the start by moving it towards end by one
 		// if not fixed, depend on the loop condition to remove the start
 		while (CONDITION && start <= end ) { // the condition "start <= end" is critical to ensure it is still a valid window; it can be omitted if window size can be zero
 			// can do something for the valid window here as the window is shrinking
@@ -181,7 +196,7 @@ string fnString(vector<char>& arr) {
 odd number of items: fast is valid, but fast->next is nullptr, slow points to the exact middle node of list
 even number of items: fast is nullptr, and slow points to the second middle (right-middle) node 
 283. Move Zeroes; https://leetcode.com/problems/move-zeroes/
-234. Palindrome Linked List; https://leetcode.com/problems/palindrome-linked-list/
+234. Palindrome Linked List; https://leetcode.com/problems/palindrome-linked-list/; need to distinguish odd or even numbers
 */
 int fnFastAndSlowPointers(ListNode* head) {
 	int ans = 0;
@@ -206,16 +221,19 @@ ListNode* fnReverse(ListNode* head) {
 	return prev; 
 }
 
-// Find numbers of subarrays that fit an exact criteria
-// this like a fixed-left-side sliding window and process as a length-increasing-forever window, sharing the similar code template
-// 325. Maximum Size Subarray Sum Equals k; https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/
-// 523. Continuous Subarray Sum; https://leetcode.com/problems/continuous-subarray-sum/ 
-// 560. Subarray Sum Equals K; https://leetcode.com/problems/subarray-sum-equals-k/
-// similar e.g. 219. Contains Duplicate II; https://leetcode.com/problems/contains-duplicate-ii/
-// 525. Contiguous Array; https://leetcode.com/problems/contiguous-array/
+/* Find numbers of subarrays that fit an exact criteria
+	this like a fixed-left-side sliding window and process as a length-increasing-forever window, sharing the similar code template
+	this also looks like pre-sum; 
+325. Maximum Size Subarray Sum Equals k; https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/
+523. Continuous Subarray Sum; https://leetcode.com/problems/continuous-subarray-sum/ 
+560. Subarray Sum Equals K; https://leetcode.com/problems/subarray-sum-equals-k/
+525. Contiguous Array; https://leetcode.com/problems/contiguous-array/
+similar e.g. 219. Contains Duplicate II; https://leetcode.com/problems/contains-duplicate-ii/
+*/
 int fnFindSubarrays(vector<int>& arr, int k) {
 	// 0. define the map and initialize it properly
 	// using a map to look up quickly; and it serves as a memo/dp, so it needs the initialization
+	// mapping a pre-sum to the index (for maximum size or longest), or counting the frequency of a pre-sum (for how many / total)
 	unordered_map<int, int> counts;  // choose the proper name for this map according to the problem; the map serves as a dp array too
 	counts[0] = 1; // must initialize counts[0], but its value will depend on the problem; dp array needs a base case
 					// might be memo[0] = -1, if the value is the index of the array
@@ -232,7 +250,7 @@ int fnFindSubarrays(vector<int>& arr, int k) {
 
 		// 3. Update the map
 		// NOTE: cannot add curr into map first; otherwise, ans might be counted incorrectly
-		counts[curr]++; // there might be a condition to check before adding into the map
+		counts[curr]++; // there might be a condition to check before adding into the map, e.g. if curr is NOT in map
 	}
 	return ans; 
 }
@@ -252,7 +270,7 @@ int fnMonotonicIncreasingStack(vector<int>& arr) {
 	for (int n : arr) {
 		// this is monotonic increasing
 		// for monotonic decrease, change > to < 
-		while (!stack.empty() && stack.top() > n) {
+		while (!stack.empty() && stack.top() > n) { // it is while-loop here
 			// do logic here
 			stack.pop(); 
 		}
@@ -267,7 +285,8 @@ preOrder
 inOrder
 426. Convert Binary Search Tree to Sorted Doubly Linked List; https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/
 987. Vertical Order Traversal of a Binary Tree; https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/
-1161. Maximum Level Sum of a Binary Tree; https://leetcode.com/problems/maximum-level-sum-of-a-binary-tree/
+1161. Maximum Level Sum of a Binary Tree; https://leetcode.com/problems/maximum-level-sum-of-a-binary-tree/; must be preOrder; crash if inOrder, for it is similar to bfs by layer
+285. Inorder Successor in BST; https://leetcode.com/problems/inorder-successor-in-bst/; it needs a short cut when the answer is found; no need to browse all
 postOrder
 543. Diameter of Binary Tree; https://leetcode.com/problems/diameter-of-binary-tree/
 536. Construct Binary Tree from String; https://leetcode.com/problems/construct-binary-tree-from-string/
@@ -291,11 +310,21 @@ int dfsTree(TreeNode *root) { // could return a tuple of a node and the depth
 	int ans = 0; 
 	// 2. do logic for this node if it is preOrder
 	// sometime check if the root is the special target, such as a leave, do the logic for leaf and then return; 
+	// sometime check if the root at the certain layer, or if the root is some special input node
 
 	// 3. iterate all branches/candidates/choices/;
-	// 4. might need to check if a branch should be visited with some conditions, e.g. value in the special range
+	// 3.1. Pre-Check: might need to check if a branch should be visited with some conditions, e.g. value in the special range
 	//  or depending on if other branches exist or not
+	// 3.2. Post-Check might need to check the return value from a branch and then determine if it should return earlier or continue with other branch
+	// 3.3 these two checks can be applied to DFS/BFS on Tree/Graph/Backtrack
+
+	// must pay attention the parameters in invoking the recursive function call
+	//	pass all parameters accordingly
+	//	update some parameters properly, e.g. increase depth, increase or decrease row and column, 
 	dfsTree(root->left); 
+
+	// 4 do logic for this node if it is inOrder
+
 	dfsTree(root->right); 
 	
 	// 5. do logic for this node if it is postOrder
@@ -327,10 +356,10 @@ int dfsTreeStack(TreeNode* root) {
 /*
 314. Binary Tree Vertical Order Traversal, https://leetcode.com/problems/binary-tree-vertical-order-traversal/
 199. Binary Tree Right Side View; https://leetcode.com/problems/binary-tree-right-side-view/
-1161. Maximum Level Sum of a Binary Tree; https://leetcode.com/problems/maximum-level-sum-of-a-binary-tree/
+1161. Maximum Level Sum of a Binary Tree; https://leetcode.com/problems/maximum-level-sum-of-a-binary-tree/; do some logic for each layer
 */
 int bfsTree(TreeNode* root) {
-	if (!root) { return 0; }
+	if (!root) { return 0; } // this step is critical for BFS, for no nullptr can be pushed into queue any time
 
 	queue<TreeNode*> queue; 
 	queue.push(root); 
@@ -345,7 +374,7 @@ int bfsTree(TreeNode* root) {
 			if (node->left) { queue.push(node->left); }
 			if (node->right) { queue.push(node->right); }
 		}
-		// do some actions for this layer, e.g. calculating steps/time/sum
+		// do some actions for this layer, e.g. calculating steps/time/sum for this layer
 		// or this action can be merged with the while loop and change it into a for loop
 	}
 	return ans; 
@@ -355,7 +384,7 @@ int bfsTree(TreeNode* root) {
 1. check if the node is valid, e.g. it must be in the grid when the problem is a grid,
 2. check if the node should be visited, e.g. the original value/attribute of this node makes it as a valid candidate. 
 3. check if the node is already visited, e.g. seen/visited already contains it 
-4. do something for this node; this is a real visit on this node
+4. do something for this node; this is a real visit on this node; it might check if the condition of ending this DFS is met
 5. visit all its neighbors; 
 * these core actions is the core of DFS and the block of the BFS while loop
 * for BFS, the order might be 4, 5, 1, 2, 3
@@ -421,10 +450,11 @@ int dfsGraph2(int node, vector<vector<int>>& graph) {
 200. Number of Islands; https://leetcode.com/problems/number-of-islands/
 694. Number of Distinct Islands; https://leetcode.com/problems/number-of-distinct-islands/
 827. Making A Large Island; https://leetcode.com/problems/making-a-large-island/
+489. Robot Room Cleaner; https://leetcode.com/problems/robot-room-cleaner/description/
 */
 bool dfsGraph3(int node, vector<vector<int>>& graph) {	
-	if (seen2.find(node) == seen2.end()) {
-		return false; 
+	if (seen2.find(node) != seen2.end()) { 
+		return false; // already visited
 	} else if (CONDITION) { // CONDITION: node is the destination
 		return true; // found
 	}
@@ -685,6 +715,8 @@ In binary search, if "left" is 0, "right" is the array size, the loop condition 
 However, if "right" is  the array size minus 1, the loop condition is "left <= right".
 For "left < right", the loop condition is that there are two items in the array, and the exit condition is only one item left (left == right); 
 For "left <= right", the loop condition is that there is at least one item in the array, and the exit condition is the empty array (left > right);
+NOTE: exceptions is 4. Median of Two Sorted Arrays; https://leetcode.com/problems/median-of-two-sorted-arrays/description/
+for (int low = 0, high = M; low <= high; ) // high is size, but the loop condition is "low <= high"
 
 Yes, the above statement is correct. The choice of loop condition in binary search depends on how you initialize the `right` pointer.
 
@@ -766,13 +798,16 @@ int binaryMaximum(vector<int>& arr) {
 	return high; 
 }
 
-// 17. Letter Combinations of a Phone Number; https://leetcode.com/problems/letter-combinations-of-a-phone-number/
-// 78. Subsets https://leetcode.com/problems/subsets/
-// 301. Remove Invalid Parentheses; https://leetcode.com/problems/remove-invalid-parentheses/
-// 46. Permutations; https://leetcode.com/problems/permutations/
-// 77. Combinations; https://leetcode.com/problems/combinations/
-// 140. Word Break II; https://leetcode.com/problems/word-break-ii/ 
-// 282. Expression Add Operators; https://leetcode.com/problems/expression-add-operators/
+/*
+17. Letter Combinations of a Phone Number; https://leetcode.com/problems/letter-combinations-of-a-phone-number/
+78. Subsets https://leetcode.com/problems/subsets/
+301. Remove Invalid Parentheses; https://leetcode.com/problems/remove-invalid-parentheses/
+46. Permutations; https://leetcode.com/problems/permutations/
+77. Combinations; https://leetcode.com/problems/combinations/
+140. Word Break II; https://leetcode.com/problems/word-break-ii/ 
+282. Expression Add Operators; https://leetcode.com/problems/expression-add-operators/
+490. The Maze; https://leetcode.com/problems/the-maze/; return bool; keep going on one direction
+*/
 int backtrack(STATE curr, OTHERS) {
 	if (BASE_CASE) { // startId, or curr state size, or both
 		// modify the answer
@@ -907,8 +942,10 @@ public:
 
 /* Parentheses
 921. Minimum Add to Make Parentheses Valid; https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/
-1249. Minimum Remove to Make Valid Parentheses; https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/
 301. Remove Invalid Parentheses; https://leetcode.com/problems/remove-invalid-parentheses/
+two rounds; first from left to right, second from right to left; in order to find the balance
+1249. Minimum Remove to Make Valid Parentheses; https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/
+32. Longest Valid Parentheses; https://leetcode.com/problems/longest-valid-parentheses/
 */
 
 /* intervals 
@@ -975,6 +1012,7 @@ sliding
 1209. Remove All Adjacent Duplicates in String II; https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string-ii/
 1047. Remove All Adjacent Duplicates In String; https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/
 20. Valid Parentheses; https://leetcode.com/problems/valid-parentheses/
+1963. Minimum Number of Swaps to Make the String Balanced; https://leetcode.com/problems/minimum-number-of-swaps-to-make-the-string-balanced/
 */
 
 /* Divide and conquer
@@ -984,4 +1022,8 @@ sliding
 
 /* Multiset
 218. The Skyline Problem; https://leetcode.com/problems/the-skyline-problem/
+*/
+
+/* Greedy
+135. Candy; https://leetcode.com/problems/candy/
 */
