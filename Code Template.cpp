@@ -20,6 +20,11 @@ using namespace std;
 #define CONDITION true
 #define START_NODE 0
 
+#define MINIMUM_POSSIBLE_ANSWER 1 
+#define MAXIMUM_POSSIBLE_ANSWER 1000 
+#define BASE_CASE true
+#define ITERATE_OVER_INPUT 1 : 1
+
 struct ListNode {
 	int val; 
 	ListNode *next; 
@@ -72,19 +77,28 @@ Binary Search: low and high if the array is strictly increased, or use left and 
 6. Start with top-right toward bottom-left for a sorted matrix (2D vector). e.g. 378. Kth Smallest Element in a Sorted Matrix
 7. If the first character is '0' in a string of presenting a number, this string is invalid
 8. When paring a sting as a number, n = n * 10 + (ch - '0') by iterating each char in the string; always check if isdigit(ch) and reaching the string length
-9. When verifying if two adjacent words are ordered, if the length of the first word is larger than that of the second one, this is invalid (not order);
-	if two characters at the same index are same, move to compare the next one; if these two characters are different, reach the comparison result and break the loop
+9. When verifying if two adjacent words are ordered, 
+	if the length of the first word is larger than that of the second one, this is invalid (not ordered);
+	if these two characters are different, reach the comparison result and break the loop;
+	if two characters at the same index are same, move to compare the next one; 
 10. Use -1 and 1 in counting two different things/numbers and judge if their occurrences are same; e.g. 525. Contiguous Array; 348. Design Tic-Tac-Toe
-11. if more than one data structures are used in the algorithm, any action must update all data structures at the same time in order to keep them synchronized and consistent;
-	the updates, such as pop and erase, must be done after all adjustments among these data structures, such as swap; 
+11. If more than one data structures are used in the algorithm, any action must update all data structures at the same time in order to keep them synchronized and consistent;
+	The updates, such as pop and erase, must be done after all adjustments among these data structures, such as swap; 
 	e.g. 316. Remove Duplicate Letters; 146. LRU Cache; 380. Insert Delete GetRandom O(1); https://leetcode.com/problems/insert-delete-getrandom-o1/
 12. In matching a string, can set up an unordered_map to count the frequencies of characters in the string and the total, and use them as a budget to decrease both; 
-	when the total is zero, it means that the whole string is matched. e.g. 76. Minimum Window Substring
+	When the total is zero, it means that the whole string is matched. e.g. 76. Minimum Window Substring
 13. It is not easy to define unordered_set<pair<int, int>>, instead, can use unordered_set<string> by encoding a pair as a string
 	e.g. 489. Robot Room Cleaner
-14. The short cut might be needed and dealt in the normal DFS/BFS on a tree/graph or backtrack, for it is unnecessary to browse all, when the answer is found. 
-	As a result, DFS/BFS/backtrack ends earlier than the normal cases
+14. The short cut might be needed and dealt in the normal DFS/BFS on a tree/graph or backtrack, for it is unnecessary to browse all, when the answer is already found. 
+	As a result, DFS/BFS/backtrack can end earlier than the normal cases
 	e.g.  236. Lowest Common Ancestor of a Binary Tree, 285. Inorder Successor in BST
+15. DFS problem's indicator: 
+	Nested data structure, e.g. 339. Nested List Weight Sum
+	Recursively process, e.g. 529. Minesweeper
+	Repeated step, 490. The Maze
+16. Add and then process vs process than then add; each item will be added once and only once
+	Add and then process/calculate : sliding windows, topK
+	Process/calculate and add : monotonic stack/queue (maintain monotonic), sub-array (avoid count the duplicates), 
 */
 
 // ??? sort all problems of meta once a week into different algorithms, whose numbers are less than 23 and after 29
@@ -255,14 +269,16 @@ int fnFindSubarrays(vector<int>& arr, int k) {
 	return ans; 
 }
 
-// the monotonic stack might contain values or some index; 
-// if the stack contains index, the while condition should be changed accordingly
-// < and > is opposite to the order decreasing and increasing
-// 	increase: >
-// 	decrease: <
-// 1944. Number of Visible People in a Queue https://leetcode.com/problems/number-of-visible-people-in-a-queue/
-// 1762. Buildings With an Ocean View https://leetcode.com/problems/buildings-with-an-ocean-view/ 
-// 316. Remove Duplicate Letters; https://leetcode.com/problems/remove-duplicate-letters/
+/* the monotonic stack might contain values or some index; 
+	if the stack contains index, the while condition should be changed accordingly
+	< and > is opposite to the order decreasing and increasing
+		increase: >
+		decrease: <
+	Each item will be pushed into the stack after the stack is updated accordingly
+1944. Number of Visible People in a Queue https://leetcode.com/problems/number-of-visible-people-in-a-queue/
+1762. Buildings With an Ocean View https://leetcode.com/problems/buildings-with-an-ocean-view/ 
+316. Remove Duplicate Letters; https://leetcode.com/problems/remove-duplicate-letters/
+*/
 int fnMonotonicIncreasingStack(vector<int>& arr) {
 	stack<int> stack; 
 	int ans = 0;
@@ -369,8 +385,8 @@ int bfsTree(TreeNode* root) {
 		// the following for loop can be eliminated if there is NO action for each layer
 		for (int count = queue.size(); 0 < count; --count) {
 			auto node = queue.front(); queue.pop(); 
-			// 1. do logic for this node
-			// 2. visit its branches
+			// 1. do logic for this node; might do some logic as post-Check
+			// 2. visit its branches; might need to do pre-Check
 			if (node->left) { queue.push(node->left); }
 			if (node->right) { queue.push(node->right); }
 		}
@@ -385,13 +401,15 @@ int bfsTree(TreeNode* root) {
 2. check if the node should be visited, e.g. the original value/attribute of this node makes it as a valid candidate. 
 3. check if the node is already visited, e.g. seen/visited already contains it 
 4. do something for this node; this is a real visit on this node; it might check if the condition of ending this DFS is met
-5. visit all its neighbors; 
+	4.1 add this node into seen/visit; this step must be done before visiting its neighbors, otherwise, it would be a dead loop
+	4.2 do logic for this node; 
+	4.3 might need to check if it should be a short cut there, e.g. meet the certain condition/target
+5. visit all its neighbors which are not seen/visit yet; need a pre-Check here; might need to add them into seen/visited
 * these core actions is the core of DFS and the block of the BFS while loop
 * for BFS, the order might be 4, 5, 1, 2, 3
 * if changing the original value instead of using seen/visited, the 2 and 3 are merged into one of checking value
 * for DFS, the seen/visit must be set/inserted before visiting its neighbors; and it could be the first step checking if the current is seen or visited already
 
-317. Shortest Distance from All Buildings;  https://leetcode.com/problems/shortest-distance-from-all-buildings/
 339. Nested List Weight Sum; https://leetcode.com/problems/nested-list-weight-sum/
 529. Minesweeper; https://leetcode.com/problems/minesweeper/; acton 2 and 3 are separated
 */
@@ -407,7 +425,7 @@ int dfsGraph1(int node, vector<vector<int>>& graph) {
 	int ans = 0; 
 	// do logic for node here
 	for (int neighbor : graph[node]) { // might to validate if a neighbor is valid first		
-		if (seen.find(neighbor) == seen.end()) { // prerequisite of the atomic action: ensure the node is not visited before
+		if (seen.find(neighbor) == seen.end()) { // prerequisite of the atomic action: ensure the node is not visited before; otherwise, cause a dead loop
 			// they are a pair of actions, inserting the node into seen and call dfs on this node.
 			// an atomic action: add into seen, and then dfs ths node
 			// AKA. the atomic action: want to visit (add into seen), and do visit (do dfs)
@@ -418,8 +436,6 @@ int dfsGraph1(int node, vector<vector<int>>& graph) {
 	return ans; 
 }
 
-
-// 490. The Maze; https://leetcode.com/problems/the-maze/
 unordered_set<int> seen2; 
 int dfsGraph2(vector<vector<int>>& graph) {
 	return dfsGraph2(START_NODE, graph);
@@ -443,9 +459,8 @@ int dfsGraph2(int node, vector<vector<int>>& graph) {
 }
 
 /*
-490. The Maze; https://leetcode.com/problems/the-maze/
-778. Swim in Rising Water; https://leetcode.com/problems/swim-in-rising-water/
-79. Word Search; https://leetcode.com/problems/word-search/
+490. The Maze; https://leetcode.com/problems/the-maze/; not use the direct neighbor, but keep going
+778. Swim in Rising Water; https://leetcode.com/problems/swim-in-rising-water/; Binary Search + DFS
 721. Accounts Merge; https://leetcode.com/problems/accounts-merge/
 200. Number of Islands; https://leetcode.com/problems/number-of-islands/
 694. Number of Distinct Islands; https://leetcode.com/problems/number-of-distinct-islands/
@@ -455,7 +470,7 @@ int dfsGraph2(int node, vector<vector<int>>& graph) {
 bool dfsGraph3(int node, vector<vector<int>>& graph) {	
 	if (seen2.find(node) != seen2.end()) { 
 		return false; // already visited
-	} else if (CONDITION) { // CONDITION: node is the destination
+	} else if (CONDITION) { // ending condition: node is the destination
 		return true; // found
 	}
 	seen2.insert(START_NODE); // must do insert before visiting it in order to avoid the dead loop
@@ -595,7 +610,7 @@ int binarySearch(vector<int>& arr, int target) {
 // 852. Peak Index in a Mountain Array, https://leetcode.com/problems/peak-index-in-a-mountain-array/
 // 1870. Minimum Speed to Arrive on Time; https://leetcode.com/problems/minimum-speed-to-arrive-on-time/
 // 1539. Kth Missing Positive Number; https://leetcode.com/problems/kth-missing-positive-number/
-// 778. Swim in Rising Water; https://leetcode.com/problems/swim-in-rising-water/
+// 778. Swim in Rising Water; https://leetcode.com/problems/swim-in-rising-water/; why not binaryMinimum ???
 // Binary search: duplicate elements, left-most insertion point
 int binaryLeftMost(vector<int>& arr, int target) {
 	int left = 0;
@@ -767,16 +782,16 @@ If looking for a minimum:
 int binaryMinimum(vector<int>& arr) {
 	int low = MINIMUM_POSSIBLE_ANSWER; 
 	int high = MAXIMUM_POSSIBLE_ANSWER; 
-	// must use <= here; this is different from the above binary search
+	// must use "<="" here; this is different from the above binary search
 	while (low <= high) {
 		auto mid = low + (high - low) / 2; 
 		if (check(mid)) {
-			high = mid - 1; 
+			high = mid - 1; // different from the normal binary search here, "high = mid - 1" rather than high = "mid"; 
 		} else {
-			low = mid + 1;  // when exit, low will be the first/smallest/minimum to meet the check function
+			low = mid + 1;  // when exit, low will be the minimum (first/smallest) to meet the check function
 		}
 	}
-	return low; 
+	return low; // return the minimum
 }
 
 /* Binary search: for greedy problems
@@ -786,19 +801,27 @@ If looking for a maximum:
 int binaryMaximum(vector<int>& arr) {
 	int low = MINIMUM_POSSIBLE_ANSWER; 
 	int high = MAXIMUM_POSSIBLE_ANSWER;
-	// must use <= here
+	// must use "<="" here
 	while (low <= high) {
 		auto mid = low + (high - low) / 2; 
 		if (check(mid)) {
 			low = mid + 1; 
 		} else {
-			high = mid - 1; // when exit, high will be the last/largest/maximum to meet the check function
+			high = mid - 1; // when exit, high will be the maximum (last/largest) to meet the check function
 		}
 	}
-	return high; 
+	return high; // return the maximum
 }
 
-/*
+/* Backtrack vs DFS
+Same: backtrack uses the similar code template as DFS
+Diff: backtrack uses the short cut by trimming the candidates or solution space, while DFS will generally browses all 
+	backtrack must check the ending condition to trim, before checking the normal conditions used in DFS; it is the base case 
+	in backtrack which might be not valid condition in DFS anymore
+		e.g. if the current index == word.length() or nums.size(); 
+		if such a check is delayed in checking DFS conditions, it might cause an access violation
+	backtrack do and then undo the current state before and after the recursive call 
+	backtrack might do and undo the modification (adding into seen/visit) on the current node too
 17. Letter Combinations of a Phone Number; https://leetcode.com/problems/letter-combinations-of-a-phone-number/
 78. Subsets https://leetcode.com/problems/subsets/
 301. Remove Invalid Parentheses; https://leetcode.com/problems/remove-invalid-parentheses/
@@ -807,8 +830,11 @@ int binaryMaximum(vector<int>& arr) {
 140. Word Break II; https://leetcode.com/problems/word-break-ii/ 
 282. Expression Add Operators; https://leetcode.com/problems/expression-add-operators/
 490. The Maze; https://leetcode.com/problems/the-maze/; return bool; keep going on one direction
+79. Word Search; https://leetcode.com/problems/word-search/
 */
 int backtrack(STATE curr, OTHERS) {
+	// might check if the current state is till valid, as 301. Remove Invalid Parentheses
+	// check the base condition of backtrack first, before check the DFS conditions
 	if (BASE_CASE) { // startId, or curr state size, or both
 		// modify the answer
 		return 0; 
@@ -816,15 +842,15 @@ int backtrack(STATE curr, OTHERS) {
 
 	int ans = 0; 
 	// like dfs, iterate all candidates
-	// the other difference is to modify the current state
-	// and to undo the modification
-	for (INTERATE_OVER_INPUT) {
-		// modify curr, the current state
+	// the other difference is to modify the current state and to undo the modification
+	// if some change is done on the current node in DFS, then undo it after iterating its neighbors, and before return
+	for (ITERATE_OVER_INPUT) {
+		// DO modify curr, the current state
 		ans += backtrack(curr, OTHERS); 
-		// undo the modification of the current state
+		// UNDO the modification of the current state
 	}
 	return ans; 
-}
+} 
 
 // 212. Word Search II; https://leetcode.com/problems/word-search-ii/
 struct TrieNode {
