@@ -30,14 +30,14 @@ Framework:
 
 8. Evolve and Optimize (5m)
 	1. Single point of failure
-	2. Monitoring and logging (daignosing and debugging)
+	2. Monitoring and logging (diagnosing and debugging)
 	3. Bottleneck 
 	4. Performance
 	5. Testability, Usability, Extensibility, Security
 	5. long-term 
 	6. Authentication
 	7. Containerization
-	8. Portability (Infrastruture as Code)
+	8. Portability (Infrastructure as Code)
 	
 ################################
 2. Non-functional req
@@ -46,7 +46,7 @@ Framework:
 	3. Consistency (ACID, Eventual Consistency)
 	4. Latency (Cache, CDN, Edge)
 	5. Reliability (Redundancy, Backup, Replication, Failover)
-	6. Security (Authentication, Authorization, Encryption, Firewallm, VPC, Security Group)
+	6. Security (Authentication, Authorization, Encryption, Firewall, VPC, Security Group)
 
 ################################
 	
