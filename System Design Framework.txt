@@ -19,6 +19,8 @@ Framework:
 	5. Servers
 	
 4. High level design + Data Flow (5-10m)
+	1. Building Blocks (Components) : LB, servers, DB, blobs
+	2. Workflow
 
 5. APIs Design
 6. Data Schema + Data Store
@@ -41,10 +43,10 @@ Framework:
 	
 ################################
 2. Non-functional req
-	1. Availability (LB, ASG, Micro)
-	2. Scalability (ASG, Cache, CDN, Async, Micro)
+	1. Availability (LB, ASG, Micro, sharding, replica)
+	2. Scalability (ASG, Cache, CDN, Async, Micro, sharding)
 	3. Consistency (ACID, Eventual Consistency)
-	4. Latency (Cache, CDN, Edge)
+	4. Latency (Cache, CDN, Edge, sharding)
 	5. Reliability (Redundancy, Backup, Replication, Failover)
 	6. Security (Authentication, Authorization, Encryption, Firewall, VPC, Security Group)
 
