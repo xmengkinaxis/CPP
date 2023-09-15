@@ -3,7 +3,7 @@
 #include <iostream> // cout, cin
 #include <cctype> // isalnum, isalpha, isdigit, islower, isupper, isspace; toupper, tolower
 #include <sstream> // stringstream
-#include <string> // substr, getline, strlen, string(n, char), append(n, char), find(str, pos), erase(first, last), strcpy, strncpy, strcmp, stryncmp
+#include <string> // substr, getline, strlen, stoi, string(n, char), append(n, char), find(str, pos), erase(first, last), strcpy, strncpy, strcmp, stryncmp
 #include <vector>
 #include <unordered_map> 
 #include <unordered_set>
@@ -98,7 +98,9 @@ Binary Search: low and high if the array is strictly increased, or use left and 
 	Repeated step, 490. The Maze
 16. Add and then process vs process than then add; each item will be added once and only once
 	Add and then process/calculate : sliding windows, topK
-	Process/calculate and add : monotonic stack/queue (maintain monotonic), sub-array (avoid count the duplicates), 
+	Process/calculate and add : monotonic stack/queue (maintain monotonic), sub-array (avoid count the duplicates) (might not be added, if wanting to keep the small index) 
+17. Converting an integer into a string is the quicker way of getting the digits from a number
+18. can use minus to convert a maxHeap to minHeap, instead of creating a special comparison function
 */
 
 // ??? sort all problems of meta once a week into different algorithms, whose numbers are less than 23 and after 29
@@ -110,6 +112,7 @@ e.g. Palindrome problems (odd or even, two pointers with the opposite directions
 16. 3Sum Closest; https://leetcode.com/problems/3sum-closest/
 125. Valid Palindrome; https://leetcode.com/problems/valid-palindrome/
 557. Reverse Words in a String III; https://leetcode.com/problems/reverse-words-in-a-string-iii/
+11. Container With Most Water; https://leetcode.com/problems/container-with-most-water/ 
 */
 int fnTwoPointers(vector<int>& arr) {
 	int ans = 0;
@@ -165,7 +168,7 @@ int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
 	must ensure the start is moved, otherwise, the inner loop would become a dead one.
 239. Sliding Window Maximum;  https://leetcode.com/problems/sliding-window-maximum/; a very typical one; need a deque to maintain the values within the window
 1004. Max Consecutive Ones III; https://leetcode.com/problems/max-consecutive-ones-iii/; the window size can be zero
-76. Minimum Window Substring; https://leetcode.com/problems/minimum-window-substring/
+76. Minimum Window Substring; https://leetcode.com/problems/minimum-window-substring/; use a frequency map
 713. Subarray Product Less Than K; https://leetcode.com/problems/subarray-product-less-than-k/
 */
 int fnSlidingWindow(vector<int>& arr, int size) {
@@ -278,6 +281,7 @@ int fnFindSubarrays(vector<int>& arr, int k) {
 1944. Number of Visible People in a Queue https://leetcode.com/problems/number-of-visible-people-in-a-queue/
 1762. Buildings With an Ocean View https://leetcode.com/problems/buildings-with-an-ocean-view/ 
 316. Remove Duplicate Letters; https://leetcode.com/problems/remove-duplicate-letters/
+similar: 896. Monotonic Array; https://leetcode.com/problems/monotonic-array/
 */
 int fnMonotonicIncreasingStack(vector<int>& arr) {
 	stack<int> stack; 
@@ -317,6 +321,7 @@ postOrder
 1110. Delete Nodes And Return Forest; https://leetcode.com/problems/delete-nodes-and-return-forest/; must update root and add it if still valid
 inOrder + postOrder
 1382. Balance a Binary Search Tree; https://leetcode.com/problems/balance-a-binary-search-tree/
+545. Boundary of Binary Tree; https://leetcode.com/problems/boundary-of-binary-tree/
 */
 int dfsTree(TreeNode *root) { // could return a tuple of a node and the depth
 	// 1. deal withing the special base cases;  could be more base cases
@@ -347,8 +352,10 @@ int dfsTree(TreeNode *root) { // could return a tuple of a node and the depth
 	return ans; 	
 }
 
-// 173. Binary Search Tree Iterator; https://leetcode.com/problems/binary-search-tree-iterator/
-// dfsTreeStack is much similar to bfsTree; the only difference is stack vs queue
+/* dfsTreeStack is much similar to bfsTree; the only difference is stack vs queue
+173. Binary Search Tree Iterator; https://leetcode.com/problems/binary-search-tree-iterator/
+270. Closest Binary Search Tree Value; https://leetcode.com/problems/closest-binary-search-tree-value
+*/
 int dfsTreeStack(TreeNode* root) {
 	if (!root) { return 0; 	}
 
@@ -509,8 +516,9 @@ int dfsIterative(vector<vector<int>> & graph) {
 1091. Shortest Path in Binary Matrix; https://leetcode.com/problems/shortest-path-in-binary-matrix/
 286. Walls and Gates; https://leetcode.com/problems/walls-and-gates/; min() for shortest
 863. All Nodes Distance K in Binary Tree; https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/; reach a certain level
-1293. Shortest Path in a Grid with Obstacles Elimination; https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination/
-785. Is Graph Bipartite? https://leetcode.com/problems/is-graph-bipartite/; return a bool ; 
+1293. Shortest Path in a Grid with Obstacles Elimination; https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination/; visit[r][c] is an integer 
+785. Is Graph Bipartite? https://leetcode.com/problems/is-graph-bipartite/; bfs return a bool; can have a short cut
+127. Word Ladder; https://leetcode.com/problems/word-ladder/
 */
 int bfsGraph(vector<vector<int>>& graph) {
 	queue<int> queue; 
@@ -523,7 +531,7 @@ int bfsGraph(vector<vector<int>>& graph) {
 	seen.insert(START_NODE); 
 	queue.push(START_NODE); 
 	int ans = 0; 
-	while (!queue.empty()) {
+	while (!queue.empty()) { // for (int step = 1; !queue.empty(); ++step)
 		int node = queue.front(); 
 		queue.pop(); 
 		// do logic for the node; e.g. set the distance or time for this node, or check if reach the destination and then exit
@@ -571,9 +579,11 @@ int bfsGraphSteps(vector<vector<int>>& grid) {
 	return -1; 
 }
 
-// 973. K Closest Points to Origin; https://leetcode.com/problems/k-closest-points-to-origin/
-// 347. Top K Frequent Elements; https://leetcode.com/problems/top-k-frequent-elements/
-// 215. Kth Largest Element in an Array; https://leetcode.com/problems/kth-largest-element-in-an-array/
+/*
+973. K Closest Points to Origin; https://leetcode.com/problems/k-closest-points-to-origin/
+347. Top K Frequent Elements; https://leetcode.com/problems/top-k-frequent-elements/
+215. Kth Largest Element in an Array; https://leetcode.com/problems/kth-largest-element-in-an-array/ use minus to create a minHeap;
+*/
 vector<int> fnTopK(vector<int>& arr, int k) {
 	priority_queue<int, vector<int>, greater<int>> minHeap; // priority_queue<int> heap; 
 	for (auto n : arr) {
@@ -591,7 +601,10 @@ vector<int> fnTopK(vector<int>& arr, int k) {
 	return ans; 
 }
 
-// 81. Search in Rotated Sorted Array II; https://leetcode.com/problems/search-in-rotated-sorted-array-ii/
+/*
+81. Search in Rotated Sorted Array II; https://leetcode.com/problems/search-in-rotated-sorted-array-ii/
+4. Median of Two Sorted Arrays; https://leetcode.com/problems/median-of-two-sorted-arrays/
+*/
 int binarySearch(vector<int>& arr, int target) {
 	int low = 0, high = arr.size() - 1; 
 	while (low <= high) {
@@ -607,11 +620,13 @@ int binarySearch(vector<int>& arr, int target) {
 	return low; 
 }
 
-// 852. Peak Index in a Mountain Array, https://leetcode.com/problems/peak-index-in-a-mountain-array/
-// 1870. Minimum Speed to Arrive on Time; https://leetcode.com/problems/minimum-speed-to-arrive-on-time/
-// 1539. Kth Missing Positive Number; https://leetcode.com/problems/kth-missing-positive-number/
-// 778. Swim in Rising Water; https://leetcode.com/problems/swim-in-rising-water/; why not binaryMinimum ???
-// Binary search: duplicate elements, left-most insertion point
+/* Binary search: duplicate elements, left-most insertion point
+852. Peak Index in a Mountain Array, https://leetcode.com/problems/peak-index-in-a-mountain-array/
+1870. Minimum Speed to Arrive on Time; https://leetcode.com/problems/minimum-speed-to-arrive-on-time/
+1539. Kth Missing Positive Number; https://leetcode.com/problems/kth-missing-positive-number/
+778. Swim in Rising Water; https://leetcode.com/problems/swim-in-rising-water/; why not binaryMinimum ???
+658. Find K Closest Elements; https://leetcode.com/problems/find-k-closest-elements/
+*/
 int binaryLeftMost(vector<int>& arr, int target) {
 	int left = 0;
 	for (int right = arr.size(); left < right; )  {
@@ -647,8 +662,11 @@ int minSpeedOnTime(vector<int>& dist, double hour) {
 	return minSpeed;
 }
 */
-// Binary search: duplicate elements, right-most insertion point
-// 1060. Missing Element in Sorted Array; https://leetcode.com/problems/missing-element-in-sorted-array/
+
+/* Binary search: duplicate elements, right-most insertion point
+1060. Missing Element in Sorted Array; https://leetcode.com/problems/missing-element-in-sorted-array/
+similar : 162. Find Peak Element; https://leetcode.com/problems/find-peak-element/; right = nums.size() - 1 and if (nums[mid] > nums[mid + 1])
+*/
 int binaryRightMost(vector<int>& arr, int target) {
 	int left = 0;
 	for (int right = arr.size(); left < right; )  {
@@ -730,8 +748,12 @@ In binary search, if "left" is 0, "right" is the array size, the loop condition 
 However, if "right" is  the array size minus 1, the loop condition is "left <= right".
 For "left < right", the loop condition is that there are two items in the array, and the exit condition is only one item left (left == right); 
 For "left <= right", the loop condition is that there is at least one item in the array, and the exit condition is the empty array (left > right);
-NOTE: exceptions is 4. Median of Two Sorted Arrays; https://leetcode.com/problems/median-of-two-sorted-arrays/description/
+NOTE: 
+Exception #1 is 4. Median of Two Sorted Arrays; https://leetcode.com/problems/median-of-two-sorted-arrays/
 for (int low = 0, high = M; low <= high; ) // high is size, but the loop condition is "low <= high"
+Exception #2 is 162. Find Peak Element; https://leetcode.com/problems/find-peak-element/ 
+for (int right = nums.size() - 1; left < right; ) // high is size - 1, but the loop condition is "left < right"
+Exception #2 is similar to 852. Peak Index in a Mountain Array; https://leetcode.com/problems/peak-index-in-a-mountain-array/
 
 Yes, the above statement is correct. The choice of loop condition in binary search depends on how you initialize the `right` pointer.
 
@@ -749,6 +771,10 @@ To summarize:
 
 Both approaches are valid, and you can choose the one that suits your preference or the specific problem you are solving. 
 Just make sure to be consistent with the loop condition and handle boundary cases correctly to avoid any off-by-one errors.
+*/
+
+/*
+34. Find First and Last Position of Element in Sorted Array; https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
 */
 {
 	auto cmpLeftMost = [](auto lhs, auto rhs) -> bool {
@@ -972,14 +998,16 @@ public:
 two rounds; first from left to right, second from right to left; in order to find the balance
 1249. Minimum Remove to Make Valid Parentheses; https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/
 32. Longest Valid Parentheses; https://leetcode.com/problems/longest-valid-parentheses/
+20. Valid Parentheses; https://leetcode.com/problems/valid-parentheses/
 */
 
-/* intervals 
+/* Intervals 
 sort by start or end; when merging, newEnd = max(newEnd, end); when overlapping, newEnd = min(minEnd, end); 
 56. Merge Intervals; https://leetcode.com/problems/merge-intervals/
 253. Meeting Rooms II; https://leetcode.com/problems/meeting-rooms-ii/
 163. Missing Ranges; https://leetcode.com/problems/missing-ranges/
 986. Interval List Intersections; https://leetcode.com/problems/interval-list-intersections/
+435. Non-overlapping Intervals; https://leetcode.com/problems/non-overlapping-intervals/
 */
 
 /* combine data structures
@@ -991,11 +1019,18 @@ unordered_map + list
 146. LRU Cache; https://leetcode.com/problems/lru-cache/
 unordered_map + vector
 380. Insert Delete GetRandom O(1); https://leetcode.com/problems/insert-delete-getrandom-o1/
+stack + vector
+895. Maximum Frequency Stack; https://leetcode.com/problems/maximum-frequency-stack/; stack of stack; 2D stack; 
 */
 
 // sell and buy stocks
 
-/* Calculator 
+/* Parsing string 
+String into integer: 
+8. String to Integer (atoi); https://leetcode.com/problems/string-to-integer-atoi/
+65. Valid Number; https://leetcode.com/problems/valid-number/; use four flags; 
+
+Calculator 
 224. Basic Calculator; https://leetcode.com/problems/basic-calculator/
 227. Basic Calculator II; https://leetcode.com/problems/basic-calculator-ii/
 772. Basic Calculator III; https://leetcode.com/problems/basic-calculator-iii/
@@ -1004,11 +1039,13 @@ unordered_map + vector
 
 /* dp
 91. Decode Ways; https://leetcode.com/problems/decode-ways/
+53. Maximum Subarray; https://leetcode.com/problems/maximum-subarray
 sliding
 1D dp 
 139. Word Break; https://leetcode.com/problems/word-break/
 2369. Check if There is a Valid Partition For The Array; https://leetcode.com/problems/check-if-there-is-a-valid-partition-for-the-array/
 646. Maximum Length of Pair Chain; https://leetcode.com/problems/maximum-length-of-pair-chain/
+377. Combination Sum IV; https://leetcode.com/problems/combination-sum-iv
 
 2D dp
 63. Unique Paths II; https://leetcode.com/problems/unique-paths-ii/ ; grid, up or left
@@ -1031,6 +1068,8 @@ sliding
 /* unordered_map and map
 249. Group Shifted Strings; https://leetcode.com/problems/group-shifted-strings/
 146. LRU Cache; https://leetcode.com/problems/lru-cache/
+13. Roman to Integer; https://leetcode.com/problems/roman-to-integer/
+953. Verifying an Alien Dictionary; https://leetcode.com/problems/verifying-an-alien-dictionary/
 */
 
 /* stack
@@ -1052,4 +1091,25 @@ sliding
 
 /* Greedy
 135. Candy; https://leetcode.com/problems/candy/
+435. Non-overlapping Intervals; https://leetcode.com/problems/non-overlapping-intervals/
+605. Can Place Flowers; https://leetcode.com/problems/can-place-flowers/
+670. Maximum Swap; https://leetcode.com/problems/maximum-swap/
+767. Reorganize String; https://leetcode.com/problems/reorganize-string/
+1647. Minimum Deletions to Make Character Frequencies Unique; https://leetcode.com/problems/minimum-deletions-to-make-character-frequencies-unique/
+1996. The Number of Weak Characters in the Game; https://leetcode.com/problems/the-number-of-weak-characters-in-the-game/
+*/
+
+
+/* Cyclic Sorting
+41. First Missing Positive; https://leetcode.com/problems/first-missing-positive/
+nums[i] - 1 == i || nums[nums[i] - 1] == nums[i]
+*/
+
+
+/* 2D array
+498. Diagonal Traverse; https://leetcode.com/problems/diagonal-traverse/
+*/
+
+/* Linked list
+708. Insert into a Sorted Circular Linked List; https://leetcode.com/problems/insert-into-a-sorted-circular-linked-list/
 */
