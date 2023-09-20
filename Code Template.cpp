@@ -214,6 +214,7 @@ odd number of items: fast is valid, but fast->next is nullptr, slow points to th
 even number of items: fast is nullptr, and slow points to the second middle (right-middle) node 
 283. Move Zeroes; https://leetcode.com/problems/move-zeroes/
 234. Palindrome Linked List; https://leetcode.com/problems/palindrome-linked-list/; need to distinguish odd or even numbers
+287. Find the Duplicate Number; https://leetcode.com/problems/find-the-duplicate-number/
 */
 int fnFastAndSlowPointers(ListNode* head) {
 	int ans = 0;
@@ -512,6 +513,8 @@ int dfsIterative(vector<vector<int>> & graph) {
 
 /* when do Topological Sort, no need to keep the seen set, 
 	for it is DAG, and a node is added into queue only when only its in/out degree reach zero
+---------------
+Meta
 317. Shortest Distance from All Buildings; https://leetcode.com/problems/shortest-distance-from-all-buildings/
 1091. Shortest Path in Binary Matrix; https://leetcode.com/problems/shortest-path-in-binary-matrix/
 286. Walls and Gates; https://leetcode.com/problems/walls-and-gates/; min() for shortest
@@ -519,6 +522,8 @@ int dfsIterative(vector<vector<int>> & graph) {
 1293. Shortest Path in a Grid with Obstacles Elimination; https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination/; visit[r][c] is an integer 
 785. Is Graph Bipartite? https://leetcode.com/problems/is-graph-bipartite/; bfs return a bool; can have a short cut
 127. Word Ladder; https://leetcode.com/problems/word-ladder/
+--------------
+994. Rotting Oranges; https://leetcode.com/problems/rotting-oranges/; there is an additional condition in the outer loop
 */
 int bfsGraph(vector<vector<int>>& graph) {
 	queue<int> queue; 
@@ -580,9 +585,13 @@ int bfsGraphSteps(vector<vector<int>>& grid) {
 }
 
 /*
+minHeap vs maxHeap;  similar to monotonic queue/stack, using minHeap and maxHeap is opposite to the order decreasing and increasing
+	using minHeap, in order to get the top K largest; cmp is greater, > 
+	using maxHeap, in order to get the top K smallest; the default cmp is lesser, < 
 973. K Closest Points to Origin; https://leetcode.com/problems/k-closest-points-to-origin/
 347. Top K Frequent Elements; https://leetcode.com/problems/top-k-frequent-elements/
 215. Kth Largest Element in an Array; https://leetcode.com/problems/kth-largest-element-in-an-array/ use minus to create a minHeap;
+1337. The K Weakest Rows in a Matrix；https://leetcode.com/problems/the-k-weakest-rows-in-a-matrix/
 */
 vector<int> fnTopK(vector<int>& arr, int k) {
 	priority_queue<int, vector<int>, greater<int>> minHeap; // priority_queue<int> heap; 
@@ -598,6 +607,7 @@ vector<int> fnTopK(vector<int>& arr, int k) {
 		ans.push_back(minHeap.top()); 
 		minHeap.pop(); 
 	}
+	// must reverse the array ans, in order to get the descendent order (from largest to smallest)
 	return ans; 
 }
 
@@ -878,7 +888,11 @@ int backtrack(STATE curr, OTHERS) {
 	return ans; 
 } 
 
-// 212. Word Search II; https://leetcode.com/problems/word-search-ii/
+/*
+212. Word Search II; https://leetcode.com/problems/word-search-ii/
+----------
+642. Design Search Autocomplete System; https://leetcode.com/problems/design-search-autocomplete-system/
+*/
 struct TrieNode {
 	int data; 
 	unordered_map<char, TrieNode*> children; 
@@ -943,8 +957,10 @@ public:
     }
 };
 
-// or  Disjoint Set Union (DSU)
-// 721. Accounts Merge; https://leetcode.com/problems/accounts-merge/
+/* or  Disjoint Set Union (DSU)
+721. Accounts Merge; https://leetcode.com/problems/accounts-merge/
+1584. Min Cost to Connect All Points; https://leetcode.com/problems/min-cost-to-connect-all-points/
+*/
 class DSU {
 public:
     vector<int> representative;
@@ -991,6 +1007,42 @@ public:
     }
 };
 
+class UnionFind {
+public: 
+    vector<int> group; 
+    vector<int> rank; 
+    UnionFind(int size) {
+        group  = vector<int>(size); 
+        rank = vector<int>(size);
+        for (int i = 0; i < size; ++i) {
+            group[i] = i; 
+        }
+    }
+
+    int find(int node) {
+        if (group[node] != node) {
+            group[node] = find(group[node]);
+        }
+        return group[node];
+    }
+
+    bool join(int node1, int node2) {
+        int group1 = find(node1);
+        int group2 = find(node2); 
+        if (group1 == group2) {
+            return false; 
+        }
+        if (rank[group1] > rank[group2]) {
+            group[group2] = group1;
+        } else if (rank[group1] < rank[group2]) {
+            group[group1] = group2;
+        } else {
+            group[group1] = group2; 
+            rank[group2]++;
+        }
+        return true; 
+    }
+};
 
 /* Parentheses
 921. Minimum Add to Make Parentheses Valid; https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/
@@ -1102,7 +1154,8 @@ sliding
 
 /* Cyclic Sorting
 41. First Missing Positive; https://leetcode.com/problems/first-missing-positive/
-nums[i] - 1 == i || nums[nums[i] - 1] == nums[i]
+	nums[i] - 1 == i || nums[nums[i] - 1] == nums[i]
+287. Find the Duplicate Number; https://leetcode.com/problems/find-the-duplicate-number/
 */
 
 
