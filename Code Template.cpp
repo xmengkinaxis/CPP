@@ -11,7 +11,7 @@
 #include <stack>
 #include <queue> // priority_queue
 #include <deque> // deque
-#include <algorithm> // sort, min, max, remove(first, last, value)
+#include <algorithm> // sort, min, max, remove(first, last, value), reverse
 #include <numeric> // accumulate(begin, end, 0) to calculate the sum in a range, max_element, partial_sum(begin, end, begin) to calculate the partial sum in a range, 
 					// iota(begin, end, initial) to fill a range with the consecutive increasing values
 
@@ -139,6 +139,8 @@ Can start from front to back or from back to front
 1650. Lowest Common Ancestor of a Binary Tree III; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iii/
 88. Merge Sorted Array; https://leetcode.com/problems/merge-sorted-array/ 3 pointers in fact
 67. Add Binary; https://leetcode.com/problems/add-binary/
+--------
+392. Is Subsequence; https://leetcode.com/problems/is-subsequence/
 */
 int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
 	int i = 0, j = 0, ans = 0; 
@@ -215,6 +217,8 @@ even number of items: fast is nullptr, and slow points to the second middle (rig
 283. Move Zeroes; https://leetcode.com/problems/move-zeroes/
 234. Palindrome Linked List; https://leetcode.com/problems/palindrome-linked-list/; need to distinguish odd or even numbers
 287. Find the Duplicate Number; https://leetcode.com/problems/find-the-duplicate-number/
+----------------------
+905. Sort Array By Parity; https://leetcode.com/problems/sort-array-by-parity/
 */
 int fnFastAndSlowPointers(ListNode* head) {
 	int ans = 0;
@@ -247,6 +251,8 @@ ListNode* fnReverse(ListNode* head) {
 560. Subarray Sum Equals K; https://leetcode.com/problems/subarray-sum-equals-k/
 525. Contiguous Array; https://leetcode.com/problems/contiguous-array/
 similar e.g. 219. Contains Duplicate II; https://leetcode.com/problems/contains-duplicate-ii/
+---------------------
+1512. Number of Good Pairs; https://leetcode.com/problems/number-of-good-pairs/
 */
 int fnFindSubarrays(vector<int>& arr, int k) {
 	// 0. define the map and initialize it properly
@@ -275,7 +281,7 @@ int fnFindSubarrays(vector<int>& arr, int k) {
 
 /* the monotonic stack might contain values or some index; 
 	if the stack contains index, the while condition should be changed accordingly
-	< and > is opposite to the order decreasing and increasing
+	when the top the stack is at left and the current value is at right, < and > is opposite to the order decreasing and increasing
 		increase: >
 		decrease: <
 	Each item will be pushed into the stack after the stack is updated accordingly
@@ -283,6 +289,8 @@ int fnFindSubarrays(vector<int>& arr, int k) {
 1762. Buildings With an Ocean View https://leetcode.com/problems/buildings-with-an-ocean-view/ 
 316. Remove Duplicate Letters; https://leetcode.com/problems/remove-duplicate-letters/
 similar: 896. Monotonic Array; https://leetcode.com/problems/monotonic-array/
+--------------
+456. 132 Pattern; https://leetcode.com/problems/132-pattern/
 */
 int fnMonotonicIncreasingStack(vector<int>& arr) {
 	stack<int> stack; 
@@ -381,6 +389,8 @@ int dfsTreeStack(TreeNode* root) {
 314. Binary Tree Vertical Order Traversal, https://leetcode.com/problems/binary-tree-vertical-order-traversal/
 199. Binary Tree Right Side View; https://leetcode.com/problems/binary-tree-right-side-view/
 1161. Maximum Level Sum of a Binary Tree; https://leetcode.com/problems/maximum-level-sum-of-a-binary-tree/; do some logic for each layer
+-----------------
+958. Check Completeness of a Binary Tree; https://leetcode.com/problems/check-completeness-of-a-binary-tree/
 */
 int bfsTree(TreeNode* root) {
 	if (!root) { return 0; } // this step is critical for BFS, for no nullptr can be pushed into queue any time
@@ -405,15 +415,18 @@ int bfsTree(TreeNode* root) {
 }
 
 /* for DFS, the core actions are: 
-1. check if the node is valid, e.g. it must be in the grid when the problem is a grid,
-2. check if the node should be visited, e.g. the original value/attribute of this node makes it as a valid candidate. 
+1. check if the node is a valid node, e.g. it must be in the grid when the problem is a grid,
+2. check if the node is a valid candidate and should be visited, e.g. the original value/attribute of this node makes it as a valid candidate. 
 3. check if the node is already visited, e.g. seen/visited already contains it 
 4. do something for this node; this is a real visit on this node; it might check if the condition of ending this DFS is met
 	4.1 add this node into seen/visit; this step must be done before visiting its neighbors, otherwise, it would be a dead loop
 	4.2 do logic for this node; 
-	4.3 might need to check if it should be a short cut there, e.g. meet the certain condition/target
+	4.3 might need to check if it should be a short cut to end the whole DFS there, e.g. meet the certain condition/target
 5. visit all its neighbors which are not seen/visit yet; need a pre-Check here; might need to add them into seen/visited
-* these core actions is the core of DFS and the block of the BFS while loop
+* all of these core actions is the core of DFS and the block of the BFS while loop
+* the core logic of processing a node includes 1, 2, 3, 4; 
+* For BFS, these actions in the core logic are done before the node is pushed into the queue, in order to avoid pushing an invalid node into the queue; 
+* For some abnormal case, an invalid node like nullptr is pushed into the queue on purpose
 * for BFS, the order might be 4, 5, 1, 2, 3
 * if changing the original value instead of using seen/visited, the 2 and 3 are merged into one of checking value
 * for DFS, the seen/visit must be set/inserted before visiting its neighbors; and it could be the first step checking if the current is seen or visited already
@@ -422,9 +435,12 @@ int bfsTree(TreeNode* root) {
 529. Minesweeper; https://leetcode.com/problems/minesweeper/; acton 2 and 3 are separated
 */
 unordered_set<int> seen; 
+// if the node value can be changed and the changed value can be used as the visited flag, 
+// then there is no need to create a separated seen/visited data structure
+
 int dfsGraph1(vector<vector<int>>& graph) {
-	seen.insert(START_NODE); // #1. must do insert before visiting it in order to avoid the dead loop
-							// #2. alternatively, immediately insert it when start visiting it, 
+	seen.insert(START_NODE); // #1. must do insert before visiting its neighbors in order to avoid the dead loop
+							// #2. alternatively, immediately insert it when start visiting it as dfsGraph2, 
 							// and check if the neighbor is already visited when iterating them 
 	return dfsGraph1(START_NODE, graph);
 }
@@ -437,26 +453,19 @@ int dfsGraph1(int node, vector<vector<int>>& graph) {
 			// they are a pair of actions, inserting the node into seen and call dfs on this node.
 			// an atomic action: add into seen, and then dfs ths node
 			// AKA. the atomic action: want to visit (add into seen), and do visit (do dfs)
-			seen.insert(neighbor); // this and the next steps are repeating the two steps in the above function
+			seen.insert(neighbor); // this and the next steps are repeating the two steps in the outer function
 			dfsGraph1(neighbor, graph); 
 		}
 	}
 	return ans; 
 }
 
-unordered_set<int> seen2; 
-int dfsGraph2(vector<vector<int>>& graph) {
-	return dfsGraph2(START_NODE, graph);
-}
-
 int dfsGraph2(int node, vector<vector<int>>& graph) {
-	seen2.insert(START_NODE); // must do insert before visiting it in order to avoid the dead loop
+	seen.insert(START_NODE); // must do insert before visiting its neighbors in order to avoid the dead loop
 	int ans = 0; 
 	// do logic for node here
-	// if the node value can be changed and the changed value can be used as the visited flag, 
-	// then there is no need to create a separated seen/visited data structure
 	for (int neighbor : graph[node]) { // might to validate if a neighbor is valid first		
-		if (seen2.find(neighbor) == seen2.end()) { // prerequisite of the atomic action: ensure the node is not visited before
+		if (seen.find(neighbor) == seen.end()) { // prerequisite of the atomic action: ensure the node is not visited before
 			// they are a pair of actions, inserting the node into seen and call dfs on this node.
 			// an atomic action: add into seen, and then dfs ths node
 			// AKA. the atomic action: want to visit (add into seen), and do visit (do dfs)
@@ -476,12 +485,12 @@ int dfsGraph2(int node, vector<vector<int>>& graph) {
 489. Robot Room Cleaner; https://leetcode.com/problems/robot-room-cleaner/description/
 */
 bool dfsGraph3(int node, vector<vector<int>>& graph) {	
-	if (seen2.find(node) != seen2.end()) { 
+	if (seen.find(node) != seen.end()) { 
 		return false; // already visited
 	} else if (CONDITION) { // ending condition: node is the destination
 		return true; // found
 	}
-	seen2.insert(START_NODE); // must do insert before visiting it in order to avoid the dead loop
+	seen.insert(START_NODE); // must do insert before visiting its neighbor in order to avoid the dead loop
 	// do logic for node here
 	for (int neighbor : graph[node]) { 
 		if (dfsGraph3(neighbor, graph)) {
@@ -524,6 +533,7 @@ Meta
 127. Word Ladder; https://leetcode.com/problems/word-ladder/
 --------------
 994. Rotting Oranges; https://leetcode.com/problems/rotting-oranges/; there is an additional condition in the outer loop
+365. Water and Jug Problem; https://leetcode.com/problems/water-and-jug-problem/
 */
 int bfsGraph(vector<vector<int>>& graph) {
 	queue<int> queue; 
@@ -537,13 +547,11 @@ int bfsGraph(vector<vector<int>>& graph) {
 	queue.push(START_NODE); 
 	int ans = 0; 
 	while (!queue.empty()) { // for (int step = 1; !queue.empty(); ++step)
-		int node = queue.front(); 
-		queue.pop(); 
+		int node = queue.front(); queue.pop(); 
 		// do logic for the node; e.g. set the distance or time for this node, or check if reach the destination and then exit
 		for (auto neighbor : graph[node]) {
 			// iterate candidates or validate if it is a valid candidate
-			if (seen.find(neighbor) == seen.end()) {
-				// ensure if it is NOT seen yet
+			if (seen.find(neighbor) == seen.end()) { // ensure if it is NOT seen yet
 				// atomic action: add it into both seen and queue
 				seen.insert(neighbor); 
 				queue.push(neighbor); 
@@ -572,8 +580,8 @@ int bfsGraphSteps(vector<vector<int>>& grid) {
 			// iterate all candidates
 			for (auto [dr, dc] : dirs) {
 				auto nr = r + dr, nc = c + dc; 
-				if (nr < 0 || nr >= N || nc < 0 || nc >= N // valid if it is a valid candidate
-					|| grid[nr][nc]) { // check if it was visited
+				if (nr < 0 || nr >= N || nc < 0 || nc >= N // validate if it is a valid location in the grid
+					|| grid[nr][nc]) { // check if it was visited already
 					continue; 
 				}
 				grid[nr][nc] = 2; 
@@ -585,7 +593,7 @@ int bfsGraphSteps(vector<vector<int>>& grid) {
 }
 
 /*
-minHeap vs maxHeap;  similar to monotonic queue/stack, using minHeap and maxHeap is opposite to the order decreasing and increasing
+minHeap vs maxHeap;  similar to monotonic queue/stack, using minHeap and maxHeap is opposite to the order of decreasing and increasing
 	using minHeap, in order to get the top K largest; cmp is greater, > 
 	using maxHeap, in order to get the top K smallest; the default cmp is lesser, < 
 973. K Closest Points to Origin; https://leetcode.com/problems/k-closest-points-to-origin/
@@ -594,7 +602,7 @@ minHeap vs maxHeap;  similar to monotonic queue/stack, using minHeap and maxHeap
 1337. The K Weakest Rows in a Matrix；https://leetcode.com/problems/the-k-weakest-rows-in-a-matrix/
 */
 vector<int> fnTopK(vector<int>& arr, int k) {
-	priority_queue<int, vector<int>, greater<int>> minHeap; // priority_queue<int> heap; 
+	priority_queue<int, vector<int>, greater<int>> minHeap; // priority_queue<int> maxHeap; 
 	for (auto n : arr) {
 		minHeap.push(n); 
 		if (minHeap.size() > k) {
@@ -608,12 +616,13 @@ vector<int> fnTopK(vector<int>& arr, int k) {
 		minHeap.pop(); 
 	}
 	// must reverse the array ans, in order to get the descendent order (from largest to smallest)
+	reverse(begin(ans), end(ans));
 	return ans; 
 }
 
 /*
 81. Search in Rotated Sorted Array II; https://leetcode.com/problems/search-in-rotated-sorted-array-ii/
-4. Median of Two Sorted Arrays; https://leetcode.com/problems/median-of-two-sorted-arrays/
+4. Median of Two Sorted Arrays; https://leetcode.com/problems/median-of-two-sorted-arrays/; for (int low = 0, high = M; low <= high; )
 */
 int binarySearch(vector<int>& arr, int target) {
 	int low = 0, high = arr.size() - 1; 
@@ -818,7 +827,7 @@ If looking for a minimum:
 int binaryMinimum(vector<int>& arr) {
 	int low = MINIMUM_POSSIBLE_ANSWER; 
 	int high = MAXIMUM_POSSIBLE_ANSWER; 
-	// must use "<="" here; this is different from the above binary search
+	// must use "<="" here; this is different from the above binary search, for both min and max are valid and should be included
 	while (low <= high) {
 		auto mid = low + (high - low) / 2; 
 		if (check(mid)) {
@@ -870,7 +879,7 @@ Diff: backtrack uses the short cut by trimming the candidates or solution space,
 */
 int backtrack(STATE curr, OTHERS) {
 	// might check if the current state is till valid, as 301. Remove Invalid Parentheses
-	// check the base condition of backtrack first, before check the DFS conditions
+	// check the base condition (the ending condition) of backtrack first, before check the DFS normal conditions
 	if (BASE_CASE) { // startId, or curr state size, or both
 		// modify the answer
 		return 0; 
@@ -901,7 +910,7 @@ struct TrieNode {
 
 TrieNode* buildTrie(vector<string> words) {
 	TrieNode* root = new TrieNode(); 
-	for (auto word : words) {
+	for (auto &word : words) {
 		auto curr = root; 
 		for (auto c : word) {
 			if (curr->children.find(c) == curr->children.end()) {
@@ -1073,6 +1082,9 @@ unordered_map + vector
 380. Insert Delete GetRandom O(1); https://leetcode.com/problems/insert-delete-getrandom-o1/
 stack + vector
 895. Maximum Frequency Stack; https://leetcode.com/problems/maximum-frequency-stack/; stack of stack; 2D stack; 
+--------------------
+1. Two set as stacks. 
+716. Max Stack; https://leetcode.com/problems/max-stack/
 */
 
 // sell and buy stocks
