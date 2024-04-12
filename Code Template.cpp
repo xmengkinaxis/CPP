@@ -291,6 +291,8 @@ int fnFindSubarrays(vector<int>& arr, int k) {
 similar: 896. Monotonic Array; https://leetcode.com/problems/monotonic-array/
 --------------
 456. 132 Pattern; https://leetcode.com/problems/132-pattern/
+739. Daily Temperatures; https://leetcode.com/problems/daily-temperatures/
+402. Remove K Digits; https://leetcode.com/problems/remove-k-digits
 */
 int fnMonotonicIncreasingStack(vector<int>& arr) {
 	stack<int> stack; 
@@ -362,6 +364,7 @@ int dfsTree(TreeNode *root) { // could return a tuple of a node and the depth
 }
 
 /* dfsTreeStack is much similar to bfsTree; the only difference is stack vs queue
+Normally, nullptr will not be pushed into the stack and the queue; 
 173. Binary Search Tree Iterator; https://leetcode.com/problems/binary-search-tree-iterator/
 270. Closest Binary Search Tree Value; https://leetcode.com/problems/closest-binary-search-tree-value
 */
@@ -391,6 +394,7 @@ int dfsTreeStack(TreeNode* root) {
 1161. Maximum Level Sum of a Binary Tree; https://leetcode.com/problems/maximum-level-sum-of-a-binary-tree/; do some logic for each layer
 -----------------
 958. Check Completeness of a Binary Tree; https://leetcode.com/problems/check-completeness-of-a-binary-tree/
+513. Find Bottom Left Tree Value; https://leetcode.com/problems/find-bottom-left-tree-value
 */
 int bfsTree(TreeNode* root) {
 	if (!root) { return 0; } // this step is critical for BFS, for no nullptr can be pushed into queue any time
@@ -534,6 +538,7 @@ Meta
 --------------
 994. Rotting Oranges; https://leetcode.com/problems/rotting-oranges/; there is an additional condition in the outer loop
 365. Water and Jug Problem; https://leetcode.com/problems/water-and-jug-problem/
+787. Cheapest Flights Within K Stops; https://leetcode.com/problems/cheapest-flights-within-k-stops/; can revisit, but only update when less
 */
 int bfsGraph(vector<vector<int>>& graph) {
 	queue<int> queue; 
@@ -607,6 +612,28 @@ vector<int> fnTopK(vector<int>& arr, int k) {
 		minHeap.push(n); 
 		if (minHeap.size() > k) {
 			minHeap.pop();
+		}
+	}
+
+	vector<int> ans; 
+	while (!minHeap.empty()){
+		ans.push_back(minHeap.top()); 
+		minHeap.pop(); 
+	}
+	// must reverse the array ans, in order to get the descendent order (from largest to smallest)
+	reverse(begin(ans), end(ans));
+	return ans; 
+}
+
+
+vector<int> fnTopKEnhanced(vector<int>& arr, int k) {
+	priority_queue<int, vector<int>, greater<int>> minHeap; // priority_queue<int> maxHeap; 
+	for (auto n : arr) {
+		if (minHeap.size() < k) {
+			minHeap.push(n); 
+		} else if (n > minHeap.top()) {
+			minHeap.pop();
+			minHeap.push(n); 
 		}
 	}
 
@@ -1110,6 +1137,8 @@ sliding
 2369. Check if There is a Valid Partition For The Array; https://leetcode.com/problems/check-if-there-is-a-valid-partition-for-the-array/
 646. Maximum Length of Pair Chain; https://leetcode.com/problems/maximum-length-of-pair-chain/
 377. Combination Sum IV; https://leetcode.com/problems/combination-sum-iv
+746. Min Cost Climbing Stairs; https://leetcode.com/problems/min-cost-climbing-stairs/; from right to left
+279. Perfect Squares; https://leetcode.com/problems/perfect-squares
 
 2D dp
 63. Unique Paths II; https://leetcode.com/problems/unique-paths-ii/ ; grid, up or left

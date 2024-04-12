@@ -26,8 +26,27 @@ import queue
 import functools
 
 from collections import deque 
+from collections import defaultdict # defaultdict is a subclass of the built-in dict class that provides a convenient way to create dictionaries with default values for keys that don't exist yet
+from collections import Counter # count the occurrences of elements in a collection, typically in a list, tuple, or string. It returns a dictionary-like object where keys are the unique elements in the input collection, and values are the counts of each element.
+from collections import most_common # returns a list of the n most common elements and their counts from the most common to the least; use as priority queue
 
 import heapq # By default, heapq implements a min heap
+'''
+The heapq module in Python provides a collection of efficient heap queue algorithms. The name "heapq" is derived from "heap" (a data structure) and "queue" (a data structure). 
+heappush(heap, item): This function adds the element item to the heap while maintaining the heap property. 
+heappop(heap): This function removes and returns the smallest (or largest in the case of a max-heap) element from the heap. 
+heappushpop(heap, item): This operation pushes item onto the heap and then immediately pops and returns the smallest element. It can be more efficient than performing separate heappush and heappop operations.
+heapreplace(heap, item): This operation pops and returns the smallest element from the heap and then pushes item onto the heap
+    def findKthLargest(self, nums: List[int], k: int) -> int:
+        min_heap = []
+        for n in nums: 
+            heapq.heappush(min_heap, n)
+            if len(min_heap) > k: 
+                heapq.heappop(min_heap)
+        return heapq.heappop(min_heap)
+'''
+
+CONDITION = True
 
 class Node:
     def __init__(self, data):
@@ -57,8 +76,7 @@ def fn_two_pointers(arr):
     return ans
 
 def fn_two_pointers_two_arrays(arr1, arr2):
-    i = 0
-    j = 0
+    i = j = 0
     ans = 0
 
     while i < len(arr1) and j < len(arr2): #  might contain other conditions here like a carry in adding
@@ -76,13 +94,12 @@ def fn_two_pointers_two_arrays(arr1, arr2):
 
     return ans
 
-def fn_sliding_window(arr, size):
+def fn_sliding_window(arr:list, size):
     ans = 0
     start = 0
-    end = 0
     curr = 0
 
-    while end < len(arr):
+    for end in len(arr):
         # Add arr[end] into curr (the window)
         # The curr might be a complex data structure like a deque or a dictionary
         # Depending on your use case, you might need some preprocessing before adding
@@ -99,8 +116,6 @@ def fn_sliding_window(arr, size):
         # If the size is fixed, when "size - 1 <= end", do something
         # You can add your logic here to process the current window
         # For example, you can update ans based on the contents of the window
-
-        end += 1  # Move the end pointer to expand the window
 
     return ans
 
@@ -119,8 +134,7 @@ def fn_string(arr):
 
 def fn_fast_and_slow_pointers(head):
     ans = 0
-    slow = head
-    fast = head
+    slow = fast = head
 
     while fast and fast.next:
         slow = slow.next
@@ -149,6 +163,8 @@ def fn_find_subarrays(arr, k):
     # Define a dictionary to store prefix sum frequencies.
     # It will serve as a memo/dp and is used to count the frequency of pre-sums.
     counts = {0: 1}  # Initialize with the base case counts[0] = 1
+    # counts = defaultdict(int)
+    # counts[0] = 1
 
     ans = 0
     curr = 0  # Current prefix sum
@@ -165,6 +181,30 @@ def fn_find_subarrays(arr, k):
         # Update the dictionary (counts).
         # Make sure to update the dictionary after checking, as adding curr first may affect the result.
         counts[curr] = counts.get(curr, 0) + 1
+
+    return ans
+
+def fn_find_subarrays2(arr, k):
+    # Define a dictionary to store prefix sum frequencies.
+    # It will serve as a memo/dp and is used to count the frequency of pre-sums.
+    counts = defaultdict(int)
+    counts[0] = 1
+
+    ans = 0
+    curr = 0  # Current prefix sum
+
+    for num in arr:
+        # Update curr to include num (do any necessary logic here).
+        # For example, you can update curr by adding num to it.
+        curr += num
+
+        # Check the dictionary for pre-sums.
+        # Check if curr - k is in the dictionary to count subarrays.
+        ans += counts[curr - k]
+
+        # Update the dictionary (counts).
+        # Make sure to update the dictionary after checking, as adding curr first may affect the result.
+        counts[curr] += 1
 
     return ans
 
