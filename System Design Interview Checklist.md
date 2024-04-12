@@ -15,7 +15,7 @@
   - [1.2 Non-Functional Requirements (Product Properties + User Expectations) (PACELC + reliable + Scalability + Extensibility)](#12-non-functional-requirements-product-properties--user-expectations-pacelc--reliable--scalability--extensibility)
     - [Availability](#availability)
     - [Consistency](#consistency)
-    - [Efficiency (Latency and throughput)](#efficiency-latency-and-throughput)
+    - [Efficiency (Performance, Latency and throughput)](#efficiency-performance-latency-and-throughput)
     - [Scalability](#scalability)
     - [Reliability](#reliability)
     - [Concurrency](#concurrency)
@@ -229,18 +229,18 @@ All nodes see the same data at the same time, no matter users read/write from/to
 * **Eventual consistency:** ensure data of each node of the database get consistent eventually; offers low latency at the risk of returning stale data. <br>
 * high consistency on messages can be achieved with the help of a FIFO messaging queue with strict ordering
 
-### Efficiency (Latency and throughput)
+### Efficiency (Performance, Latency and throughput)
 * Two standard measures of its efficiency are **the response time(or latency)** that denotes the delay to obtain the first item and **the throughput (or bandwidth)** with denotes the number of items delivered in a given time unit. (Metrics: Latency/Response Time, throughput/Bandwidth)
 * **Response Time**: the time difference between request and response
 * **Latency**: how long a system takes to transmit data from one point to another point in the system;
 * **Throughput** is the amount of work done by the system in a given particular time. partition and split data, so they are served by different machines in the parallel read or write; cache at the different layers, including the client side, front-end servers, and databases
 * **Bandwidth** is the maximum data that can be transferred on the different networks.
-* Request Per Second;
+* Employ the right technology for the right feature; User different datastores for different reasons; use different distributed caches depending upon the use case and access frequency; 
 * can be **achieved** by using multiple machines to parallel process; minimize the latency by geographically distributing servers and their caches, adding cache clusters on top of database clusters, and using CDNs for frequently sharing documents and media content; can be **achieved** by Caching at each layer (web server, application server, cluster, data base, file system, storage units), CDN, Index, the appropriate programming language
 * video streaming should be smooth
 
 ### Scalability
-* a distributed system can continuously evolve in order to support the growing amount of work; 
+* a distributed system can continuously evolve in order to support the growing amount of work (handle the increasing amount of user requests, and work with the more data); 
 * increase resources and performance with increasing load and traffic over the existing system without affecting the complexity and performance; need enough resources to handle the increasing load, for it would be increased at any point in time; should be simple and easy to scale; performance should always be increased with scalability <br>
 * A system can be called scalable if adding more resources in the system results in performance increases. Performance is directly proportional to resources added. <br>
 * Horizontal (scaling out) vs Vertical Scaling (scaling up) <br>

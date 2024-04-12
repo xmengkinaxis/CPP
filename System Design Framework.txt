@@ -1,6 +1,7 @@
 Framework:
 1. Functional req (10m)
 	System
+	Data
 	User
 2. Non-functional req
 	1. Availability
@@ -17,9 +18,10 @@ Framework:
 	3. Storage
 	4. Bandwidth
 	5. Servers
+	6. CPU & Memory
 	
 4. High level design + Data Flow (5-10m)
-	1. Building Blocks (Components) : LB, servers, DB, blobs
+	1. Building Blocks (Components) : LB, API GW, servers, DB, blobs
 	2. Workflow
 
 5. APIs Design
@@ -29,6 +31,11 @@ Framework:
 	3. DB Partitioning / sharding
 
 7. Deep Dive (10m)
+	7.1 Scale
+	7.2 Partition and Replication
+	7.3 VPC
+	7.4 Authentication, throttling, Load balancing
+	7.5 Push vs Pull
 
 8. Evolve and Optimize (5m)
 	1. Single point of failure
