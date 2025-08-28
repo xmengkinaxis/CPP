@@ -1,5 +1,8 @@
 // https://leetcode.com/explore/interview/card/cheatsheets/720/resources/4723/
 // cheat sheet and code template
+// https://hackernoon.com/14-patterns-to-ace-any-coding-interview-question-c5bb3357f6ed
+// 14 Patterns to Ace Any Coding Interview Question
+
 #include <iostream> // cout, cin
 #include <cctype> // isalnum, isalpha, isdigit, islower, isupper, isspace; toupper, tolower
 #include <sstream> // stringstream
@@ -172,6 +175,8 @@ int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
 1004. Max Consecutive Ones III; https://leetcode.com/problems/max-consecutive-ones-iii/; the window size can be zero
 76. Minimum Window Substring; https://leetcode.com/problems/minimum-window-substring/; use a frequency map
 713. Subarray Product Less Than K; https://leetcode.com/problems/subarray-product-less-than-k/
+-----------
+1208. Get Equal Substrings Within Budget; https://leetcode.com/problems/get-equal-substrings-within-budget/
 */
 int fnSlidingWindow(vector<int>& arr, int size) {
 	int ans = 0; 
@@ -185,11 +190,11 @@ int fnSlidingWindow(vector<int>& arr, int size) {
 		// if fixed, when size <= end, remove the start by moving it towards end by one
 		// if not fixed, depend on the loop condition to remove the start
 		while (CONDITION && start <= end ) { // the condition "start <= end" is critical to ensure it is still a valid window; it can be omitted if window size can be zero
-			// can do something for the valid window here as the window is shrinking
+			// can do something for this window if it is valid here when the window is shrinking
 			// remove arr[start] from curr; 
 			++start;  // it would be a dead loop if start is not moved
 		}
-		// do something for this valid window
+		// do something for this window if it is valid
 		// if the size is fixed, when "size - 1 <= end", do something
 	}
 	return ans; 
@@ -219,6 +224,7 @@ even number of items: fast is nullptr, and slow points to the second middle (rig
 287. Find the Duplicate Number; https://leetcode.com/problems/find-the-duplicate-number/
 ----------------------
 905. Sort Array By Parity; https://leetcode.com/problems/sort-array-by-parity/
+2486. Append Characters to String to Make Subsequence; https://leetcode.com/problems/append-characters-to-string-to-make-subsequence/
 */
 int fnFastAndSlowPointers(ListNode* head) {
 	int ans = 0;
@@ -333,9 +339,12 @@ postOrder
 inOrder + postOrder
 1382. Balance a Binary Search Tree; https://leetcode.com/problems/balance-a-binary-search-tree/
 545. Boundary of Binary Tree; https://leetcode.com/problems/boundary-of-binary-tree/
+--------------
+postOrder: 
+1325. Delete Leaves With a Given Value; https://leetcode.com/problems/delete-leaves-with-a-given-value
 */
 int dfsTree(TreeNode *root) { // could return a tuple of a node and the depth
-	// 1. deal withing the special base cases;  could be more base cases
+	// 1. deal with the special base cases;  could be more base cases
 	// when calculating the depth, it is 0 for nullptr and 1 for a leave; so the base case is still nullptr; 
 	if (!root) { return 0; }
 
@@ -353,6 +362,9 @@ int dfsTree(TreeNode *root) { // could return a tuple of a node and the depth
 	// must pay attention the parameters in invoking the recursive function call
 	//	pass all parameters accordingly
 	//	update some parameters properly, e.g. increase depth, increase or decrease row and column, 
+	// the results from the branches might be required and combined in order to do the logic for this node
+	//	the branches might be changes and should be updated accordingly
+	//	the return might be complex as a tuple, e.g. Diameter and depth
 	dfsTree(root->left); 
 
 	// 4 do logic for this node if it is inOrder
@@ -388,7 +400,10 @@ int dfsTreeStack(TreeNode* root) {
 }
 
 
-/*
+/* bfsTree is much similar to bfsTree; 
+	both are similar to preOrder
+	use a queue instead of a stack; 
+	usually pop all items in the queue and process one by one, while popping and process the top of the stack;
 314. Binary Tree Vertical Order Traversal, https://leetcode.com/problems/binary-tree-vertical-order-traversal/
 199. Binary Tree Right Side View; https://leetcode.com/problems/binary-tree-right-side-view/
 1161. Maximum Level Sum of a Binary Tree; https://leetcode.com/problems/maximum-level-sum-of-a-binary-tree/; do some logic for each layer
@@ -599,8 +614,8 @@ int bfsGraphSteps(vector<vector<int>>& grid) {
 
 /*
 minHeap vs maxHeap;  similar to monotonic queue/stack, using minHeap and maxHeap is opposite to the order of decreasing and increasing
-	using minHeap, in order to get the top K largest; cmp is greater, > 
-	using maxHeap, in order to get the top K smallest; the default cmp is lesser, < 
+	using minHeap, in order to get the top K largest, must remove the current (K + 1)th minimum ; cmp is greater, > 
+	using maxHeap, in order to get the top K smallest, must remove the current (K + 1)th maximum; the default cmp is lesser, < 
 973. K Closest Points to Origin; https://leetcode.com/problems/k-closest-points-to-origin/
 347. Top K Frequent Elements; https://leetcode.com/problems/top-k-frequent-elements/
 215. Kth Largest Element in an Array; https://leetcode.com/problems/kth-largest-element-in-an-array/ use minus to create a minHeap;
@@ -609,7 +624,9 @@ minHeap vs maxHeap;  similar to monotonic queue/stack, using minHeap and maxHeap
 vector<int> fnTopK(vector<int>& arr, int k) {
 	priority_queue<int, vector<int>, greater<int>> minHeap; // priority_queue<int> maxHeap; 
 	for (auto n : arr) {
-		minHeap.push(n); 
+		if (minHeap.size() < k || minHeap.top() > n) {
+			minHeap.push(n); 
+		}
 		if (minHeap.size() > k) {
 			minHeap.pop();
 		}
