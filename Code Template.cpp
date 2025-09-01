@@ -434,16 +434,16 @@ int bfsTree(TreeNode* root) {
 	return ans; 
 }
 
-/* for DFS, the core actions are: 
-1. check if the node is a valid node, e.g. it must be in the grid when the problem is a grid,
-2. check if the node is a valid candidate and should be visited, e.g. the original value/attribute of this node makes it as a valid candidate. 
-3. check if the node is already visited, e.g. seen/visited already contains it 
+/* In DFS, for a node, the core actions are: 
+1. [valid] check if the node is a valid node, e.g. it must be within the grid when the problem is a grid,
+2. [eligible] check if the node is a valid candidate and should be visited, e.g. the original value/attribute of this node makes it as a valid candidate. 
+3. [unvisited] check if the node is already visited, e.g. seen/visited already contains it 
 4. do something for this node; this is a real visit on this node; it might check if the condition of ending this DFS is met
 	4.1 add this node into seen/visit; this step must be done before visiting its neighbors, otherwise, it would be a dead loop
 	4.2 do logic for this node; 
 	4.3 might need to check if it should be a short cut to end the whole DFS there, e.g. meet the certain condition/target
 5. visit all its neighbors which are not seen/visit yet; need a pre-Check here; might need to add them into seen/visited
-* all of these core actions is the core of DFS and the block of the BFS while loop
+* all of these core actions form the core logic of DFS and the block of the BFS while loop
 * the core logic of processing a node includes 1, 2, 3, 4; 
 * For BFS, these actions in the core logic are done before the node is pushed into the queue, in order to avoid pushing an invalid node into the queue; 
 * For some abnormal case, an invalid node like nullptr is pushed into the queue on purpose
@@ -458,6 +458,7 @@ unordered_set<int> seen;
 // if the node value can be changed and the changed value can be used as the visited flag, 
 // then there is no need to create a separated seen/visited data structure
 
+// NOT good, for actions are separated into two methods
 int dfsGraph1(vector<vector<int>>& graph) {
 	seen.insert(START_NODE); // #1. must do insert before visiting its neighbors in order to avoid the dead loop
 							// #2. alternatively, immediately insert it when start visiting it as dfsGraph2, 
@@ -472,7 +473,7 @@ int dfsGraph1(int node, vector<vector<int>>& graph) {
 		if (seen.find(neighbor) == seen.end()) { // prerequisite of the atomic action: ensure the node is not visited before; otherwise, cause a dead loop
 			// they are a pair of actions, inserting the node into seen and call dfs on this node.
 			// an atomic action: add into seen, and then dfs ths node
-			// AKA. the atomic action: want to visit (add into seen), and do visit (do dfs)
+			// AKA. the atomic action: want or label to visit (add into seen), and do visit (do dfs)
 			seen.insert(neighbor); // this and the next steps are repeating the two steps in the outer function
 			dfsGraph1(neighbor, graph); 
 		}
@@ -480,15 +481,17 @@ int dfsGraph1(int node, vector<vector<int>>& graph) {
 	return ans; 
 }
 
+// Good, for all actions are in a method
+// pre-assumption: the node is a valid and unseen node in the graph; this pre-assumption must be preserved during the recursive calls later
 int dfsGraph2(int node, vector<vector<int>>& graph) {
 	seen.insert(START_NODE); // must do insert before visiting its neighbors in order to avoid the dead loop
 	int ans = 0; 
 	// do logic for node here
 	for (int neighbor : graph[node]) { // might to validate if a neighbor is valid first		
-		if (seen.find(neighbor) == seen.end()) { // prerequisite of the atomic action: ensure the node is not visited before
+		if (seen.find(neighbor) == seen.end()) { // prerequisite of the atomic action: ensure the node is not visited before; otherwise, cause a dead loop
 			// they are a pair of actions, inserting the node into seen and call dfs on this node.
 			// an atomic action: add into seen, and then dfs ths node
-			// AKA. the atomic action: want to visit (add into seen), and do visit (do dfs)
+			// AKA. the atomic action: want or label to visit (add into seen), and do visit (do dfs)
 			dfsGraph2(neighbor, graph); 
 		}
 	}
@@ -520,10 +523,10 @@ bool dfsGraph3(int node, vector<vector<int>>& graph) {
 	return false; 
 }
 
-
+// to keep the definition and usage consistent, seen is defined before stack
 int dfsIterative(vector<vector<int>> & graph) {
-	stack<int> stack; 
 	unordered_set<int> seen; 
+	stack<int> stack; // only contain these unseen nodes
 	seen.insert(START_NODE);
 	stack.push(START_NODE);
 	int ans = 0;
@@ -556,14 +559,31 @@ Meta
 365. Water and Jug Problem; https://leetcode.com/problems/water-and-jug-problem/
 787. Cheapest Flights Within K Stops; https://leetcode.com/problems/cheapest-flights-within-k-stops/; can revisit, but only update when less
 */
+
+// bfsGraph uses a queue, but dfsIterative uses a stack; others are the exactly same for iterative implementations
+// In other words, BFS and DFS are essentially same, and their difference of browsing nodes 
+// in different orders can be achieved by using queue(FIFO) and stack(LIFO/FILO) 
+/* 
+Both BFS (Breadth-First Search) and DFS (Depth-First Search) are graph/tree traversal algorithms.
+The core mechanism is indeed similar:
+	You start from a node, mark it as visited, then explore its neighbors.
+	The main difference lies in how you manage the "frontier" (the next nodes to visit).
+The main difference is in how the "frontier" (next nodes to visit) is managed:
+	BFS uses a queue (FIFO), exploring level by level.
+	DFS uses a stack (LIFO/FILO)(explicit or recursion), exploring as deep as possible first.
+The choice of BFS vs DFS affects algorithmic properties:
+	BFS is used for shortest path, level-order traversal, bipartite check, etc.
+	DFS is used for cycle detection, topological sort, connected components, etc.
+*/
 int bfsGraph(vector<vector<int>>& graph) {
-	queue<int> queue; 
 	unordered_set<int> seen; 
-	// they are a pair of actions, inserting the node into seen and adding the node into queen.
+	queue<int> queue; 
+	// they are a pair of actions, inserting the node into seen and adding the node into the queue.
 	// an atomic action: add into seen, and then add into queue
-	// there might be a numbers of starting nodes and all these need to be added into the queue initially
-	// there might be zero of starting nodes. This is an edge case. 
-	// in summary, the number of starting nodes, could be 0, 1, N; 
+	// Initialization:
+	// 	there might be a numbers of starting nodes and all these need to be added into the queue initially
+	// 	there might be zero of starting nodes. This is an edge case. 
+	// 	in summary, the number of starting nodes, could be 0, 1, N; 
 	seen.insert(START_NODE); 
 	queue.push(START_NODE); 
 	int ans = 0; 
