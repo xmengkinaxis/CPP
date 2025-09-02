@@ -2,8 +2,11 @@
 #include <vector>
 #include <algorithm>
 #include <iostream> 
+#include <mutex>
 
 using namespace std; 
+
+mutex mut; 
 
 struct Foo {
     Foo() { cout << "Foo Created\n"; }
@@ -12,6 +15,8 @@ struct Foo {
 
 int main()
 {
+    lock_guard<mutex> lock(mut);
+
     unique_ptr<Foo> f1 = make_unique<Foo>(); 
     shared_ptr<Foo> f2 = make_shared<Foo>(); 
     
