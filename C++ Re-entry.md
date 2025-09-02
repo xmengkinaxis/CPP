@@ -4,12 +4,19 @@
 
 ### check C++ compiler version 
 
+```bash
 // check g++ version
-g++ --version
+g++ --version 
+
 // compile a file
+// -Wall covers the most common mistakes.
+// -Wextra digs deeper, catching subtler issues.
+// Together, they help you write cleaner, safer C++.
 g++ -std=c++20 -Wall -Wextra -O2 helloworld.cpp -o helloworld
+
 // open a file
 code helloworld.cpp 
+```
 
 ## Terms
 
