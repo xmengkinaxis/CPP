@@ -68,7 +68,11 @@ O(n^2), O(n^3), ... - Polynomial Space: Memory usage grows with the square, cube
 /*
 Two Pointers Technique: left and right, or slow and fast 
 Sliding Window Technique: start and end
-Binary Search: low and high if the array is strictly increased, or use left and right if there are some duplications
+Binary Search: use left / right when searching array indices or intervals; using low / high when searching numeric range 
+	(emphasizing numeric bounds rather than spatial position); 
+	Default: use left / right (most people are familiar with this from LeetCode/education); 
+	When search space is numeric and not array indices: low / high might make more sense; 
+	Old: low and high if the array is strictly increased, or use left and right if there are some duplications
 */
 
 /* useful coding skills
@@ -634,9 +638,19 @@ int bfsGraphSteps(vector<vector<int>>& grid) {
 }
 
 /*
+Heap is a complete binary tree (the root is the heap top):
+	Max Heap: the root is always the maximum value; keeps k minimum values
+	Min Heap: the root is always the minimum value; keeps k maximum values 
+Rule for Top K problems:
+	To find Top K largest (remove smallest) → use a Min Heap (the root is the smallest; remove it to keep only the largest K elements)
+	To find Top K smallest (remove largest) → use a Max Heap (the root is the largest; remove it to keep only the smallest K elements)
+Reason: keep the heap size = K, and always remove the "least useful" element.
+This is similar in spirit to a monotonic queue, but the order is opposite.
+
 minHeap vs maxHeap;  similar to monotonic queue/stack, using minHeap and maxHeap is opposite to the order of decreasing and increasing
 	using minHeap, in order to get the top K largest, must remove the current (K + 1)th minimum ; cmp is greater, > 
 	using maxHeap, in order to get the top K smallest, must remove the current (K + 1)th maximum; the default cmp is lesser, < 
+
 973. K Closest Points to Origin; https://leetcode.com/problems/k-closest-points-to-origin/
 347. Top K Frequent Elements; https://leetcode.com/problems/top-k-frequent-elements/
 215. Kth Largest Element in an Array; https://leetcode.com/problems/kth-largest-element-in-an-array/ use minus to create a minHeap;
@@ -689,19 +703,22 @@ vector<int> fnTopKEnhanced(vector<int>& arr, int k) {
 81. Search in Rotated Sorted Array II; https://leetcode.com/problems/search-in-rotated-sorted-array-ii/
 4. Median of Two Sorted Arrays; https://leetcode.com/problems/median-of-two-sorted-arrays/; for (int low = 0, high = M; low <= high; )
 */
+// arr[mid] op target in conditions, the same order as the input parameters
 int binarySearch(vector<int>& arr, int target) {
-	int low = 0, high = arr.size() - 1; 
-	while (low <= high) {
-		int mid = low + (high - low) / 2; 
-		if (target == arr[mid])  {
+	int left = 0, right = arr.size() - 1; 
+	while (left <= right) {
+		int mid = left + (right - left) / 2; 
+		if (arr[mid] == target)  {
+			// do something;
 			return mid; 
-		} else if (target < arr[mid]) {
-			high = mid - 1; 
+		} else if (arr[mid] > target) {
+			right = mid - 1; 
 		} else {
-			low = mid + 1; 
+			left = mid + 1; 
 		}
 	}
-	return low; 
+	// left is the insertion point
+	return left; 
 }
 
 /* Binary search: duplicate elements, left-most insertion point
@@ -725,22 +742,22 @@ int binaryLeftMost(vector<int>& arr, int target) {
 	}
 	return left; 
 }
-/*
+/* Binary search on a spatial range
 int minSpeedOnTime(vector<int>& dist, double hour) {
-	int left = 1;
-	int right = 1e7;
+	int low = 1;
+	int high = 1e7;
 	int minSpeed = -1;
 	
-	while (left <= right) {
-		int mid = (left + right) / 2;
+	while (low <= high) {
+		int mid = (low + high) / 2;
 		
 		// Move to the left half.
 		if (timeRequired(dist, mid) <= hour) {
 			minSpeed = mid;
-			right = mid - 1;
+			high = mid - 1;
 		} else {
 			// Move to the right half.
-			left = mid + 1;
+			low = mid + 1;
 		}
 	}
 	return minSpeed;
@@ -781,47 +798,6 @@ int missingElement(vector<int>& nums, int k) {
 */
 
 /*
-In C++, when using binary search, the initialization of the right pointer in the search range can be done in two ways:
-
-1. When considering the entire array:
-   - If the binary search needs to consider all elements of the array, the right pointer is initialized to `array.size()`. For example:
-*/
-
-vector<int> nums; 
-{
-     int left = 0;
-     int right = nums.size(); // Right pointer initialized to array.size()
-     while (left < right) {
-         // Binary search logic
-     }
-}
-/*
-2. When excluding the last element:
-   - In some scenarios, the binary search may need to exclude the last element from the search range. 
-   This is commonly seen when searching for a specific target or finding an element that is just greater or equal to a given value. 
-   In such cases, the right pointer is initialized to `array.size() - 1`. For example:
-*/
-{
-     int left = 0;
-     int right = nums.size() - 1; // Right pointer initialized to array.size() - 1
-     while (left <= right) {
-         // Binary search logic
-     }
-}
-	 
-/*
-3. Adjusting indexing convention:
-   - In C++, arrays are 0-indexed, which means that the valid indices of elements range from 0 to `array.size() - 1`. 
-   If the binary search uses this indexing convention, then the right pointer is typically initialized to `array.size() - 1` to prevent accessing an element beyond the valid index range. For example:
-*/
-{
-     int left = 0;
-     int right = nums.size() - 1; // Right pointer initialized to array.size() - 1
-     while (left <= right) {
-         // Binary search logic
-     }
-}
-/*
 In summary, the choice of initializing the right pointer to `array.size()` or `array.size() - 1` in a binary search 
 depends on the specific problem's requirements and the indexing convention used (0-indexed or 1-indexed). 
 Careful consideration of the search range and the desired behavior will determine the appropriate initialization of the right pointer.
@@ -860,6 +836,7 @@ Just make sure to be consistent with the loop condition and handle boundary case
 /*
 34. Find First and Last Position of Element in Sorted Array; https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
 */
+vector<int> binaryFirstLast(vector<int> &nums, int target)
 {
 	auto cmpLeftMost = [](auto lhs, auto rhs) -> bool {
 		return lhs >= rhs; 
@@ -882,6 +859,7 @@ Just make sure to be consistent with the loop condition and handle boundary case
 
 	auto first = binarySearch(cmpLeftMost); 
 	auto last = binarySearch(cmpRightMost) - 1; 
+	return {first, last};
 }
 
 /* Binary search: for greedy problems
@@ -889,6 +867,7 @@ If looking for a minimum:
 1011. Capacity To Ship Packages Within D Days; https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/
 378. Kth Smallest Element in a Sorted Matrix; https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/
 */
+bool check(int x) { return true; }
 int binaryMinimum(vector<int>& arr) {
 	int low = MINIMUM_POSSIBLE_ANSWER; 
 	int high = MAXIMUM_POSSIBLE_ANSWER; 
