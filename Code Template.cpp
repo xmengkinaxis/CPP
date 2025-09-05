@@ -416,6 +416,7 @@ int dfsTreeStack(TreeNode* root) {
 958. Check Completeness of a Binary Tree; https://leetcode.com/problems/check-completeness-of-a-binary-tree/
 513. Find Bottom Left Tree Value; https://leetcode.com/problems/find-bottom-left-tree-value
 */
+// BFS: level-order traversal with separate layers, vs flat (no level distinction)
 int bfsTree(TreeNode* root) {
 	if (!root) { return 0; } // this step is critical for BFS, for no nullptr can be pushed into queue any time
 
@@ -425,7 +426,7 @@ int bfsTree(TreeNode* root) {
 	// beside if the queue is empty, it might need to check if other conditions are met, e.g. reaching the target level
 	while (!queue.empty()) {
 		// the following for loop can be eliminated if there is NO action for each layer
-		for (int count = queue.size(); 0 < count; --count) {
+		for (auto count = queue.size(); 0 < count; --count) {
 			auto node = queue.front(); queue.pop(); 
 			// 1. do logic for this node; might do some logic as post-Check
 			// 2. visit its branches; might need to do pre-Check
@@ -607,14 +608,14 @@ int bfsGraph(vector<vector<int>>& graph) {
 }
 
 int bfsGraphSteps(vector<vector<int>>& grid) {
-	const int N = grid.size(); 
+	const auto N = grid.size(); 
 	// deal with the special case, e.g. grid[0][0] or/and grid[N - 1][N - 1]
 
 	queue<pair<int, int>> queue; 
 	queue.push({0, 0}); 
 	grid[0][0] = 2; // mark it as visited by changing its value
 	for (int step = 1; !queue.empty(); step++) { // the step must be initialized properly, and is increased level by level
-		for (int count = queue.size(); 0 < count; --count) {
+		for (auto count = queue.size(); 0 < count; --count) {
 			auto [r, c] = queue.front(); queue.pop(); 
 			// do logic for this node, e.g. check if it is finished
 			if (N - 1 == r && N - 1 == c) {
@@ -957,7 +958,7 @@ TrieNode* buildTrie(vector<string> words) {
 	for (auto &word : words) {
 		auto curr = root; 
 		for (auto c : word) {
-			if (curr->children.find(c) == curr->children.end()) {
+			if (curr->children.find(c) == curr->children.end()) { // C++ 20: if (curr->contains(c))
 				curr->children[c] = new TrieNode(); 
 			}
 			curr = curr->children[c]; 
@@ -1096,6 +1097,42 @@ public:
         return true; 
     }
 };
+
+// Dijkstra's algorithm
+#include <vector>
+#include <queue>
+#include <limits>
+
+using namespace std;
+
+using Edge = pair<int, int>;   // (neighbor, weight)
+using HeapNode = pair<int, int>; // (distance, node)
+
+vector<int> dijkstra(int n, int source, const vector<vector<Edge>>& graph) {
+    vector<int> distances(n, numeric_limits<int>::max());
+    distances[source] = 0;
+
+    using MinHeap = priority_queue<HeapNode, vector<HeapNode>, greater<>>;
+    MinHeap heap;
+    heap.push({0, source});
+
+    while (!heap.empty()) {
+        auto [currDist, node] = heap.top();
+        heap.pop();
+
+        if (currDist > distances[node]) continue; // outdated entry
+
+        for (const auto& [nei, weight] : graph[node]) {
+            int newDist = currDist + weight;
+            if (newDist < distances[nei]) {
+                distances[nei] = newDist;
+                heap.push({newDist, nei});
+            }
+        }
+    }
+    return distances;
+}
+
 
 /* Parentheses
 921. Minimum Add to Make Parentheses Valid; https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/
