@@ -12,7 +12,10 @@ g++ --version
 // -Wall covers the most common mistakes.
 // -Wextra digs deeper, catching subtler issues.
 // Together, they help you write cleaner, safer C++.
-g++ -std=c++20 -Wall -Wextra -O2 helloworld.cpp -o helloworld
+// -std=c++20 → use modern C++20 features.
+// -O2 → optimize (closer to production performance).
+// -g → keep debug info (for gdb).
+g++ -std=c++20 -Wall -Wextra -O2 -g helloworld.cpp -o helloworld
 
 // open a file
 code helloworld.cpp 

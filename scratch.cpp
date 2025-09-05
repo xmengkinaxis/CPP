@@ -6,6 +6,14 @@
 
 using namespace std; 
 
+struct Node {
+    int value; 
+    unique_ptr<Node> left; 
+    unique_ptr<Node> right; 
+
+    Node(int v) : value(v) {}
+};
+
 mutex mut; 
 
 struct Foo {
@@ -23,5 +31,10 @@ int main()
     vector<int> v = {5, 3, 8, 1}; 
     sort(v.begin(), v.end()); 
     for (auto n: v) cout << n << " ";
+
+    auto root = make_unique<Node>(0);
+    root->left = make_unique<Node>(1); 
+    root->right = make_unique<Node>(2)
+;
     return 0; 
 }
