@@ -1,17 +1,21 @@
 Framework:
+0. Restate the problem
+
 1. Functional req (10m)
 	System
 	Data
 	User
+
 2. Non-functional req
-	1. Availability
-	2. Scalability
-	3. Consistency
-	4. Latency
+	1. Scalability
+	2. Availability
+	3. Latency target
+	4. Consistency vs Availability
 	5. Reliability
 	6. Security
+	7. Observability
 	
-3. Quantitative analysis
+3. Quantitative analysis (Back-of-the-Envelope Estimation)
 	1. Users & DAU
 	2. Read vs Write
 	2. QPS / TPS
@@ -25,12 +29,13 @@ Framework:
 	2. Workflow
 
 5. APIs Design
+
 6. Data Schema + Data Store
 	1. SQL vs NoSQL
 	2. Object storage
 	3. DB Partitioning / sharding
 
-7. Deep Dive (10m)
+7. Deep Dive on Core Components (10m)
 	7.1 Scale
 	7.2 Partition and Replication
 	7.3 VPC
