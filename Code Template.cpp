@@ -43,6 +43,8 @@ struct TreeNode {
 n <= 10 : O(n^2 * n!) or O(4^n), backtrack or brute-force 
 n <= 20: O(2^n), backtrack or recursion 
 n <= 100: O(n^3), brute-force
+(brute-force or backtrack can be used for the above input sizes)
+--------------------------------------------
 n <= 1,000: O(n * n)
 n <= 100,000: O(n * log n) or O(n): sort or heap; 
 hash map, two pointers, sliding windows, Monotonic stack, 
@@ -55,7 +57,7 @@ More: O(log n ) or O(1)
 O(1) - Constant Time: The algorithm's performance does not change with input size.
 O(log n) - Logarithmic Time: The algorithm's performance increases logarithmically with the input size.
 O(n) - Linear Time: The algorithm's performance scales linearly with the input size.
-O(n log n) - Linearithmic Time: Common for efficient sorting and searching algorithms.
+O(n log n) - Linearithmic time: Common for efficient sorting algorithms (e.g., merge sort, heapsort, quicksort average case).
 O(n^2), O(n^3), ... - Polynomial Time: Performance grows with the square, cube, etc. of the input size.
 O(2^n), O(n!) - Exponential and Factorial Time: Extremely inefficient algorithms.
 
@@ -63,6 +65,37 @@ Common space complexity notations include:
 O(1) - Constant Space: The algorithm uses a fixed amount of memory regardless of the input size.
 O(n) - Linear Space: The algorithm's memory usage scales linearly with the input size.
 O(n^2), O(n^3), ... - Polynomial Space: Memory usage grows with the square, cube, etc. of the input size.
+------------
+
+Time Complexity Pronunciation Cheat Sheet
+| Complexity     | How to Say It           | Common Name      | Example Algorithms                                          |
+| -------------- | ----------------------- | ---------------- | ----------------------------------------------------------- |
+| **O(1)**       | “big O of one”          | Constant time    | Array access by index, push/pop in stack                    |
+| **O(log n)**   | “big O of log n”        | Logarithmic time | Binary search                                               |
+| **O(n)**       | “big O of n”            | Linear time      | Scanning an array                                           |
+| **O(n log n)** | “big O of n log n”      | *n log n time*   | Merge sort, quicksort (average), heapsort                   |
+| **O(n²)**      | “big O of n squared”    | Quadratic time   | Bubble sort, insertion sort, selection sort                 |
+| **O(n³)**      | “big O of n cubed”      | Cubic time       | Floyd–Warshall algorithm                                    |
+| **O(2ⁿ)**      | “big O of two to the n” | Exponential time | Recursive subset generation, brute-force traveling salesman |
+| **O(n!)**      | “big O of n factorial”  | Factorial time   | Generating all permutations                                 |
+
+---
+**Interview Tip**:
+Don’t just say the notation — give the **intuition**:
+
+* *“O(1), meaning constant time.”*
+* *“O(n log n), meaning linearithmic time, common in efficient sorting algorithms.”*
+
+Space Complexities
+| Complexity   | How to Say It        | Common Name       | Example Usage                                                    |
+| ------------ | -------------------- | ----------------- | ---------------------------------------------------------------- |
+| **O(1)**     | “big O of one”       | Constant space    | Iterative Fibonacci, two-pointer algorithms                      |
+| **O(log n)** | “big O of log n”     | Logarithmic space | Recursive binary search, divide & conquer recursion depth        |
+| **O(n)**     | “big O of n”         | Linear space      | Storing input array, recursion stack in DFS                      |
+| **O(n²)**    | “big O of n squared” | Quadratic space   | Dynamic programming tables (e.g., edit distance, Floyd–Warshall) |
+Interview Tip:
+When asked about complexity, answer both time and space if relevant. For example:
+“Merge sort runs in O(n log n) time and requires O(n) space.”
 */
 
 /*
