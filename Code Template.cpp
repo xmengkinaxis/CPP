@@ -99,8 +99,12 @@ When asked about complexity, answer both time and space if relevant. For example
 */
 
 /*
-Two Pointers Technique: left and right, or slow and fast 
-Sliding Window Technique: start and end
+Two Pointers Technique: find a pair of index/positions on an array or list, or lock-steps on two arrays/lists
+	left and right, or slow and fast, or async depending on conditions, or two arrays/lists;
+	opposite directions toward the center, or against the center; 
+	same directions, but with the different speeds, e.g. slow and fast; 
+Sliding Window Technique: find a continuous sub array in an array, or a continuous substr in a string; 
+	start and end with the variable window size, or end for the fixed window size;
 Binary Search: use left / right when searching array indices or intervals; using low / high when searching numeric range 
 	(emphasizing numeric bounds rather than spatial position); 
 	Default: use left / right (most people are familiar with this from LeetCode/education); 
