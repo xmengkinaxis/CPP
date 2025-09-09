@@ -1127,11 +1127,11 @@ vector<int> dijkstra(int n, int source, const vector<vector<Edge>>& graph) {
 
         if (currDist > distances[node]) continue; // outdated entry
 
-        for (const auto& [nei, weight] : graph[node]) {
+        for (const auto& [neighbor, weight] : graph[node]) {
             int newDist = currDist + weight;
-            if (newDist < distances[nei]) {
-                distances[nei] = newDist;
-                heap.push({newDist, nei});
+            if (newDist < distances[neighbor]) {
+                distances[neighbor] = newDist;
+                heap.push({newDist, neighbor});
             }
         }
     }
