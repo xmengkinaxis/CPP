@@ -5,7 +5,7 @@
 import sys
 
 # For character manipulation
-import string
+import string # .isalnum(), .isalpha(), .isdigit(), .lower(), .upper()
 
 # For string manipulation and formatting
 import io

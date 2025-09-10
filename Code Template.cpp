@@ -145,6 +145,7 @@ Binary Search: use left / right when searching array indices or intervals; using
 	Process/calculate and add : monotonic stack/queue (maintain monotonic), sub-array (avoid count the duplicates) (might not be added, if wanting to keep the small index) 
 17. Converting an integer into a string is the quicker way of getting the digits from a number
 18. can use minus to convert a maxHeap to minHeap, instead of creating a special comparison function
+19. Need to pay attention to or skip the same items when processing an array to avoid the duplicate result, e.g. 15. 3Sum
 */
 
 // ??? sort all problems of meta once a week into different algorithms, whose numbers are less than 23 and after 29
