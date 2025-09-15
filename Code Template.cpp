@@ -175,7 +175,7 @@ int fnTwoPointers(vector<int>& arr) {
 }
 
 
-/* two pointers for two arrays with the same direction; to merge rather to to intersect; lockstep to sync them 
+/* two pointers for two arrays with the same direction; to merge rather to intersect; lockstep to sync them 
 Can start from front to back or from back to front
 408. Valid Word Abbreviation https://leetcode.com/problems/valid-word-abbreviation/
 21. Merge Two Sorted Lists; https://leetcode.com/problems/merge-two-sorted-lists/
