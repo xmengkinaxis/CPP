@@ -49,6 +49,7 @@
   - [7.2 Security and Permissions](#72-security-and-permissions)
   - [7.3 Analytics - users behavior](#73-analytics---users-behavior)
   - [7.4 Performance monitor - system performance (telemetry)](#74-performance-monitor---system-performance-telemetry)
+  - [7.5 Identify and solve bottlenecks](#75-identify-and-solve-bottlenecks)
 - [8 Trade-off](#8-trade-off)
   - [8.1 Common Trade-off](#81-common-trade-off)
   - [8.2 Partition](#82-partition)
@@ -339,6 +340,7 @@ Break it down, to the most important, minimal features for your system.
 * assumption: surge in traffic <br>
 
 # 2 Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation.
+Estimate the scale of the system we are going to design. <br>
 The estimation will be helpful later when focusing on scaling, partitioning, load balancing, and caching <br>
 What are the constraints? <br>
 
@@ -435,8 +437,8 @@ Each entry has a place name, address, category, rating, and thumbnail.<br>
 
 ## 4.0 Data Model
 **Benefit:** Defining the data model in the early part of the interview will 
-* clarify how data will flow between different system components, 
-* determine which database storage schema is required and which database type is preferred;
+* clarify how data will flow between different system components; identify various entities of the system, and how they will interact with each other; <br> 
+* determine which database storage schema is required and which database type is preferred;  <br>
 * guide for data partitioning and management.  <br>
   
 **static and dynamic to identify**
@@ -719,6 +721,12 @@ How is the average latency?
 
 * Alert when critical component fail or their performance degrade
 * Determine if we need more load balancing (scaling), or caching, or replication, or further partitioning. 
+
+## 7.5 Identify and solve bottlenecks
+Try to discuss as many bottlenecks as possible and different approaches to mitigate them. 
+* any single point of failure
+* enough replicaso of the data in case we lose a few servers to avoid the total system shutdown
+* monitoring the performance of our services and get alerts whenever critical components fails or their performance degrades
 
 # 8 Trade-off 
 * Goal
