@@ -725,7 +725,7 @@ How is the average latency?
 ## 7.5 Identify and solve bottlenecks
 Try to discuss as many bottlenecks as possible and different approaches to mitigate them. 
 * any single point of failure
-* enough replicaso of the data in case we lose a few servers 
+* enough replicas of the data in case we lose a few servers 
 * enough copies of different services running to avoid the total system shutdown
 * monitoring the performance of our services and get alerts whenever critical components fails or their performance degrades
 
