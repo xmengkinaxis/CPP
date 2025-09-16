@@ -8,11 +8,11 @@
   - [0.4 Goal and Purpose](#04-goal-and-purpose)
   - [0.5 Expectations](#05-expectations)
   - [0.6 Should do](#06-should-do)
-- [1 Ask clarifying and high-level design Questions to scope the problem well](#1-ask-clarifying-and-high-level-design-questions-to-scope-the-problem-well)
-  - [1.1 Functional Requirements (Product Features + User Requirements)](#11-functional-requirements-product-features--user-requirements)
-    - [1.1.1 Product Features](#111-product-features)
+- [1 Ask clarifying and high-level design questions to **scope** the problem well](#1-ask-clarifying-and-high-level-design-questions-to-scope-the-problem-well)
+  - [1.1 Functional Requirements (Product Features/Functionalities + User Requirements)](#11-functional-requirements-product-featuresfunctionalities--user-requirements)
+    - [1.1.1 Product Features/Functionalties](#111-product-featuresfunctionalties)
     - [1.1.2 User requirements](#112-user-requirements)
-  - [1.2 Non-Functional Requirements (Product Properties + User Expectations) (PACELC + reliable + Scalability + Extensibility)](#12-non-functional-requirements-product-properties--user-expectations-pacelc--reliable--scalability--extensibility)
+  - [1.2 Non-Functional Requirements (Product Properties + User Expectations in term of performance) (PACELC + Reliable + Scalability + Extensibility)](#12-non-functional-requirements-product-properties--user-expectations-in-term-of-performance-pacelc--reliable--scalability--extensibility)
     - [Availability](#availability)
     - [Consistency](#consistency)
     - [Efficiency (Performance, Latency and throughput)](#efficiency-performance-latency-and-throughput)
@@ -221,85 +221,92 @@ Start with process → methodology → scale → reliability → meta-mindset.
     - What APIs does it expose? (interface)
     - What data does it store/manage? (state/data)
 
-# 1 Ask clarifying and high-level design Questions to scope the problem well
-what an interviewer is expecting from us; the interviewer is evaluating your investigative abilities<br>
-- to Gather requirements, and to scope the problem
+# 1 Ask clarifying and high-level design questions to **scope** the problem well
+
+It is what an interviewer is expecting from us; the interviewer is evaluating your investigative abilities
+
+- to gather requirements, and to **scope** the problem
 - to outline use cases, to gather constraints, and to validate our assumptions
-Whenever you interact with a platform, think of the who, why, what, and how. Looking into designing the incentives for all kinds of users for them to interact with the system. <br>
+whenever you interact with a platform; think of who, why, what, and how. Looking into designing the incentives for all kinds of users for them to interact with the system.
 
-The functional requirements are the **features and functionalities** that the user will get, whereas the non-functional requirements are the **expectations in terms of performance** from the system. 
+The functional requirements are the **features and functionalities** that the user will get, whereas the non-functional requirements are the **expectations in terms of performance** from the system.
 
-## 1.1 Functional Requirements (Product Features + User Requirements)
-### 1.1.1 Product Features
-* Goal: What is the goal? <br>
-* Functions: What does the system do? <br>
-* Input and output: What are the inputs and outputs of the system? <br>
-* Criticality: What is the criticality of the system? <br>
+## 1.1 Functional Requirements (Product Features/Functionalities + User Requirements)
+
+### 1.1.1 Product Features/Functionalties
+
+- **Goal**: What is the goal?
+- **Functions**: What does the system do?
+- **Input and output**: What are the inputs and outputs of the system?
+- **Criticality**: What is the criticality of the system?
 
 ### 1.1.2 User requirements
-* User types: Who is going to use it? How many kinds of users are there? The categories of people. E.g.Creator, Viewer, and Advertiser.  <br>
-* Purpose: Why? Their incentives to use the system. We develop the whats (incentives/procedures) and the whys (why someone would interact with that kind of content). <br>
-* User cases: 
-  * What are the use cases? <br>
-  * How are they going to use it?  <br>
-  * What kind of operations does the system support? <br>
-  * Read-Heavery vs Write-Heavy
 
-## 1.2 Non-Functional Requirements (Product Properties + User Expectations) (PACELC + reliable + Scalability + Extensibility)
-CAP theory. CP or AP? PACELC (When Partition, Availability or Consistency, Else Latency or Consistency); High reliable and high scalable;  <br>
+- **User types**: Who is going to use it? How many kinds of users are there? The categories of people. E.g. Creator, Viewer, and Advertiser.
+- **Purpose**: Why? Their incentives to use the system. We develop the whats (incentives/procedures) and the whys (why someone would interact with that kind of content).
+- **User cases**:
+  - What are the use cases?
+  - How are they going to use it?  
+  - What kind of **operations** does the system support?
+  - Read-Heavery vs Write-Heavy
+
+## 1.2 Non-Functional Requirements (Product Properties + User Expectations in term of performance) (PACELC + Reliable + Scalability + Extensibility)
+
+CAP theory. CP or AP? **PACELC (When Partition, Availability or Consistency, Else Latency or Consistency)**; High reliable and high scalable;  
 Reliability, Redundant, Stable, Security, Availability 100 up-time?, Simplicity vs Complexity, Maintainability, Consistency, or eventual consistency <br>
 
-Need enough resources to handle the increasing load; the system must be simple so that it is easy to scale at any point in time; performance should always be increased with scalability. <br> 
+Need enough resources to handle the increasing load; the system must be simple so that it is easy to scale at any point in time; **performance should always be increased with scalability**. <br>
 
-### Availability 
-* System must be highly available to keep the users engaged with the platform
-* the percentage of the time that a system remains operational to perform its required function in a specific period under normal conditions; if a system is reliable, it is available. However, if it is available, it is not necessarily reliable.  <br>
-* Every request received by a non-failing node in the system must result in a response. Refers to the system's ability to remain accessible even if one or more nodes in the system to go down. 
-* Measured in a number of 9s, three 9s - 99.9%, four 9s - 99.99% <br>
-* Availability = Uptime ÷ (Uptime + downtime);  <br>
-* **Mean Time Between Failures (MTBF)**: total uptime / # of failures. This is the average time between failures.  <br>
-* **Mean Time to Repair (MTTR)**: total downtime / # of failures. This is the average time taken to recover from a failure. <br>
-* Availability can be **achieved** through CDN (Cache), redundancy (replica of servers and data) , load balancing (distribute the requests only to the active healthy nodes by local LB and to different locations by global LB), choosing high availability databases <br>
+### Availability
+
+- System must be highly available to keep the users **engaged** with the platform
+- **Every request received by a non-failing node in the system must result in a response**. Refers to the system's ability to remain accessible even if one or more nodes in the system to go down.
+- Definition: **the percentage of the time that a system remains operational to perform its required function in a specific period under normal conditions**; if a system is reliable, it is available. However, if it is available, it is not necessarily reliable.
+  - Measured in a number of 9s, three 9s - 99.9%, four 9s - 99.99%
+  - Availability = Uptime ÷ (Uptime + downtime);
+  - **Mean Time Between Failures (MTBF)**: total uptime / # of failures. This is the **average time between failures**.
+  - **Mean Time to Repair (MTTR)**: total downtime / # of failures. This is the **average time taken to recover from a failure**.
+- Availability can be **achieved** through CDN (Cache), redundancy (replica of servers and data) , load balancing (distribute the requests only to the active healthy nodes by local LB and to different locations by global LB), choosing high availability databases
 
 ### Consistency
 All nodes see the same data at the same time, no matter users read/write from/to any node. Equivalent to having a single up-to-date copy of the data. is the agreement between multiple nodes in a distributed system to achieve a certain value. <br>
-* **Strong consistency**: the data in all nodes is the same at any time; offers up-to-date data, but at the cost of high latency. <br>
-* **Weak consistency:** no guarantee that all nodes have the same data at any time.  <br>
-* **Eventual consistency:** ensure data of each node of the database get consistent eventually; offers low latency at the risk of returning stale data. <br>
-* high consistency on messages can be achieved with the help of a FIFO messaging queue with strict ordering
+- **Strong consistency**: the data in all nodes is the same at any time; offers up-to-date data, but at the cost of high latency. <br>
+- **Weak consistency:** no guarantee that all nodes have the same data at any time.  <br>
+- **Eventual consistency:** ensure data of each node of the database get consistent eventually; offers low latency at the risk of returning stale data. <br>
+- high consistency on messages can be achieved with the help of a FIFO messaging queue with strict ordering
 
 ### Efficiency (Performance, Latency and throughput)
-* Two standard measures of its efficiency are **the response time(or latency)** that denotes the delay to obtain the first item and **the throughput (or bandwidth)** with denotes the number of items delivered in a given time unit. (Metrics: Latency/Response Time, throughput/Bandwidth)
-* **Response Time**: the time difference between request and response
-* **Latency**: how long a system takes to transmit data from one point to another point in the system;
-* **Throughput** is the amount of work done by the system in a given particular time. partition and split data, so they are served by different machines in the parallel read or write; cache at the different layers, including the client side, front-end servers, and databases
-* **Bandwidth** is the maximum data that can be transferred on the different networks.
-* Employ the right technology for the right feature; User different datastores for different reasons; use different distributed caches depending upon the use case and access frequency; 
-* can be **achieved** by using multiple machines to parallel process; minimize the latency by geographically distributing servers and their caches, adding cache clusters on top of database clusters, and using CDNs for frequently sharing documents and media content; can be **achieved** by Caching at each layer (web server, application server, cluster, data base, file system, storage units), CDN, Index, the appropriate programming language
-* video streaming should be smooth
+- Two standard measures of its efficiency are **the response time(or latency)** that denotes the delay to obtain the first item and **the throughput (or bandwidth)** with denotes the number of items delivered in a given time unit. (Metrics: Latency/Response Time, throughput/Bandwidth)
+- **Response Time**: the time difference between request and response
+- **Latency**: how long a system takes to transmit data from one point to another point in the system;
+- **Throughput** is the amount of work done by the system in a given particular time. partition and split data, so they are served by different machines in the parallel read or write; cache at the different layers, including the client side, front-end servers, and databases
+- **Bandwidth** is the maximum data that can be transferred on the different networks.
+- Employ the right technology for the right feature; User different datastores for different reasons; use different distributed caches depending upon the use case and access frequency; 
+- can be **achieved** by using multiple machines to parallel process; minimize the latency by geographically distributing servers and their caches, adding cache clusters on top of database clusters, and using CDNs for frequently sharing documents and media content; can be **achieved** by Caching at each layer (web server, application server, cluster, data base, file system, storage units), CDN, Index, the appropriate programming language
+- video streaming should be smooth
 
 ### Scalability
-* a distributed system can continuously evolve in order to support the growing amount of work (handle the increasing amount of user requests, and work with the more data); 
-* increase resources and performance with increasing load and traffic over the existing system without affecting the complexity and performance; need enough resources to handle the increasing load, for it would be increased at any point in time; should be simple and easy to scale; performance should always be increased with scalability <br>
-* A system can be called scalable if adding more resources in the system results in performance increases. Performance is directly proportional to resources added. <br>
-* Horizontal (scaling out) vs Vertical Scaling (scaling up) <br>
-* The system should be able to scale up and down, depending on the number of requests; Auto-scaling policies are crucial for maintaining the desired level of performance, availability, and cost efficiency <br>
-* Scalability can be **achieved** through CDN (Cache which bring the content closer to user and remove the requirement of high bandwidth), reading replicas, partitioning data/files, horizontal sharding of database,  the isolation of different services (micro-services), load balancer, separate read/write operations on different server; optimize a general-purpose server for special tasks by carefull performance engineering of the full software stack <br> 
-* Partition and split the big file/blobs into small-sized chunks to scale the requests, served by different partition servers; maybe range-based partition; need a partition mapping
-* Storage, bandwidth, and the number of concurrent user request should NOT become bottleneck, or overwhelm any servers
+- a distributed system can continuously evolve in order to support the growing amount of work (handle the increasing amount of user requests, and work with the more data); 
+- increase resources and performance with increasing load and traffic over the existing system without affecting the complexity and performance; need enough resources to handle the increasing load, for it would be increased at any point in time; should be simple and easy to scale; performance should always be increased with scalability <br>
+- A system can be called scalable if adding more resources in the system results in performance increases. Performance is directly proportional to resources added. <br>
+- Horizontal (scaling out) vs Vertical Scaling (scaling up) <br>
+- The system should be able to scale up and down, depending on the number of requests; Auto-scaling policies are crucial for maintaining the desired level of performance, availability, and cost efficiency <br>
+- Scalability can be **achieved** through CDN (Cache which bring the content closer to user and remove the requirement of high bandwidth), reading replicas, partitioning data/files, horizontal sharding of database,  the isolation of different services (micro-services), load balancer, separate read/write operations on different server; optimize a general-purpose server for special tasks by carefull performance engineering of the full software stack <br> 
+- Partition and split the big file/blobs into small-sized chunks to scale the requests, served by different partition servers; maybe range-based partition; need a partition mapping
+- Storage, bandwidth, and the number of concurrent user request should NOT become bottleneck, or overwhelm any servers
 
 ### Reliability
-* **Goal**: keep delivering its service even when one or several of its software or hardware components fail; handle faults, failures, and errors;  
-  * A **fault** is a defect or flaw in the system's components. A fault is a defect or flaw in the system's hardware or software that can potentially cause the system to deviate from its expected behavior.
-  * A **failure** is the visible manifestation of a system not performing as expected due to one or more faults.
-  * An **error** is a human action or decision that can introduce faults or lead to failures in the system.
-* **achieve** such resilience with a cost in order to eliminate every single point of failure (vulnerable), data lost, authentication(???)
-  * client: 
-    * use local storage, and resend after reconnect 
-  * System: 
-    * redundancy of the hardware, software components and data
-    * load balancer: achieve with health check (heartbeat protocol, gossip protocol), and monitoring services with alerts.
-    * services are decoupled and isolated; 
+- **Goal**: keep delivering its service even when one or several of its software or hardware components fail; handle faults, failures, and errors;  
+  - A **fault** is a defect or flaw in the system's components. A fault is a defect or flaw in the system's hardware or software that can potentially cause the system to deviate from its expected behavior.
+  - A **failure** is the visible manifestation of a system not performing as expected due to one or more faults.
+  - An **error** is a human action or decision that can introduce faults or lead to failures in the system.
+- **achieve** such resilience with a cost in order to eliminate every single point of failure (vulnerable), data lost, authentication(???)
+  - client: 
+    - use local storage, and resend after reconnect 
+  - System: 
+    - redundancy of the hardware, software components and data
+    - load balancer: achieve with health check (heartbeat protocol, gossip protocol), and monitoring services with alerts.
+    - services are decoupled and isolated; 
 
 ### Concurrency
 To maximize system's performance: high bandwidth and high throughput.
@@ -369,13 +376,13 @@ Remember that achieving these attributes often involves trade-offs, and the stra
 Break it down, to the most important, minimal features for your system.
 
 ## 1.5 Design Considerations (no do, or assumption)
-* Security: No user authentication or authorization; both are already completed <br>
-* Result: get all or nothing, not a partial result;  <br>
-* Fairness and ethical <br>
-* Prevent abuse: put some restriction to stop system abuse, 
-  * limit the size of text or image or video, 
-  * add a rate limiter (prevent abuse behavior, provide a fair and reasonable use of the resource's capacity when sharing among many users, control the cost of operations and avoid excess costs) <br>
-* assumption: surge in traffic <br>
+- Security: No user authentication or authorization; both are already completed <br>
+- Result: get all or nothing, not a partial result;  <br>
+- Fairness and ethical <br>
+- Prevent abuse: put some restriction to stop system abuse, 
+  - limit the size of text or image or video, 
+  - add a rate limiter (prevent abuse behavior, provide a fair and reasonable use of the resource's capacity when sharing among many users, control the cost of operations and avoid excess costs) <br>
+- assumption: surge in traffic <br>
 
 # 2 Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation.
 Estimate the scale of the system we are going to design. <br>
@@ -383,15 +390,15 @@ The estimation will be helpful later when focusing on scaling, partitioning, loa
 What are the constraints? <br>
 
 **Read-heavy vs Write-heavy**
-* based on the read-heavy or write-heavy machine we can apply the 80–20 rule.  <br>
-* If this is a **read-heavy**, estimate **read throughput**. <br>
-* If a system is **write-heavy** then we need to estimate the **Storage** requirements per day, per year, and for 5–10 years. <br>
+- based on the read-heavy or write-heavy machine we can apply the 80–20 rule.  <br>
+- If this is a **read-heavy**, estimate **read throughput**. <br>
+- If a system is **write-heavy** then we need to estimate the **Storage** requirements per day, per year, and for 5–10 years. <br>
 
 
-* **traffic** is the user request from users to servers
-* **storage** is the user data or user-request data on disk 
-* **bandwidth**  is traffic from servers to users
-* **memory** is the cache capacity in order to improve the performance, esp. for read-heavy
+- **traffic** is the user request from users to servers
+- **storage** is the user data or user-request data on disk 
+- **bandwidth**  is traffic from servers to users
+- **memory** is the cache capacity in order to improve the performance, esp. for read-heavy
 
 ## 2.1 Traffic in write/second, or read/second
 **Users** <br>
