@@ -116,77 +116,115 @@
 <!-- TOC -->
 
 # 0 Interview Preparation
+
 ## 0.1 Time Allocation
-Clarify the problem, break down the complex problem into parts, discuss the overall design, and deep dive into some components; identify and analyze the tradeoffs, recover from the failures; <br>
+
+Clarify the problem, break down the complex problem into parts, discuss the overall design, and deep dive into some components; identify and analyze the tradeoffs, recover from the failures;
+
 1. Understand the problem and establish design core: ~10 minutes (3 - 10 m)
 2. Propose high-level design and get buy-in; -10 minutes (10 - 15 m)
 3. Design deep dive; 20 minutes (10 - 25 m)
 4. Wrap / Evaluation / feedback / discussion / question : 5 minutes (3 - 5 m)
 
 ## 0.2 Tips on the process
-1. Discuss trade-offs with your interviewers
-2. Manage your time efficiently
+
+1. Manage your **time** efficiently
+2. Discuss **trade-offs** with your interviewers
 3. Start wide and end deep
 
 ## 0.3 Communicate through process
+
 1. Start with the problem statement: clearly explain the problem and the requirements for the system; then explain your approach and how you plan to tackle the problem
 2. Break down the problem: divide the problem into smaller parts and explain how you will solve each part individually
-3. Use diagrams and sketches to help explain your design 
-4. Explain the trade-offs you made and the constraints you considered; demonstrate you understanding of the problem and your ability to make informed decisions
-5. Explain your reasoning: Clearly explain why you made certain design decisions and how they address the problem and requirements.  how you arrived at your solution.
-6. Be prepared to answer questions and provide alternatives: 
-7. Be open to feedback:  be prepared to revise your design based on feedback from the interviewer. This will demonstrate your ability to iterate and improve your design based on feedback.
+3. Use diagrams and sketches to help explain your design
+4. Explain the **trade-offs** you made and the **constraints** you considered; demonstrate your ability to make informed (trade-off) decisions and your understanding of the problem (constraints)
+5. Explain your reasoning: clearly explain why you made certain design decisions and how they address the problem and requirements; how you arrived at your solution
+6. Be prepared to answer questions and provide alternatives with pros and cons
+7. Be open to feedback: be prepared to revise your design based on feedback from the interviewer. This will demonstrate your ability to iterate and improve your design based on feedback.
 
-Demonstrate your ability to anticipate and address potential issues in your design<br>
-* Anticipate edge cases: high traffic, low memory, and high user concurrency
-* Plan for failure: how to maintain availability and consistency
-* Consider scalability
-* Consider security: protect sensitive data and ensure security
-* Be prepared to explain why you made certain design decisions and how they address edge cases and constraints.
+Demonstrate your ability to anticipate and address potential issues in your design：
 
-## 0.4 Goal and Purpose 
-* The key aspect of system design is to identify the problem area and trade off, and be able to justify a decision over another. <br>
-* assesses a candidate's ability to combine knowledge, theory, experience, and judgment toward solving a real-world engineering problem with significant ambiguity. <br>
-* Interviewrs are more interested in your thought process throughout the interview than in your final design. 
-* The success heavily depends on your ability to communicate your thought process and hold a discussion (collaborate). <br>
-* Demonstrate your thought process and domain-specific knowledge; Presentation matter.<br>
-* It is critical to demonstrate your ability to recognize and evaluate trade-offs, as it reflects your understanding of various design aspects and their implications<br>
+- Anticipate edge cases: high traffic, low memory, and high user concurrency
+- Plan for failure: how to maintain availability and consistency
+- Consider scalability
+- Consider security: protect sensitive data and ensure security
+- Be prepared to explain why you made certain design decisions and how they address edge cases and constraints.
 
-## 0.5 Expectations 
-* Mid-level System Designers 
-  * Be able to identify and address performance, scalability, and reliability issues
-  * be well-versed in various architectural styles, design patterns, and their trade-off
-* Senior System Designer
-  * strong expertise on System Design
-  * tackle some of the most challenging design issues
-  * have the insight to address **long-term issues** that may affect a system over its lifetime
-  * speak toward bottlenecks and long-term scalability of the system
-  * feel confident enough to lead and mentor other designers in regard to system design principles, concepts, and best practices; 
-  * Can review, evaluate, and evolve a system desgin
-* Principle/Lead System Designer
-  * extensive knowledge of System Design, **its history, and industry trends**; (past, current, and future)
-  * be **recognized** for designing and implementing complex and large-scale systems; (have a good reputation)
-  * have a deep and thorough understanding of trade-offs, performance optimizations, and long-term scalability
+## 0.4 Goal and Purpose
 
-## 0.6 Should do 
-* Get the skeleton in the place and then start optimizing (optimization is an evolutionary process) notch by notch; <br>
-* Lead and drive an Open-ended conversation as doing a demo or presentation; or as guide juniors, discuss with peer, and present to seniors
-* Everything is a trade-off; Make points with justification; Defend your design;
-* Regularly monitor the time on track
-* Evaluate the solution, and engage in feedback, discussion and question;
-* Do NOT over-design or under-design;
-* No single-point failure (to achieve highly reliable, no data lost)
-* Identify potential bottlenecks and future problems (scale)
-* Describe failover and impacts on users and Service Level Agreements (SLAs)
-* Backup and disaster recovery
-* Usage patterns, and security
+Interviewer:
 
-* System design is similar to Object/Class Design. Why need such a class? Which method/function should it provide? Which information should it stores or manages?
+- assesses a candidate's ability to combine knowledge, theory, experience, and judgment toward solving a real-world engineering problem with significant ambiguity.
+- Interviewrs are more interested in your thought process throughout the interview than in your final design.
+
+Interviewee:
+
+- The key aspect of system design is to identify the problem area and trade off, and be able to justify a decision over another.
+- The success heavily depends on your ability to communicate your thought process and hold a discussion (collaborate).
+- Demonstrate your thought process and domain-specific knowledge; Presentation matter.
+- It is critical to demonstrate your ability to recognize and evaluate trade-offs, as it reflects your understanding of various design aspects and their implications
+
+## 0.5 Expectations
+
+- Mid-level System Designers
+  - Be able to identify and address performance, scalability, and reliability issues
+  - be well-versed in various **architectural styles, design patterns, and their trade-off**
+- Senior System Designer
+  - strong expertise on System Design
+  - tackle some of the **most challenging** design issues
+  - have the insight to address **long-term issues** that may affect a system over its lifetime
+  - speak toward **bottlenecks and long-term scalability** of the system
+  - feel confident enough to lead and mentor other designers in regard to **system design principles and best practices**
+  - Can **review, evaluate, and evolve** a system desgin
+- Principle/Lead System Designer
+  - extensive knowledge of System Design, **its history, and industry trends**; (past, current, and future)
+  - be **recognized** for designing and implementing complex and large-scale systems; (have a good reputation)
+  - have a deep and thorough understanding of trade-offs, performance optimizations, and long-term scalability
+
+## 0.6 Should do
+
+Start with process → methodology → scale → reliability → meta-mindset.
+
+- Process & Communication
+  - Lead and drive an Open-ended conversation → Treat it like guiding juniors, discussing with peers, and presenting to seniors.
+  - Regularly monitor the time on track → Keep progress balanced between breadth and depth.
+  - Evaluate the solution, and engage in feedback, discussion and question → Show adaptability and collaboration.
+
+- Design Methodology
+  - Get the skeleton in the place and then start optimizing (optimization is an evolutionary process) notch by notch.
+  - Do NOT over-design or under-design → Balance simplicity with completeness.
+  - Everything is a trade-off; Make points with justification; Defend your design.
+  - System design is similar to Object/Class Design → Why need such a component? Which APIs should it provide? Which data should it manage?
+  
+- Scalability & Performance
+  - Identify potential bottlenecks and future problems (scale).
+  - Usage patterns, and security.
+  
+- Reliability & Resilience
+  - No single-point failure (to achieve high reliability, no data lost).
+  - Describe failover and impacts on users and Service Level Agreements (SLAs).
+  - Backup and disaster recovery.
+
+- Meta-Lens (global mindset / cross-cutting principles)
+  - Trade-offs → Every decision should consider pros/cons.
+  - Communication → Clear explanations are always required.
+  - Time-awareness → Keep an eye on progress throughout.
+  - Iterative refinement → Don’t aim for perfection in one go.
+
+- Analogy between Class Desgin and System Design:
+  - In Object/Class Design, you clarify:
+    - Why does this class exist? (responsibility)
+    - Which methods/functions should it expose? (interface)
+    - Which attributes should it store/manage? (state/data)
+  - In System Design, you do the same but at a larger scale:
+    - Why does this component/service exist? (responsibility)
+    - What APIs does it expose? (interface)
+    - What data does it store/manage? (state/data)
 
 # 1 Ask clarifying and high-level design Questions to scope the problem well
 what an interviewer is expecting from us; the interviewer is evaluating your investigative abilities<br>
-* to Gather requirements, and to scope the problem
-* to outline use cases, to gather constraints, and to validate our assumptions
+- to Gather requirements, and to scope the problem
+- to outline use cases, to gather constraints, and to validate our assumptions
 Whenever you interact with a platform, think of the who, why, what, and how. Looking into designing the incentives for all kinds of users for them to interact with the system. <br>
 
 The functional requirements are the **features and functionalities** that the user will get, whereas the non-functional requirements are the **expectations in terms of performance** from the system. 
