@@ -19,7 +19,7 @@
     - [Scalability](#scalability)
     - [Reliability](#reliability)
     - [Concurrency](#concurrency)
-    - [Serviceability or Manageability (simplicity):](#serviceability-or-manageability-simplicity)
+    - [Serviceability or Manageability (simplicity)](#serviceability-or-manageability-simplicity)
     - [Durability](#durability)
     - [Security](#security)
   - [1.3 Achieve NFR (Non Functional Requirement)](#13-achieve-nfr-non-functional-requirement)
@@ -261,21 +261,25 @@ Need enough resources to handle the increasing load; the system must be simple s
 
 - System must be highly available to keep the users **engaged** with the platform
 - **Every request received by a non-failing node in the system must result in a response**. Refers to the system's ability to remain accessible even if one or more nodes in the system to go down.
-- Definition: **the percentage of the time that a system remains operational to perform its required function in a specific period under normal conditions**; if a system is reliable, it is available. However, if it is available, it is not necessarily reliable.
+- Definition: **the percentage of the time that a system remains operational to perform its required function in a specific period under normal conditions**; 
   - Measured in a number of 9s, three 9s - 99.9%, four 9s - 99.99%
   - Availability = Uptime ÷ (Uptime + downtime);
   - **Mean Time Between Failures (MTBF)**: total uptime / # of failures. This is the **average time between failures**.
   - **Mean Time to Repair (MTTR)**: total downtime / # of failures. This is the **average time taken to recover from a failure**.
 - Availability can be **achieved** through CDN (Cache), redundancy (replica of servers and data) , load balancing (distribute the requests only to the active healthy nodes by local LB and to different locations by global LB), choosing high availability databases
+- VS reliable: if a system is reliable, it is available. However, if it is available, it is not necessarily reliable.
 
 ### Consistency
-All nodes see the same data at the same time, no matter users read/write from/to any node. Equivalent to having a single up-to-date copy of the data. is the agreement between multiple nodes in a distributed system to achieve a certain value. <br>
-- **Strong consistency**: the data in all nodes is the same at any time; offers up-to-date data, but at the cost of high latency. <br>
-- **Weak consistency:** no guarantee that all nodes have the same data at any time.  <br>
-- **Eventual consistency:** ensure data of each node of the database get consistent eventually; offers low latency at the risk of returning stale data. <br>
+
+All nodes see the same data at the same time, no matter users read/write from/to any node. Equivalent to having a single up-to-date copy of the data. Consistency is the agreement between multiple nodes in a distributed system to achieve a certain value.
+
+- **Strong consistency**: the data in all nodes is the same at any time; offers up-to-date data, but at the cost of high latency.
+- **Weak consistency:** no guarantee that all nodes have the same data at any time.
+- **Eventual consistency:** ensure data of each node of the database get consistent eventually; offers low latency at the risk of returning stale data.
 - high consistency on messages can be achieved with the help of a FIFO messaging queue with strict ordering
 
 ### Efficiency (Performance, Latency and throughput)
+
 - Two standard measures of its efficiency are **the response time(or latency)** that denotes the delay to obtain the first item and **the throughput (or bandwidth)** with denotes the number of items delivered in a given time unit. (Metrics: Latency/Response Time, throughput/Bandwidth)
 - **Response Time**: the time difference between request and response
 - **Latency**: how long a system takes to transmit data from one point to another point in the system;
@@ -286,6 +290,7 @@ All nodes see the same data at the same time, no matter users read/write from/to
 - video streaming should be smooth
 
 ### Scalability
+
 - a distributed system can continuously evolve in order to support the growing amount of work (handle the increasing amount of user requests, and work with the more data); 
 - increase resources and performance with increasing load and traffic over the existing system without affecting the complexity and performance; need enough resources to handle the increasing load, for it would be increased at any point in time; should be simple and easy to scale; performance should always be increased with scalability <br>
 - A system can be called scalable if adding more resources in the system results in performance increases. Performance is directly proportional to resources added. <br>
@@ -296,6 +301,7 @@ All nodes see the same data at the same time, no matter users read/write from/to
 - Storage, bandwidth, and the number of concurrent user request should NOT become bottleneck, or overwhelm any servers
 
 ### Reliability
+
 - **Goal**: keep delivering its service even when one or several of its software or hardware components fail; handle faults, failures, and errors;  
   - A **fault** is a defect or flaw in the system's components. A fault is a defect or flaw in the system's hardware or software that can potentially cause the system to deviate from its expected behavior.
   - A **failure** is the visible manifestation of a system not performing as expected due to one or more faults.
@@ -309,16 +315,20 @@ All nodes see the same data at the same time, no matter users read/write from/to
     - services are decoupled and isolated; 
 
 ### Concurrency
+
 To maximize system's performance: high bandwidth and high throughput.
 
-### Serviceability or Manageability (simplicity): 
+### Serviceability or Manageability (simplicity)
+
 is the simplicity and speed with which a a system can be repaired or maintained. The ease of diagnosing and understanding problems when they occur, ease of making updates or modifications, and how simple the system is to operate
 
 ### Durability
+
 The data, once uploaded, shouldn't be lost unless users explicitly delete that data. <br>
 The replication and monitoring services ensure the durability of the data. <br>
 
 ### Security
+
 Be secure via end-to-end encryption
 
 ## 1.3 Achieve NFR (Non Functional Requirement)
