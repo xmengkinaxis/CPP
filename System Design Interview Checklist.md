@@ -15,7 +15,7 @@
   - [1.2 Non-Functional Requirements (Product Properties + User Expectations in term of performance) (PACELC + Reliable + Scalability + Extensibility)](#12-non-functional-requirements-product-properties--user-expectations-in-term-of-performance-pacelc--reliable--scalability--extensibility)
     - [Availability](#availability)
     - [Consistency](#consistency)
-    - [Efficiency (Performance, Latency and throughput)](#efficiency-performance-latency-and-throughput)
+    - [Efficiency (Performance, Latency and Throughput)](#efficiency-performance-latency-and-throughput)
     - [Scalability](#scalability)
     - [Reliability](#reliability)
     - [Concurrency](#concurrency)
@@ -255,7 +255,7 @@ The functional requirements are the **features and functionalities** that the us
 CAP theory. CP or AP? **PACELC (When Partition, Availability or Consistency, Else Latency or Consistency)**; High reliable and high scalable;  
 Reliability, Redundant, Stable, Security, Availability 100 up-time?, Simplicity vs Complexity, Maintainability, Consistency, or eventual consistency <br>
 
-Need enough resources to handle the increasing load; the system must be simple so that it is easy to scale at any point in time; **performance should always be increased with scalability**. <br>
+Need enough resources to handle the increasing load; the system must be simple so that it is easy to scale at any point in time; **performance should always be increased with scalability**.
 
 ### Availability
 
@@ -263,11 +263,11 @@ Need enough resources to handle the increasing load; the system must be simple s
 - **Every request received by a non-failing node in the system must result in a response**. Refers to the system's ability to remain accessible even if one or more nodes in the system to go down.
 - Definition: **the percentage of the time that a system remains operational to perform its required function in a specific period under normal conditions**; 
   - Measured in a number of 9s, three 9s - 99.9%, four 9s - 99.99%
-  - Availability = Uptime ÷ (Uptime + downtime);
+  - **Availability = Uptime ÷ (Uptime + Downtime)**
   - **Mean Time Between Failures (MTBF)**: total uptime / # of failures. This is the **average time between failures**.
   - **Mean Time to Repair (MTTR)**: total downtime / # of failures. This is the **average time taken to recover from a failure**.
 - Availability can be **achieved** through CDN (Cache), redundancy (replica of servers and data) , load balancing (distribute the requests only to the active healthy nodes by local LB and to different locations by global LB), choosing high availability databases
-- VS reliable: if a system is reliable, it is available. However, if it is available, it is not necessarily reliable.
+- V.S. Reliable: if a system is reliable, it is available. However, if it is available, it is not necessarily reliable.
 
 ### Consistency
 
@@ -278,16 +278,39 @@ All nodes see the same data at the same time, no matter users read/write from/to
 - **Eventual consistency:** ensure data of each node of the database get consistent eventually; offers low latency at the risk of returning stale data.
 - high consistency on messages can be achieved with the help of a FIFO messaging queue with strict ordering
 
-### Efficiency (Performance, Latency and throughput)
+### Efficiency (Performance, Latency and Throughput)
 
-- Two standard measures of its efficiency are **the response time(or latency)** that denotes the delay to obtain the first item and **the throughput (or bandwidth)** with denotes the number of items delivered in a given time unit. (Metrics: Latency/Response Time, throughput/Bandwidth)
-- **Response Time**: the time difference between request and response
-- **Latency**: how long a system takes to transmit data from one point to another point in the system;
-- **Throughput** is the amount of work done by the system in a given particular time. partition and split data, so they are served by different machines in the parallel read or write; cache at the different layers, including the client side, front-end servers, and databases
-- **Bandwidth** is the maximum data that can be transferred on the different networks.
-- Employ the right technology for the right feature; User different datastores for different reasons; use different distributed caches depending upon the use case and access frequency; 
-- can be **achieved** by using multiple machines to parallel process; minimize the latency by geographically distributing servers and their caches, adding cache clusters on top of database clusters, and using CDNs for frequently sharing documents and media content; can be **achieved** by Caching at each layer (web server, application server, cluster, data base, file system, storage units), CDN, Index, the appropriate programming language
-- video streaming should be smooth
+Two standard measures of its efficiency are **the response time(or latency)** that denotes the delay to obtain the first item and **the throughput (or bandwidth)** with denotes the number of items delivered in a given time unit. (Metrics: Latency/Response Time, throughput/Bandwidth)
+
+- Efficiency is measured mainly by:
+  - Latency / Response Time
+  - Throughput / Bandwidth
+
+- Key Metrics
+  - **Response Time** = time difference between request and response.
+  - **Latency** = time taken for data to travel between two points. speed of one request (delay)
+  - **Throughput** = amount of work done / number of operations completed per unit time. volume of work handled per unit of time.
+  - **Bandwidth** = maximum data transfer capacity of a network. physical network capacity.
+
+- Techniques to Improve Efficiency
+  - (a) Reduce Latency
+    - Geographically distribute servers closer to users.
+    - Use CDNs for frequently accessed documents, images, and media.
+    - Add cache clusters above database clusters.
+    - Use indexes for faster data lookup.
+  - (b) Increase Throughput
+    - Partition & shard data → parallel reads/writes across machines.
+    - Use multiple machines to parallelize processing.
+    - Employ distributed systems (datastores, caches, compute nodes).
+  - (c) General Optimization
+    - Cache at every layer: client, web server, app server, database, file system, storage.
+    - Choose the right technology for the right feature.
+      - Different datastores for different access patterns.
+      - Different distributed caches based on use case and frequency.
+    - Select the appropriate programming language/runtime for the workload.
+
+- User Experience Angle
+  - Efficiency isn’t just raw metrics — it’s about smooth experience (e.g., video streaming must feel seamless).
 
 ### Scalability
 
