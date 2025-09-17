@@ -312,6 +312,48 @@ All nodes see the same data at the same time, no matter users read/write from/to
 
 ### Scalability
 
+- **Definition & Core Idea**
+  - Scalability = the ability of a distributed system to **handle growth** in workload, users, and data **without degradation in performance**.
+  - A system is scalable if **adding more resources** results in **proportional performance improvements**.
+  - Goal: performance should increase smoothly with growth while keeping complexity manageable.
+
+- **Types of Scaling**
+  - **Vertical Scaling (Scale Up):** add more power (CPU, RAM, disk) to a single server.
+  - **Horizontal Scaling (Scale Out):** add more servers/machines to distribute workload.
+  - **Elastic Scaling (Scale Up & Down):** system should scale **both ways** automatically depending on traffic (auto-scaling policies).
+
+- **Principles & Requirements**
+  - System should remain **simple and easy to scale**.
+  - **Performance ↔ Resources**: performance should always increase with added resources.
+  - Must prevent bottlenecks in:
+    - **Storage**
+    - **Bandwidth**
+    - **Concurrent user requests**
+
+- **Techniques to Achieve Scalability**
+  - **Caching & CDN**
+    - CDN: brings content closer to users, reduces bandwidth needs.
+    - Caching layers: reduce repeated work and latency.
+
+  - **Database Strategies**
+    - Read replicas: distribute read queries.
+    - Sharding (horizontal partitioning): split database by user ID, range, hash, etc.
+    - Separate read/write operations onto different servers.
+
+  - **Partitioning**
+    - Split large files/blobs into **smaller chunks** served by multiple servers.
+    - Use **partition mapping** to track and route requests.
+
+  - **Service Architecture**
+    - Microservices: isolate different services to scale independently.
+    - Load balancers: distribute traffic across servers.
+    - Specialized servers: optimize general-purpose servers for specific tasks via performance tuning.
+
+- **Key Takeaways**
+  - Scalability ≠ just “adding machines” → requires **smart architecture**.
+  - **Auto-scaling policies** balance cost, availability, and performance.
+  - Always design to avoid **single points of failure** and **bottlenecks**.
+
 - a distributed system can continuously evolve in order to support the growing amount of work (handle the increasing amount of user requests, and work with the more data);
 - increase resources and performance with increasing load and traffic over the existing system without affecting the complexity and performance; need enough resources to handle the increasing load, for it would be increased at any point in time; should be simple and easy to scale; performance should always be increased with scalability
 - A system can be called scalable if adding more resources in the system results in performance increases. Performance is directly proportional to resources added.
