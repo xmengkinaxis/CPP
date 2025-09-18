@@ -324,7 +324,7 @@ All nodes see the same data at the same time, no matter users read/write from/to
 
 - **Principles & Requirements**
   - System should remain **simple and easy to scale**.
-  - **Performance ↔ Resources**: performance should always increase with added resources.
+  - **Performance ↔ Resources**: Ideally performance should always increase with added resources.
   - Must prevent bottlenecks in:
     - **Storage**
     - **Bandwidth**
@@ -356,12 +356,7 @@ All nodes see the same data at the same time, no matter users read/write from/to
 
 - a distributed system can continuously evolve in order to support the growing amount of work (handle the increasing amount of user requests, and work with the more data);
 - increase resources and performance with increasing load and traffic over the existing system without affecting the complexity and performance; need enough resources to handle the increasing load, for it would be increased at any point in time; should be simple and easy to scale; performance should always be increased with scalability
-- A system can be called scalable if adding more resources in the system results in performance increases. Performance is directly proportional to resources added.
-- Horizontal (scaling out) vs Vertical Scaling (scaling up)
 - The system should be able to scale up and down, depending on the number of requests; Auto-scaling policies are crucial for maintaining the desired level of performance, availability, and cost efficiency
-- Scalability can be **achieved** through CDN (Cache which bring the content closer to user and remove the requirement of high bandwidth), reading replicas, partitioning data/files, horizontal sharding of database,  the isolation of different services (micro-services), load balancer, separate read/write operations on different server; optimize a general-purpose server for special tasks by carefull performance engineering of the full software stack
-- Partition and split the big file/blobs into small-sized chunks to scale the requests, served by different partition servers; maybe range-based partition; need a partition mapping
-- Storage, bandwidth, and the number of concurrent user request should NOT become bottleneck, or overwhelm any servers
 
 ### Reliability
 
@@ -369,13 +364,14 @@ All nodes see the same data at the same time, no matter users read/write from/to
   - A **fault** is a defect or flaw in the system's components. A fault is a defect or flaw in the system's hardware or software that can potentially cause the system to deviate from its expected behavior.
   - A **failure** is the visible manifestation of a system not performing as expected due to one or more faults.
   - An **error** is a human action or decision that can introduce faults or lead to failures in the system.
+  - fault (invisible) with/without error (human action) => failure (visible)
 - **achieve** such resilience with a cost in order to eliminate every single point of failure (vulnerable), data lost, authentication(???)
-  - client: 
-    - use local storage, and resend after reconnect 
-  - System: 
-    - redundancy of the hardware, software components and data
-    - load balancer: achieve with health check (heartbeat protocol, gossip protocol), and monitoring services with alerts.
-    - services are decoupled and isolated; 
+  - client:
+    - use local storage, and resend after reconnect
+  - System:
+    - redundancy of the hardware & software components and data
+    - load balancer: achieve with health check (heartbeat protocol, gossip protocol), and monitoring services with alerts
+    - services are decoupled and isolated
 
 ### Concurrency
 
@@ -383,18 +379,22 @@ To maximize system's performance: high bandwidth and high throughput.
 
 ### Serviceability or Manageability (simplicity)
 
-is the simplicity and speed with which a a system can be repaired or maintained. The ease of diagnosing and understanding problems when they occur, ease of making updates or modifications, and how simple the system is to operate
+- is the **simplicity** and **speed** with which a system can be repaired or maintained.
+  - The ease of diagnosing and understanding problems when they occur
+  - The ease of making updates or modifications
+  - how simple the system is to operate
 
 ### Durability
 
-The data, once uploaded, shouldn't be lost unless users explicitly delete that data. <br>
-The replication and monitoring services ensure the durability of the data. <br>
+- The data, once uploaded, shouldn't be lost unless users explicitly delete that data.
+- The replication and monitoring services ensure the durability of the data.
 
 ### Security
 
 Be secure via end-to-end encryption
 
 ## 1.3 Achieve NFR (Non Functional Requirement)
+
 The table summarizing how to achieve various important attributes in system design:
 
 | Attribute           | Strategies to Achieve                                                                                 |
@@ -443,9 +443,10 @@ The table summarizing how to achieve various important attributes in system desi
 | Regular security audits                        | Security                                             |
 | Least privilege principle                      | Security                                             |
 
-Remember that achieving these attributes often involves trade-offs, and the strategies you choose will depend on your specific application requirements, budget, and the complexity you're willing to manage.
+Remember that achieving these attributes often involves trade-offs, and **the strategies you choose will depend on your specific application requirements, budget, and the complexity you're willing to manage**.
 
 ## 1.4 Prioritize requirements
+
 Break it down, to the most important, minimal features for your system.
 
 ## 1.5 Design Considerations (no do, or assumption)
