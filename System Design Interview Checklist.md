@@ -25,8 +25,11 @@
   - [1.3 Achieve NFR (Non Functional Requirement)](#13-achieve-nfr-non-functional-requirement)
   - [1.4 Prioritize requirements](#14-prioritize-requirements)
   - [1.5 Design Considerations (no do, or assumption)](#15-design-considerations-no-do-or-assumption)
-- [2 Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation.](#2-capacity-estimation-and-constraints-traffic-storage-networkbandwidth-memorycache-estimation)
+- [2 Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation](#2-capacity-estimation-and-constraints-traffic-storage-networkbandwidth-memorycache-estimation)
+  - [2.0 The common data used in estimation (TODO from Meta system design post???)](#20-the-common-data-used-in-estimation-todo-from-meta-system-design-post)
   - [2.1 Traffic in write/second, or read/second](#21-traffic-in-writesecond-or-readsecond)
+    - [**Users**](#users)
+    - [**Requests:** How many requests per second/day do we expect?](#requests-how-many-requests-per-secondday-do-we-expect)
   - [2.2 Storage in TB or GB/year](#22-storage-in-tb-or-gbyear)
   - [2.3 Bandwidth in KB/s or MB/s](#23-bandwidth-in-kbs-or-mbs)
   - [2.4 Memory (cache) in GB or TB /day](#24-memory-cache-in-gb-or-tb-day)
@@ -450,74 +453,90 @@ Remember that achieving these attributes often involves trade-offs, and **the st
 Break it down, to the most important, minimal features for your system.
 
 ## 1.5 Design Considerations (no do, or assumption)
-- Security: No user authentication or authorization; both are already completed <br>
-- Result: get all or nothing, not a partial result;  <br>
-- Fairness and ethical <br>
-- Prevent abuse: put some restriction to stop system abuse, 
-  - limit the size of text or image or video, 
-  - add a rate limiter (prevent abuse behavior, provide a fair and reasonable use of the resource's capacity when sharing among many users, control the cost of operations and avoid excess costs) <br>
-- assumption: surge in traffic <br>
 
-# 2 Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation.
-Estimate the scale of the system we are going to design. <br>
-The estimation will be helpful later when focusing on scaling, partitioning, load balancing, and caching <br>
-What are the constraints? <br>
+- Security: No user authentication or authorization; both are already completed
+- Result: **get all or nothing, not a partial result**
+- **Fairness** and ethical
+- **Prevent abuse**: put some restriction to stop system abuse
+  - limit the size of text or image or video
+  - add a rate limiter (prevent abuse behavior, provide a fair and reasonable use of the resource's capacity when sharing among many users, control the cost of operations and avoid excess costs)
+- Assumption: **surge in traffic**
 
-**Read-heavy vs Write-heavy**
-- based on the read-heavy or write-heavy machine we can apply the 80–20 rule.  <br>
-- If this is a **read-heavy**, estimate **read throughput**. <br>
-- If a system is **write-heavy** then we need to estimate the **Storage** requirements per day, per year, and for 5–10 years. <br>
+# 2 Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation
 
+- Goal
+  - Estimate the **scale of the system** we are going to design.
+  - The estimation will be helpful later when focusing on scaling, partitioning, load balancing, and caching
+  - What are the constraints?
+  
+- Terms
+  - [**traffic**](## 2.1 Traffic in write/second, or read/second) is the user request from users to servers; client => servers
+  - **storage** is the user data or user-request data on disk; data on servers' disks
+  - **bandwidth**  is traffic from servers to users; client <= servers
+  - **memory** is the cache capacity in order to improve the performance, esp. for read-heavy
 
-- **traffic** is the user request from users to servers
-- **storage** is the user data or user-request data on disk 
-- **bandwidth**  is traffic from servers to users
-- **memory** is the cache capacity in order to improve the performance, esp. for read-heavy
+- **Read-heavy vs Write-heavy**
+  - based on the read-heavy or write-heavy machine we can apply the 80–20 rule (or 90-10, or others)
+  - If this is a **read-heavy**, estimate **read throughput**
+  - If a system is **write-heavy** then we need to estimate the **Storage** requirements per day, per year, and for 5–10 years
+
+## 2.0 The common data used in estimation (TODO from Meta system design post???)
+
+- second per day? 86400 - > 10^5;
 
 ## 2.1 Traffic in write/second, or read/second
-**Users** <br>
-* User types, e.g. riders vs drivers, guest vs owner <br>
-* Total user <br>
-* DAU (Daily active users) <br>
-* Active connections per minutes <br>
-* New users added per day <br>
-* Meta data required for each user <br>
 
-**Requests:** How many requests per second/day do we expect? <br>
-* Type: (read, write, search); fast reads, fast writes, or both? <br>
-* Count: write and Read count in million per day <br>
-* Ratio: write : read ratio; generally 5 : 1 <br>
-* Size: the average size of an reading or writing objects <br>
+### **Users**
+
+- User types, e.g. riders vs drivers, guest vs owner
+- Total user
+- New users added per day
+- DAU (Daily active users)
+- Active connections per minutes
+- Meta data required for each user
+
+### **Requests:** How many requests per second/day do we expect?
+
+- Type: (read, write, search); fast reads, fast writes, or both?
+- Count: write and Read count in million per day
+- Ratio: write : read ratio; generally 5 : 1 (or 100: 1)
+- Size: the average size of an reading or writing objects
 
 How much will it grow each year?
 
 ## 2.2 Storage in TB or GB/year
-**Write:** Write count * write size; e.g. 400M * 300B = 120GB/day <br>
-* Total files/write;  <br>
-* average file/write sizes; Limit on user input for each paste or a certain time (text amount, image size, user URL size) (not abuse) <br>
-* Metadata: user information, metadata about these writes <br>
 
-**Total:** Total Storage Capacity including everythings
-* **Others:** metadata, thumbnail, different resolutions, etc. <br>
-* **Growth:** Estimate in 5 or 10 years; Growth rate? e.g. 120GB * 365 days * 5 years = 200TB <br>
-* **Margin:** to keep some margin, If never more than 70% or 80% of capacity; Assuming a 70% capacity model (we don't want to go above 70% of the total capacity of our storage system); 200TB / 80% = 250TB <br>
-* **Replication:** replication for fault tolerance; e.g. 250TB * 2 = 500TB; <br>
-(500TB / 4T/server = 125 servers) (NOTE: too big for a single machine, so must be partitioned) (so is the cache) <br>
+- **Write**: Write count * write size; e.g. 400M * 300B = 120GB/day
+
+- Total files/write ???
+- average file/write sizes ???; Limit on user input for each paste or a certain time (text amount, image size, user URL size) (not abuse)
+- Metadata: user information, metadata about these writes
+
+- **Total:** Total Storage Capacity including everything
+  - **Others:** metadata, thumbnail, different resolutions, etc
+  - **Growth:** Estimate in 5 or 10 years; Growth rate? e.g. 120GB * 365 days * 5 years = 200TB
+  - **Margin:** to keep some margin, If never more than 70% or 80% of capacity; Assuming a 70% capacity model (we don't want to go above 70% of the total capacity of our storage system); 200TB / 80% = 250TB
+  - **Replication:** replication for fault tolerance; e.g. 250TB * 2 = 500TB
+  (500TB / 4T/server = 125 servers) (NOTE: too big for a single machine, so must be partitioned) (so is the cache)
 
 ## 2.3 Bandwidth in KB/s or MB/s
-Bandwidth will decide how to manage traffic and balance load between servers. ???  <br>
-**Ingress (upload):** write count per second/minute * write average size <br>
-**Egress (download, outgoing):** read count per second/minute * write average size <br>
-**Ratio:** read or write intensive (need partition, or cache, or cache strategies) <br>
+
+Bandwidth will decide how to manage traffic and balance load between servers. ???
+
+- **Ingress (upload):** write count per second/minute * write average size
+- **Egress (download, outgoing):** read count per second/minute * read average size
+- **Ratio:** read or write intensive (need partition, or cache, or cache strategies)
 
 ## 2.4 Memory (cache) in GB or TB /day
-80-20 rule: 20% of hot pastes generate 80% of traffic, so only cache these 20% of pastes <br>
-20% of daily traffic and based on client's usage patterns, can adjust how many cache servers we need <br>
-20% * read count / per day * write average size  <br>
+
+- 80-20 rule: 20% of hot pastes generate 80% of traffic, so only cache these 20% of pastes
+- 20% of daily traffic and based on client's usage patterns, can adjust how many cache servers we need
+- 20% * read count / per day * read average size
 
 Benefit: Low latency (real time)
 
 ## 2.5 Servers' capability
+
 Requests per second that a server can handle; used in estimating how many servers are required
 
 # 3 System API design
