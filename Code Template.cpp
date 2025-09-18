@@ -168,7 +168,7 @@ int fnTwoPointers(vector<int>& arr) {
 		} else {
 			--right; 
 		}
-		// there might be a case that left++ and right-- here
+		// there might be a case that ++left and --right here; e.g. matching chars for palindrome
 		// Anyway, must update left, or right, or both. Otherwise, it would be a dead loop
 	}
 	return ans; 
@@ -198,6 +198,7 @@ int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
 		}
 	}
 
+	// if || rather than && is used in the 1st while-loop, the following two while-loops are merged into the 1st
 	while (i < arr1.size()) {
 		++i; 
 	}
@@ -208,11 +209,19 @@ int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
 }
 
 
-/* sliding window
-	for the window with the various size, need two pointers to indicate the start and the end of the window
-	for the window with the fixed size, only need a single pointer to point to the end of the window
-	for the window with the fixed size, remove the start since the end >= the window size
-	must ensure the start is moved, otherwise, the inner loop would become a dead one.
+/* sliding window: shortest/longest/count of contiguous subarrays or substring that satisfy a condition that depends on the contents of the window
+1. Fixed-size window
+	Use one pointer (end) to expand the window.
+	The start index can be computed as end - size + 1。
+	When the window exceeds the desired size:
+		Remove the element at the start (start = end - size + 1) by moving the start forward.
+	A valid window is formed when end >= size - 1.
+	Key point: Only one moving pointer is needed (end), since the window size is fixed.
+2. Variable-size (dynamic) window
+	Use two pointers (start and end) to mark the window boundaries. Move end forward to expand the window.
+	use a while loop to shrink the window, must ensure the start is moved, otherwise, the inner loop would become a dead one.
+	within the while loop of shrinking the window, the window is always valid or invalid (will be valid after the inner loop)
+	When the window violates your constraint (or when you've reached a state where you can compute a candidate answer), shrink the window by moving start forward and updating the state.
 239. Sliding Window Maximum;  https://leetcode.com/problems/sliding-window-maximum/; a very typical one; need a deque to maintain the values within the window
 1004. Max Consecutive Ones III; https://leetcode.com/problems/max-consecutive-ones-iii/; the window size can be zero
 76. Minimum Window Substring; https://leetcode.com/problems/minimum-window-substring/; use a frequency map
@@ -223,21 +232,23 @@ int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
 int fnSlidingWindow(vector<int>& arr, int size) {
 	int ans = 0; 
 	for (int start = 0, end = 0, curr = 0; end < arr.size(); ++end) {
-		// add arr[end] into curr (the window); 
+		// 1. add arr[end] into curr (the current window); 
 		// the curr might be a complex one, 
 		// 	such as a monotonic deque, and need some preprocess before adding
 		// 	or a unordered_map to represent the frequency of characters in the window
 
-		// depend on if the window size is fixed or not, 
-		// if fixed, when size <= end, remove the start by moving it towards end by one
-		// if not fixed, depend on the loop condition to remove the start
+		// 2. move the start of the window for the fixed-size window or shrink the variable size window
+		// 2.1 if fixed, when size <= end, remove the start by moving it towards end by one
+		// 2.2 if not fixed, depend on the loop condition (constraint of the problem) to remove the start
 		while (CONDITION && start <= end ) { // the condition "start <= end" is critical to ensure it is still a valid window; it can be omitted if window size can be zero
-			// can do something for this window if it is valid here when the window is shrinking
-			// remove arr[start] from curr; 
+			// 3. can do something for this window if it is valid here when the window is shrinking; exception: 713. Subarray Product Less Than K (do something outside of this loop)
+			// a. remove arr[start] from curr and update the current state)
+			// b. update the start of the window
 			++start;  // it would be a dead loop if start is not moved
+			// the window size is end - start + 1
 		}
-		// do something for this window if it is valid
-		// if the size is fixed, when "size - 1 <= end", do something
+		// 3. do something for this window if it is valid
+		// if the size is fixed, when "size - 1 <= end", start doing something
 	}
 	return ans; 
 }
