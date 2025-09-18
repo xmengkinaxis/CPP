@@ -621,7 +621,7 @@ e.g. This process returns a JSON object that contains a list of all the possible
 - Determine which database storage schema is required and which database type is preferred
 - Guide for data partitioning and management
   
-**static and dynamic to identify:**
+**Static and Dynamic to identify:**
 
 - Identify various system **entities** (primary objects)
 - their **relationship** (static)
@@ -635,6 +635,7 @@ e.g. This process returns a JSON object that contains a list of all the possible
 - Separate the read and the write onto different database; CQRS (Command Query Responsibility Segregation) separates the responsibility of reading data (queries) from writing/updating data (commands) in a system；
 
 ## 4.1 Database Schema or components/classes and their relationship/connection (static)
+
 What to store? objects/entities, and their relations <br>
 Table, Relationship <br>
 Primary Key <br>
@@ -645,21 +646,22 @@ Consideration for objects <br>
 2. for each object, Is the object small (less than 1KB) or medium (a few MB, separated to object storage)? <br>
 3. What is the relationship between records? <br>
 
-Storage:  <br>
-* Storage layer = **Metadata** storage + **Object** storage; such a division of data will allow us to scale them individually <br>
-* Metadata storage: like users/accounts, pastes/blobs(pictures, videos, etc.), etc. can use Relational DB like MySQL, or distributed key-value DB like Dynamo or Cassandra <br>
-* Object Storage: like a text paste, an image, etc; use object storage like Amazon S3, or HDFS.  <br>
+Storage:
 
-Common objects (e.g.) <br>
-* User: id (primary key, int), name (varchar 20), email (varchar 32), CreationDate (datetime, 4 byte?), LastLogin (datetime), Birthday (datetime) <br>
-* Description (512 or 256), phone (12), path(256, path to the object storage) <br>
-* Item/Object (picture, video, comment, etc): CreationData, ExpirationDate, type (int), Description (varchar 512), Category: (smallint), UserId(int, creator), contents(varchar 256), Path(varchar 256), likes_count, view_count <br>
-* Location: latitude, longitude (int - 4 bytes, or 8 bytes) <br>
-* Numbers: num of likes/dislikes (int), num of comments, num of shares, num of views <br>
-* Rating (how many stars a place gets out of ten) <br>
-* Photo: PhotoID(int, 8 bytes, 64 bits), UserID(int), Photo_Path(varchar 256), Photo Latitude & Longitude (int), User Latitude & Longitude (int), CreationDate(datetime), or Place_ID (8 bytes, foreign key) <br>
-* Place: ID (8 bytes, 64 bits), Name(256 bytes), Description(1,000 bytes), Category (8 bytes ???), Latitude (8 bytes), Longitude (8 bytes), Phone(the foreign key, 8 bytes), Rating, address, business hours, menu
-* Review: ID (8 bytes), Place_ID, User_ID, Description (512 bytes), Rating (1-5, 1 byte)
+- Storage layer = **Metadata** storage + **Object** storage; such a division of data will allow us to scale them individually
+- Metadata storage: like users/accounts, pastes/blobs(pictures, videos, etc.), etc. can use Relational DB like MySQL, or distributed key-value DB like Dynamo or Cassandra
+- Object Storage: like a text paste, an image, etc; use object storage like Amazon S3, or HDFS. 
+
+Common objects (e.g.)
+- User: id (primary key, int), name (varchar 20), email (varchar 32), CreationDate (datetime, 4 byte?), LastLogin (datetime), Birthday (datetime)
+- Description (512 or 256), phone (12), path(256, path to the object storage)
+- Item/Object (picture, video, comment, etc): CreationData, ExpirationDate, type (int), Description (varchar 512), Category: (smallint), UserId(int, creator), contents(varchar 256), Path(varchar 256), likes_count, view_count
+- Location: latitude, longitude (int - 4 bytes, or 8 bytes)
+- Numbers: num of likes/dislikes (int), num of comments, num of shares, num of views
+- Rating (how many stars a place gets out of ten)
+- Photo: PhotoID(int, 8 bytes, 64 bits), UserID(int), Photo_Path(varchar 256), Photo Latitude & Longitude (int), User Latitude & Longitude (int), CreationDate(datetime), or Place_ID (8 bytes, foreign key)
+- Place: ID (8 bytes, 64 bits), Name(256 bytes), Description(1,000 bytes), Category (8 bytes ???), Latitude (8 bytes), Longitude (8 bytes), Phone(the foreign key, 8 bytes), Rating, address, business hours, menu
+- Review: ID (8 bytes), Place_ID, User_ID, Description (512 bytes), Rating (1-5, 1 byte)
 
 Tags:  <br>
 category: (1 byte) <br>
@@ -667,10 +669,11 @@ default_language:  <br>
 
 latest (CreationDate), popular (likes, comments, shares), relevant (used in ranking)   <br>
 
-Index: <br>
-* On which field(s) to build some index? <br>
-* Pro: database performance =>  indexes to improve the performance of search queries, esp. when dataset is huge <br>
-* Con: Dramatically speed up data retrieval, but slow down the write (insert, update, and delete) performance. <br>
+Index:
+
+- On which field(s) to build some index?
+- Pro: database performance =>  indexes to improve the performance of search queries, esp. when dataset is huge
+- Con: Dramatically speed up data retrieval, but slow down the write (insert, update, and delete) performance.
 
 the goal of creating an index on a particular table in a database is to make it faster to search through the table and find the row or rows that we want.  <br>
 must carefully consider how users will access the data.  <br>
@@ -679,24 +682,26 @@ Ordered indexing (increasing or decreasing) or Hash-indexing <br>
 In any index-based data, the partition is not allowed ??? <br>
 
 ## 4.2 Choose Database
+
 choosing the proper database is a critical decision that can significantly impact the performance, scalability, and reliability of the system. <br>
 
 Factors to consider (Data Model [structured/relational/columnar, semi-structure, unstructed], Size and Volume, ACID, Join and Aggregate)
-* Data Model: Determine the data model that best fits the application's requirements; relational (SQL), document-based (NoSQL), key-value store, graph database, or time-series database.
-* Data Size and Volume: Assess the expected data size and growth rate to choose a database that can handle the scale of data effectively
-* Query Requirements: Understand the types of queries the system needs to support and whether they are read-heavy, write-heavy, or balanced.
-* Performance: Consider the database's performance characteristics, such as read and write latency, throughput, and indexing capabilities.
-* ACID Compliance: Determine whether the application requires strong consistency and transactional guarantees (ACID compliance) or can tolerate eventual consistency (NoSQL databases).
-* Horizontal Scalability: Assess the need for horizontal scaling, i.e., distributing data across multiple nodes, and choose a database that supports sharding and partitioning.
-* Data Integrity and Constraints: Evaluate the need for data integrity constraints (e.g., foreign keys, unique constraints) and choose a database that enforces these constraints.
-* Data Redundancy and Normalization: Decide on the level of data redundancy and normalization based on read and write patterns, aiming for an appropriate balance between data duplication and normalization.
-* Joins and Aggregations: Assess the frequency and complexity of joins and aggregations required in the queries and choose a database that can handle them efficiently.
 
-* Replication and High Availability: Evaluate the need for data replication and high availability to ensure data durability and system resilience.
-* Consistency Models: Understand the trade-offs between strong consistency and eventual consistency models and choose a database that aligns with the application's requirements.
-* Backup and Disaster Recovery: Consider the database's backup and disaster recovery capabilities to ensure data safety.
-* Cost and Licensing: Factor in the cost of database licenses, cloud service charges, and hardware requirements.
-* Integration with Existing Tools and Systems: Assess whether the database integrates well with existing tools, frameworks, and systems used in the application.
+- Data Model: Determine the data model that best fits the application's requirements; relational (SQL), document-based (NoSQL), key-value store, graph database, or time-series database.
+- Data Size and Volume: Assess the expected data size and growth rate to choose a database that can handle the scale of data effectively
+- Query Requirements: Understand the types of queries the system needs to support and whether they are read-heavy, write-heavy, or balanced.
+- Performance: Consider the database's performance characteristics, such as read and write latency, throughput, and indexing capabilities.
+- ACID Compliance: Determine whether the application requires strong consistency and transactional guarantees (ACID compliance) or can tolerate eventual consistency (NoSQL databases).
+- Horizontal Scalability: Assess the need for horizontal scaling, i.e., distributing data across multiple nodes, and choose a database that supports sharding and partitioning.
+- Data Integrity and Constraints: Evaluate the need for data integrity constraints (e.g., foreign keys, unique constraints) and choose a database that enforces these constraints.
+- Data Redundancy and Normalization: Decide on the level of data redundancy and normalization based on read and write patterns, aiming for an appropriate balance between data duplication and normalization.
+- Joins and Aggregations: Assess the frequency and complexity of joins and aggregations required in the queries and choose a database that can handle them efficiently.
+
+- Replication and High Availability: Evaluate the need for data replication and high availability to ensure data durability and system resilience.
+- Consistency Models: Understand the trade-offs between strong consistency and eventual consistency models and choose a database that aligns with the application's requirements.
+- Backup and Disaster Recovery: Consider the database's backup and disaster recovery capabilities to ensure data safety.
+- Cost and Licensing: Factor in the cost of database licenses, cloud service charges, and hardware requirements.
+- Integration with Existing Tools and Systems: Assess whether the database integrates well with existing tools, frameworks, and systems used in the application.
 
 # 5 High-Level Design — This is pretty much a template, you can put in front of interviewers.
 **Goal** 
