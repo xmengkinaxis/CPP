@@ -470,7 +470,7 @@ Break it down, to the most important, minimal features for your system.
   - What are the constraints?
   
 - Terms
-  - [**traffic**](## 2.1 Traffic in write/second, or read/second) is the user request from users to servers; client => servers
+  - **traffic** is the user request from users to servers; client => servers
   - **storage** is the user data or user-request data on disk; data on servers' disks
   - **bandwidth**  is traffic from servers to users; client <= servers
   - **memory** is the cache capacity in order to improve the performance, esp. for read-heavy
@@ -540,36 +540,75 @@ Benefit: Low latency (real time)
 Requests per second that a server can handle; used in estimating how many servers are required
 
 # 3 System API design
-**Goal:**<br>
-The goal of the APIs is to make as much as clean & simple as possible to be simple to understand for everybody. A simple common way is making CRUDs. <br>
-Establish the exact contract expected from the system and ensure if we haven't gotten any requirements wrong.  <br>
-APIs can translate feature set into technical 
 
-**Consideration:**<br>
-Remember to use always a key for secure authentication; throttle users based on their allocated quota. <br>
-Another consideration is to decide if our application will be Client Driver or Server Driver. <br>
-Another consideration how do we want to split our requests ??? <br>
-SOAP or REST API <br>
+**Goal:**
 
-**Operations:** <br>
-* CRUD (Create/paste/post, Read/get, Update/put, Delete) 
-* Others (Search, list, store, stream, request, like or unlike, reply, follow or unfollow, retweet or re-post? or share? )
-* these operations might work on different objects/levels/scopes
-* Registration or authentication
+- The goal of the APIs is to make as much as clean & simple as possible to be simple to understand for everybody
+- Establish the exact **contract** expected from the system and ensure if we haven't gotten any requirements wrong
+- APIs can translate (map) feature set into technical
 
-**Parameters:** <br>
-* user_id: uniquely specified th user performing the action;  throttle users based on their allocated quota <br>
-* All kinds of information about the file/video/picture/like/dislike/comments/etc, like name/title, user/place ID, category/type, description, latitude, longitude, rating, hashtags, channel, language, privacy (private or public)<br>
-* Search Query: category/type(videos, images, comments), keywords, user_location, radius, name_of_place  <br>
-* maximum Results to Return:  <br>
-* sort(number) Optional sort mode: 0 - latest first, 1 - best matched, 2 - most liked <br>
-* page_token(string) specify a page in the result set that should be returned <br>
-* Timestamp:  <br>
+**Consideration:**
 
-**Return:** <br>
-(JSON) a list of results matching the search query <br>
-e.g. This process returns a JSON object that contains a list of all the possible items in the specified category that also fall within the specified radius. <br>
-Each entry has a place name, address, category, rating, and thumbnail.<br>
+- A simple common way is making CRUDs
+- Remember to use always a key for secure authentication; throttle users based on their allocated quota
+- Decide if our application will be Client Driver or Server Driver
+- How do we want to split our requests ???
+
+**Operations:**
+
+- CRUD (Create/paste/post, Read/get, Update/put, Delete)
+- Others (Search, list, store, stream, request, like or unlike, reply, follow or unfollow, retweet or re-post? or share? )
+- these operations might work on different objects/levels/scopes
+- Registration or authentication
+
+**API Types:**
+
+- Terms
+  - SOAP API (Simple Object Access Protocol)
+  - REST API (Representational State Transfer)
+  - GraphQL (Meta)
+  - gRPC (Google Remote Procedure Call)
+
+- Comparison
+
+| Feature            | SOAP 🧩                    | REST 🌐                        | GraphQL 🔍                             | gRPC ⚡                                   |
+| ------------------ | -------------------------- | ------------------------------ | -------------------------------------- | ---------------------------------------- |
+| Type               | Protocol                   | Architectural style            | Query language/runtime                 | RPC framework                            |
+| Data format        | XML only                   | JSON, XML, etc.                | JSON                                   | Protobuf (binary)                        |
+| Transport          | HTTP, SMTP, TCP            | HTTP only                      | HTTP (POST)                            | HTTP/2                                   |
+| Contract/schema    | WSDL                       | OpenAPI/Swagger                | GraphQL schema                         | .proto files                             |
+| Stateless/stateful | Often stateful             | Stateless                      | Stateless                              | Stateless (with streaming)               |
+| Query flexibility  | Fixed operations           | Endpoint-based                 | Client chooses fields                  | Fixed RPC methods                        |
+| Performance        | Heavy (XML)                | Good (JSON, caching)           | Moderate (parsing overhead)            | Excellent (binary, multiplexed)          |
+| Use cases          | Banking, legacy enterprise | Public web APIs, microservices | Frontend/mobile APIs, flexible queries | Microservices, internal comms, real-time |
+
+- Summary
+  - SOAP = enterprise, strict, legacy-heavy.
+  - REST = simple, web-friendly, most common.
+  - GraphQL = flexible, client-driven, great for UIs.
+  - gRPC = high-performance, streaming, great for service-to-service.
+
+- Quick Decision Flow (Interview-Friendly)
+  - Is this an enterprise system with strict contracts/security? → SOAP
+  - Is this a public web/mobile API, simple CRUD, broad developer base? → REST
+  - Do clients need flexible queries, avoid over-fetching, multiple frontends? → GraphQL
+  - Is this microservices, high-performance, real-time streaming? → gRPC
+
+**Parameters:**
+
+- user_id: uniquely specified th user performing the action;  throttle users based on their allocated quota
+- All kinds of information about the file/video/picture/like/dislike/comments/etc, like name/title, user/place ID, category/type, description, latitude, longitude, rating, hashtags, channel, language, privacy (private or public)
+- Search Query: category/type(videos, images, comments), keywords, user_location, radius, name_of_place
+- maximum Results to Return
+- sort(number) Optional sort mode: 0 - latest first, 1 - best matched, 2 - most liked
+- page_token(string) specify a page in the result set that should be returned
+- Timestamp
+
+**Return:**
+
+- (JSON) a list of results matching the search query
+e.g. This process returns a JSON object that contains a list of all the possible items in the specified category that also fall within the specified radius
+- Each entry has a place name, address, category, rating, and thumbnail
 
 # 4 Database Design (Define Data Model and choose Database)
 
