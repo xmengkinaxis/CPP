@@ -35,7 +35,7 @@
   - [2.4 Memory (cache) in GB or TB /day](#24-memory-cache-in-gb-or-tb-day)
   - [2.5 Servers' capability](#25-servers-capability)
 - [3 System API design](#3-system-api-design)
-- [4 Database Design (Define Data Model and choose Database)](#4-database-design-define-data-model-and-choose-database)
+- [4 Database Design (Define Data Model and Choose Database)](#4-database-design-define-data-model-and-choose-database)
   - [4.0 Data Model](#40-data-model)
   - [4.1 Database Schema or components/classes and their relationship/connection (static)](#41-database-schema-or-componentsclasses-and-their-relationshipconnection-static)
   - [4.2 Choose Database](#42-choose-database)
@@ -552,14 +552,14 @@ Requests per second that a server can handle; used in estimating how many server
 - A simple common way is making CRUDs
 - Remember to use always a key for secure authentication; throttle users based on their allocated quota
 - Decide if our application will be Client Driver or Server Driver
-- How do we want to split our requests ???
+- How do we want to split our requests into different requests/APIs
 
-**Operations:**
+**Operations:** (verbs and actions on objects)
 
-- CRUD (Create/paste/post, Read/get, Update/put, Delete)
-- Others (Search, list, store, stream, request, like or unlike, reply, follow or unfollow, retweet or re-post? or share? )
-- these operations might work on different objects/levels/scopes
+- **CRUD**: Create/paste/post, Read/get, Update/put, Delete
+- Others: Search, list, store, stream, request, like or unlike, reply, follow or unfollow, retweet or re-post? or share?
 - Registration or authentication
+- These operations might work on different objects/levels/scopes
 
 **API Types:**
 
@@ -596,7 +596,7 @@ Requests per second that a server can handle; used in estimating how many server
 
 **Parameters:**
 
-- user_id: uniquely specified th user performing the action;  throttle users based on their allocated quota
+- user_id: uniquely specified the user performing the action;  throttle users based on their allocated quota
 - All kinds of information about the file/video/picture/like/dislike/comments/etc, like name/title, user/place ID, category/type, description, latitude, longitude, rating, hashtags, channel, language, privacy (private or public)
 - Search Query: category/type(videos, images, comments), keywords, user_location, radius, name_of_place
 - maximum Results to Return
@@ -606,28 +606,33 @@ Requests per second that a server can handle; used in estimating how many server
 
 **Return:**
 
-- (JSON) a list of results matching the search query
+- (JSON or XML) a list of results matching the search query
 e.g. This process returns a JSON object that contains a list of all the possible items in the specified category that also fall within the specified radius
 - Each entry has a place name, address, category, rating, and thumbnail
 
-# 4 Database Design (Define Data Model and choose Database)
+# 4 Database Design (Define Data Model and Choose Database)
 
 ## 4.0 Data Model
-**Benefit:** Defining the data model in the early part of the interview will 
-* clarify how data will flow between different system components; identify various entities of the system, and how they will interact with each other; <br> 
-* determine which database storage schema is required and which database type is preferred;  <br>
-* guide for data partitioning and management.  <br>
-  
-**static and dynamic to identify**
-* Identify various system **entities** (primary objects), 
-* their **relationship** (static), 
-* how they will **interact** with each other (dynamic, create, extract, transform, load), 
-* how these objects **flow** between different system components.  <br>
 
-**Consideration**
-* Which database system should we use? NoSQL like Cassandra or MySQL?
-* Separate the most frequently and less frequently accessed storage clusters from each other for optimal access time; can apply different configurations, cache strategies, shardings;  
-* Separate the read and the write???
+**Benefit:** Defining the data model in the early part of the interview will
+
+- Identify various **entities** of the system, and how they will **interact** with each other
+- Clarify how data will **flow** between different system components
+- Determine which database storage schema is required and which database type is preferred
+- Guide for data partitioning and management
+  
+**static and dynamic to identify:**
+
+- Identify various system **entities** (primary objects)
+- their **relationship** (static)
+- how they will **interact** with each other (dynamic, create, extract, transform, load)
+- how these objects **flow** between different system components
+
+**Consideration:**
+
+- Which database system should we use? NoSQL like Cassandra or MySQL?
+- Separate the most frequently and less frequently accessed storage clusters from each other for optimal access time; then can apply different configurations, cache strategies, shardings, etc.
+- Separate the read and the write onto different database; CQRS (Command Query Responsibility Segregation) separates the responsibility of reading data (queries) from writing/updating data (commands) in a system；
 
 ## 4.1 Database Schema or components/classes and their relationship/connection (static)
 What to store? objects/entities, and their relations <br>
