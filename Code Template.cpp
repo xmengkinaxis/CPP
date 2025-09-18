@@ -231,15 +231,16 @@ int fnTwoPointersTwoArrays(vector<int>& arr1, vector<int>& arr2) {
 */
 int fnSlidingWindow(vector<int>& arr, int size) {
 	int ans = 0; 
+	// Only end is required if it is the fixed-size window
 	for (int start = 0, end = 0, curr = 0; end < arr.size(); ++end) {
-		// 1. add arr[end] into curr (the current window); 
+		// 1. add arr[end] into curr (the current state of the current window); 
 		// the curr might be a complex one, 
 		// 	such as a monotonic deque, and need some preprocess before adding
 		// 	or a unordered_map to represent the frequency of characters in the window
 
 		// 2. move the start of the window for the fixed-size window or shrink the variable size window
 		// 2.1 if fixed, when size <= end, remove the start by moving it towards end by one
-		// 2.2 if not fixed, depend on the loop condition (constraint of the problem) to remove the start
+		// 2.2 if variable, depend on the loop condition (constraint of the problem) to remove the start
 		while (CONDITION && start <= end ) { // the condition "start <= end" is critical to ensure it is still a valid window; it can be omitted if window size can be zero
 			// 3. can do something for this window if it is valid here when the window is shrinking; exception: 713. Subarray Product Less Than K (do something outside of this loop)
 			// a. remove arr[start] from curr and update the current state)
@@ -282,10 +283,10 @@ even number of items: fast is nullptr, and slow points to the second middle (rig
 */
 int fnFastAndSlowPointers(ListNode* head) {
 	int ans = 0;
-	ListNode *slow = head, *fast = head; 
+	ListNode *fast = head, *slow = head; // to meet the algorithm name, always define and update fast than then slow 
 	while (fast && fast->next) {
-		slow = slow->next; 
 		fast = fast->next->next; 
+		slow = slow->next; 
 	}
 	return ans; 
 }
