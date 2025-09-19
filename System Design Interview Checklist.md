@@ -39,6 +39,9 @@
   - [4.0 Data Model](#40-data-model)
   - [4.1 Database Schema or components/classes and their relationship/connection (static)](#41-database-schema-or-componentsclasses-and-their-relationshipconnection-static)
   - [4.2 Choose Database](#42-choose-database)
+    - [Key Factors to Consider](#key-factors-to-consider)
+    - [Database Options](#database-options)
+    - [Hybrid Approach (Polyglot Persistence)](#hybrid-approach-polyglot-persistence)
 - [5 High-Level Design — This is pretty much a template, you can put in front of interviewers.](#5-high-level-design--this-is-pretty-much-a-template-you-can-put-in-front-of-interviewers)
 - [6 Low-Level Design - Deep dive core components; detailed component design](#6-low-level-design---deep-dive-core-components-detailed-component-design)
   - [6.1 Scale the design](#61-scale-the-design)
@@ -47,6 +50,13 @@
     - [6.2.2 Partition](#622-partition)
       - [6.2.2.1 Horizontal Partitioning](#6221-horizontal-partitioning)
       - [6.2.2.2 Vertical Partitioning](#6222-vertical-partitioning)
+  - [6.3 Partitioning VS Sharding](#63-partitioning-vs-sharding)
+    - [Partitioning](#partitioning)
+    - [Sharding](#sharding)
+    - [🎯 Key Differences (Quick Recall)](#-key-differences-quick-recall)
+    - [Partitioning](#partitioning-1)
+    - [Sharding](#sharding-1)
+    - [🎯 Key Differences](#-key-differences)
 - [7 Evaluation and Optimization](#7-evaluation-and-optimization)
   - [7.1 Evaluation](#71-evaluation)
   - [7.2 Security and Permissions](#72-security-and-permissions)
@@ -663,10 +673,10 @@ e.g. This process returns a JSON object that contains a list of all the possible
   - **Review**: `ReviewID (PK), PlaceID (FK), UserID (FK), Description, Rating`.
   - **Photo**: `PhotoID (PK), UserID (FK), PlaceID (FK), Path, CreationDate`.
 
-- Indexing & Query Optimization
+- Indexing & Query Optimization (make it faster to search through the table and find the row or rows that we want)
   - **Indexes speed up reads** but slow down writes.
-  - Choose indexes based on **query patterns** (e.g., search by `UserID`, sort by `CreationDate`, filter).
-  - Trade-offs: performance vs storage vs write speed.
+  - Choose indexes based on **query patterns** (how users will access the data) (e.g., search by `UserID`, sort by `CreationDate`, filter).
+  - Trade-offs: performance (query/read speed) vs storage (cost) vs write speed (latency).
 
 - Scalability Considerations
   - **Sharding / Partitioning**: split large tables (e.g., user Id, users by region/geography, items by ID range).
@@ -682,8 +692,7 @@ e.g. This process returns a JSON object that contains a list of all the possible
   - Discuss **trade-offs** (RDBMS vs NoSQL, index impact, storage cost).
   - Keep details **high-level first**; dive deep only if interviewer asks.
 
-
-Common objects (e.g.)
+Common Entities (e.g.)
 - User: id (primary key, int), name (varchar 20), email (varchar 32), CreationDate (datetime, 4 byte?), LastLogin (datetime), Birthday (datetime)
 - Description (512 or 256), phone (12), path(256, path to the object storage)
 - Item/Object (picture, video, comment, etc): CreationData, ExpirationDate, type (int), Description (varchar 512), Category: (smallint), UserId(int, creator), contents(varchar 256), Path(varchar 256), likes_count, view_count
@@ -694,15 +703,83 @@ Common objects (e.g.)
 - Place: ID (8 bytes, 64 bits), Name(256 bytes), Description(1,000 bytes), Category (8 bytes ???), Latitude (8 bytes), Longitude (8 bytes), Phone(the foreign key, 8 bytes), Rating, address, business hours, menu
 - Review: ID (8 bytes), Place_ID, User_ID, Description (512 bytes), Rating (1-5, 1 byte)
 
-
 latest (CreationDate), popular (likes, comments, shares), relevant (used in ranking)   <br>
 
-the goal of creating an index on a particular table in a database is to make it faster to search through the table and find the row or rows that we want.  <br>
-must carefully consider how users will access the data.  <br>
 Indexing needs a primary key on the table with a unique value; Using one or more columns <br>
 Ordered indexing (increasing or decreasing) or Hash-indexing <br>
 
 ## 4.2 Choose Database
+
+Choosing the proper database is a **critical decision** that significantly impacts **performance, scalability, reliability, and cost** of the system.
+**Structured for recall (Factors → Options → Hybrid).**
+
+### Key Factors to Consider
+
+- **Data Model**
+  - Structured: Relational (SQL).
+  - Semi-structured: Document stores (JSON-like).
+  - Unstructured: Key-value, object storage.
+  - Specialized: Graph, time-series, columnar.
+
+- **Data Size & Volume**
+  - Expected growth rate and storage needs (GB → PB).
+  - Small objects vs. large blobs.
+
+- **Query & Access Patterns**
+  - Read-heavy, write-heavy, or mixed workload.
+  - Need for joins, aggregations, or full-text search.
+
+- **Performance Requirements**
+  - Latency (response time), throughput (requests/sec).
+  - Indexing, caching, and replication support.
+
+- **Consistency & Transactions**
+  - Strong consistency (ACID) vs. eventual consistency (BASE).
+  - Transactional guarantees (banking vs. social feeds).
+
+- **Scalability**
+  - Horizontal scaling: sharding, partitioning, replication.
+  - Vertical scaling: bigger machines.
+  - Auto-scaling for elasticity.
+
+- **Data Integrity & Constraints**
+  - Need for unique keys, foreign keys, normalization.
+  - Trade-off: normalization (less redundancy) vs. denormalization (faster reads).
+
+- **Reliability & Availability**
+  - Replication, failover, high availability.
+  - Backup & disaster recovery features.
+
+- **Cost & Ecosystem**
+  - Licensing & cloud service costs.
+  - Integration with existing tools, frameworks, monitoring.
+
+### Database Options
+
+- **Relational Databases (SQL)**
+  - MySQL, PostgreSQL, Oracle.
+  - Good for structured data, joins, transactions.
+  - Limited horizontal scalability.
+
+- **NoSQL Databases**
+  - Key-Value (Redis, DynamoDB): ultra-fast lookups.
+  - Document (MongoDB, Couchbase): flexible schema.
+  - Columnar (Cassandra, HBase): time-series, analytics.
+  - Graph (Neo4j): relationships (social networks, fraud).
+
+- **Object Storage**
+  - Amazon S3, HDFS.
+  - Best for large blobs (images, videos, logs).
+  - Metadata stored separately (SQL/NoSQL).
+
+### Hybrid Approach (Polyglot Persistence)
+
+Most real-world systems combine multiple storage types:
+
+- SQL DB → metadata (users, accounts).
+- NoSQL → fast access, high-scale workloads.
+- Object Storage → large files.
+- Cache/CDN → latency reduction.
 
 choosing the proper database is a critical decision that can significantly impact the performance, scalability, and reliability of the system. <br>
 
@@ -881,6 +958,135 @@ Remote partitioning is to increase the bandwidth of access to the data by having
 How to map a particular piece of data to its node? How to move and minimize data movement when adding or removing nodes? => consistent Hash. 
 
 Other consideration: evenly distribute the load, no hotspot
+
+## 6.3 Partitioning VS Sharding
+Great question — these two are often confused because they look similar. Let me break it down clearly:
+
+---
+
+### Partitioning
+
+* **Definition**: Splitting a large database table (or index, or dataset) into **smaller parts** for manageability and performance.
+* **Scope**: Usually happens **inside a single database system** (same server or cluster).
+* **Types**:
+
+  * **Horizontal partitioning**: rows split by range/hash/list (e.g., `UserID 1–1000 → partition A`).
+  * **Vertical partitioning**: columns split into different tables (e.g., profile info vs authentication info).
+* **Goal**: Manage **big tables** more efficiently → faster queries, better maintenance.
+
+👉 Example: In Postgres, a `users` table is partitioned into `users_2024`, `users_2025` by `creation_date`.
+
+---
+
+### Sharding
+
+* **Definition**: A **form of horizontal partitioning** where data is split across **multiple independent database servers/nodes** (shards).
+* **Scope**: Distributed systems, each shard can be seen as its own DB instance.
+* **Key feature**: Each shard handles a portion of the load → enables **horizontal scaling**.
+* **Trade-offs**:
+
+  * Pros: scales to billions of rows, parallel processing, removes bottleneck.
+  * Cons: cross-shard queries are expensive, re-sharding is hard.
+
+👉 Example: A global app splits users:
+
+* Shard 1 → users in North America
+* Shard 2 → users in Europe
+* Shard 3 → users in Asia
+
+---
+
+### 🎯 Key Differences (Quick Recall)
+
+| Aspect                    | Partitioning                    | Sharding                                       |
+| ------------------------- | ------------------------------- | ---------------------------------------------- |
+| **Where?**                | Within a single DB instance     | Across multiple DB servers                     |
+| **Who manages?**          | The DB engine                   | The application / middleware                   |
+| **Use case**              | Handle large tables efficiently | Scale system horizontally to billions of users |
+| **Cross-partition query** | Easy (same DB)                  | Hard/expensive (cross-shard joins)             |
+
+---
+
+⚡ **Memory Hook:**
+
+> Partitioning = splitting data inside a DB.
+> Sharding = partitioning data across multiple DBs.
+
+---
+
+Would you like me to also give you **a diagram** that visually contrasts sharding vs partitioning? It’s often easier to remember with a picture.
+
+
+Here’s the difference in short, and then I can also make a visual diagram if you want:
+
+---
+
+### Partitioning
+
+* Splits **one table inside a single database** into smaller chunks.
+* Managed by the **DB engine**.
+* Types: Horizontal (by rows), Vertical (by columns), Range/Hash/List partitioning.
+* Goal: easier query optimization and maintenance.
+  👉 Example: Postgres `users` table partitioned by `region_id` → still one DB.
+
+---
+
+### Sharding
+
+* Splits **data across multiple database servers (shards)**.
+* Managed by the **application or middleware layer**, not the DB engine alone.
+* Each shard is an independent DB instance with its own copy of schema.
+* Goal: true horizontal scaling (support billions of rows/users).
+  👉 Example: Global user DB → Shard A (US users), Shard B (EU users), Shard C (Asia users).
+
+---
+
+### 🎯 Key Differences
+
+| Aspect   | Partitioning               | Sharding                         |
+| -------- | -------------------------- | -------------------------------- |
+| Location | Within one DB instance     | Across multiple DB instances     |
+| Manager  | Database engine            | Application / middleware         |
+| Query    | Easy cross-partition joins | Hard/expensive cross-shard joins |
+| Use case | Optimize large tables      | Scale out across machines        |
+
+---
+
+⚡ **Memory Hook:**
+👉 Partitioning = “slicing tables inside one DB”
+👉 Sharding = “partitioning across many DBs”
+
+---
+**comparison table** between **Partitioning** and **Sharding**, with pros, cons, and trade-offs:
+
+| Aspect             | **Partitioning**                                                                              | **Sharding**                                                                          |
+| ------------------ | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| **Definition**     | Splitting a single database (one DBMS instance) into logical/physical partitions.             | Splitting data across multiple independent databases (shards) on different servers.   |
+| **Scope**          | Within a single database server.                                                              | Across multiple database servers.                                                     |
+| **Management**     | Managed internally by the database system.                                                    | Requires application-level or middleware logic to route queries to the correct shard. |
+| **Use Case**       | Optimizing large single-database performance (e.g., table partitioning in PostgreSQL, MySQL). | Scaling out when a single database server can’t handle the data volume or query load. |
+| **Scalability**    | Limited (vertical scaling, still bound to one machine).                                       | High (horizontal scaling across many machines).                                       |
+| **Complexity**     | Low – transparent to applications, handled by DB engine.                                      | High – query routing, shard key design, and rebalancing are needed.                   |
+| **Failure Impact** | If the database fails, all partitions are affected (single point of failure).                 | A shard failure only affects part of the dataset (but requires careful HA design).    |
+| **Examples**       | Table partitioning by range, list, or hash inside MySQL/Postgres.                             | MongoDB sharding, Cassandra, custom shard key in MySQL/Postgres clusters.             |
+| **Pros**           | - Simple to implement                                                                         |                                                                                       |
+
+* Efficient query pruning
+* Managed by DB | - Scales horizontally
+* Reduces per-node data load
+* Supports huge datasets |
+  \| **Cons** | - Still tied to single machine limits
+* Doesn’t solve extreme scalability issues | - More complex dev & ops
+* Harder joins across shards
+* Rebalancing can be tricky |
+
+👉 **Rule of thumb**:
+
+* Use **Partitioning** if your workload is big but still fits on a single powerful server.
+* Use **Sharding** if you need to scale beyond a single machine.
+
+Would you like me to also add a **real-world example (like Twitter or Instagram)** to show *why they need sharding instead of just partitioning*?
+
 
 # 7 Evaluation and Optimization
 Compare your design to the requirements, and acknowledge any trade-offs made and improving aspects of design 
