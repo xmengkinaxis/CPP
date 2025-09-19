@@ -721,13 +721,13 @@ Choosing the proper database is a **critical decision** that significantly impac
   - Unstructured: Key-value, object storage.
   - Specialized: Graph, time-series, columnar.
 
-- **Data Size & Volume**
+- **Data Size & Volume** (to handle the scale of data efficiently)
   - Expected growth rate and storage needs (GB → PB).
   - Small objects vs. large blobs.
 
 - **Query & Access Patterns**
   - Read-heavy, write-heavy, or mixed workload.
-  - Need for joins, aggregations, or full-text search.
+  - Need for joins, aggregations, or full-text search: Assess the frequency and complexity of joins and aggregations required in the queries and choose a database that can handle them efficiently.
 
 - **Performance Requirements**
   - Latency (response time), throughput (requests/sec).
@@ -746,9 +746,9 @@ Choosing the proper database is a **critical decision** that significantly impac
   - Need for unique keys, foreign keys, normalization.
   - Trade-off: normalization (less redundancy) vs. denormalization (faster reads).
 
-- **Reliability & Availability**
+- **Reliability & Availability** (ensure data durability and system resilienc)
   - Replication, failover, high availability.
-  - Backup & disaster recovery features.
+  - Backup & disaster recovery features to ensure data safety.
 
 - **Cost & Ecosystem**
   - Licensing & cloud service costs.
@@ -780,26 +780,6 @@ Most real-world systems combine multiple storage types:
 - NoSQL → fast access, high-scale workloads.
 - Object Storage → large files.
 - Cache/CDN → latency reduction.
-
-choosing the proper database is a critical decision that can significantly impact the performance, scalability, and reliability of the system. <br>
-
-Factors to consider (Data Model [structured/relational/columnar, semi-structure, unstructed], Size and Volume, ACID, Join and Aggregate)
-
-- Data Model: Determine the data model that best fits the application's requirements; relational (SQL), document-based (NoSQL), key-value store, graph database, or time-series database.
-- Data Size and Volume: Assess the expected data size and growth rate to choose a database that can handle the scale of data effectively
-- Query Requirements: Understand the types of queries the system needs to support and whether they are read-heavy, write-heavy, or balanced.
-- Performance: Consider the database's performance characteristics, such as read and write latency, throughput, and indexing capabilities.
-- ACID Compliance: Determine whether the application requires strong consistency and transactional guarantees (ACID compliance) or can tolerate eventual consistency (NoSQL databases).
-- Horizontal Scalability: Assess the need for horizontal scaling, i.e., distributing data across multiple nodes, and choose a database that supports sharding and partitioning.
-- Data Integrity and Constraints: Evaluate the need for data integrity constraints (e.g., foreign keys, unique constraints) and choose a database that enforces these constraints.
-- Data Redundancy and Normalization: Decide on the level of data redundancy and normalization based on read and write patterns, aiming for an appropriate balance between data duplication and normalization.
-- Joins and Aggregations: Assess the frequency and complexity of joins and aggregations required in the queries and choose a database that can handle them efficiently.
-
-- Replication and High Availability: Evaluate the need for data replication and high availability to ensure data durability and system resilience.
-- Consistency Models: Understand the trade-offs between strong consistency and eventual consistency models and choose a database that aligns with the application's requirements.
-- Backup and Disaster Recovery: Consider the database's backup and disaster recovery capabilities to ensure data safety.
-- Cost and Licensing: Factor in the cost of database licenses, cloud service charges, and hardware requirements.
-- Integration with Existing Tools and Systems: Assess whether the database integrates well with existing tools, frameworks, and systems used in the application.
 
 # 5 High-Level Design — This is pretty much a template, you can put in front of interviewers.
 **Goal** 
