@@ -561,7 +561,7 @@ Requests per second that a server can handle; used in estimating how many server
 - Registration or authentication
 - These operations might work on different objects/levels/scopes
 
-**API Types:**
+**API Styles:**
 
 - Terms
   - SOAP API (Simple Object Access Protocol)
@@ -625,7 +625,7 @@ e.g. This process returns a JSON object that contains a list of all the possible
 
 - Identify various system **entities** (primary objects)
 - their **relationship** (static)
-- how they will **interact** with each other (dynamic, create, extract, transform, load)
+- how they will **interact** with each other (dynamic, create, extract, transform, load, etc.)
 - how these objects **flow** between different system components
 
 **Consideration:**
@@ -636,21 +636,52 @@ e.g. This process returns a JSON object that contains a list of all the possible
 
 ## 4.1 Database Schema or components/classes and their relationship/connection (static)
 
-What to store? objects/entities, and their relations <br>
-Table, Relationship <br>
-Primary Key <br>
-Foreign Key  <br>
+- emphasizes **scale + trade-offs** — which is exactly what interviewers want.
+- Entities + Relations → Metadata vs Objects → Indexing → Scaling (Sharding/Replication/Caching) → Trade-offs.
 
-Consideration for objects <br>
-1. Does store billions of records (objects)? <br>
-2. for each object, Is the object small (less than 1KB) or medium (a few MB, separated to object storage)? <br>
-3. What is the relationship between records? <br>
+- Core Idea
+  - **Schema = Entities + Relationships** (static view of the system).
+  - Define:
+    - **What are the core objects?** Entities: (User, Item, Place, Review, Photo…)
+    - **How they connect?** Relationships (via primary/foreign keys)s: 1–1, 1–many, many–many → use PKs & FKs.
 
-Storage:
+- Design Considerations
+  - **Data volume**: millions vs billions of records?
+  - **Data size**: Small (<1KB) vs large (MBs, needs object storage).
+  - **Relationships**: Many-to-one (users → items), one-to-one (user → profile), many-to-many (users ↔ places via reviews).
+  - Access patterns: Reads vs Writes? Search vs Scan?
 
-- Storage layer = **Metadata** storage + **Object** storage; such a division of data will allow us to scale them individually
-- Metadata storage: like users/accounts, pastes/blobs(pictures, videos, etc.), etc. can use Relational DB like MySQL, or distributed key-value DB like Dynamo or Cassandra
-- Object Storage: like a text paste, an image, etc; use object storage like Amazon S3, or HDFS. 
+- Storage Strategy
+  - **Metadata storage**: relational DB (MySQL/Postgres) or distributed KV (Cassandra/DynamoDB).
+  - **Object storage**: large files (images, videos, blobs) → S3, GCS, HDFS.
+  - Separate metadata (fast queries) from object storage (scalable, cheap) for scalability and cost efficiency.
+
+- Example Entities
+  - **User**: `UserID (PK), Name, Email, CreationDate, LastLogin, Birthday`.
+  - **Item**: `ItemID (PK), Description, Type, UserID (FK), Path, LikesCount`.
+  - **Place**: `PlaceID (PK), Name, Category, Lat/Long, Rating`.
+  - **Review**: `ReviewID (PK), PlaceID (FK), UserID (FK), Description, Rating`.
+  - **Photo**: `PhotoID (PK), UserID (FK), PlaceID (FK), Path, CreationDate`.
+
+- Indexing & Query Optimization
+  - **Indexes speed up reads** but slow down writes.
+  - Choose indexes based on **query patterns** (e.g., search by `UserID`, sort by `CreationDate`, filter).
+  - Trade-offs: performance vs storage vs write speed.
+
+- Scalability Considerations
+  - **Sharding / Partitioning**: split large tables (e.g., user Id, users by region/geography, items by ID range).
+  - **Partitioning**: Divide tables/files for parallel access.
+  - **Replication**: read replicas for scaling reads. Master for writes, replicas for reads.
+  - **Caching**: frequently accessed metadata in Redis/Memcached. CDN for media.
+  - **Avoid bottlenecks**: distribute load across storage + DB layers.
+
+- Interview Best Practices
+  - Start with **entities + relationships**.
+  - Then explain **storage choices** (metadata vs object storage).
+  - Highlight **scaling strategies** (sharding, replication, caching).
+  - Discuss **trade-offs** (RDBMS vs NoSQL, index impact, storage cost).
+  - Keep details **high-level first**; dive deep only if interviewer asks.
+
 
 Common objects (e.g.)
 - User: id (primary key, int), name (varchar 20), email (varchar 32), CreationDate (datetime, 4 byte?), LastLogin (datetime), Birthday (datetime)
@@ -663,23 +694,13 @@ Common objects (e.g.)
 - Place: ID (8 bytes, 64 bits), Name(256 bytes), Description(1,000 bytes), Category (8 bytes ???), Latitude (8 bytes), Longitude (8 bytes), Phone(the foreign key, 8 bytes), Rating, address, business hours, menu
 - Review: ID (8 bytes), Place_ID, User_ID, Description (512 bytes), Rating (1-5, 1 byte)
 
-Tags:  <br>
-category: (1 byte) <br>
-default_language:  <br>
 
 latest (CreationDate), popular (likes, comments, shares), relevant (used in ranking)   <br>
-
-Index:
-
-- On which field(s) to build some index?
-- Pro: database performance =>  indexes to improve the performance of search queries, esp. when dataset is huge
-- Con: Dramatically speed up data retrieval, but slow down the write (insert, update, and delete) performance.
 
 the goal of creating an index on a particular table in a database is to make it faster to search through the table and find the row or rows that we want.  <br>
 must carefully consider how users will access the data.  <br>
 Indexing needs a primary key on the table with a unique value; Using one or more columns <br>
 Ordered indexing (increasing or decreasing) or Hash-indexing <br>
-In any index-based data, the partition is not allowed ??? <br>
 
 ## 4.2 Choose Database
 
