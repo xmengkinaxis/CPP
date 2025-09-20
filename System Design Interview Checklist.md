@@ -42,7 +42,7 @@
     - [Key Factors to Consider](#key-factors-to-consider)
     - [Database Options](#database-options)
     - [Hybrid Approach (Polyglot Persistence)](#hybrid-approach-polyglot-persistence)
-- [5 High-Level Design — This is pretty much a template, you can put in front of interviewers.](#5-high-level-design--this-is-pretty-much-a-template-you-can-put-in-front-of-interviewers)
+- [5 High-Level Design — This is pretty much a template, you can put in front of interviewers](#5-high-level-design--this-is-pretty-much-a-template-you-can-put-in-front-of-interviewers)
 - [6 Low-Level Design - Deep dive core components; detailed component design](#6-low-level-design---deep-dive-core-components-detailed-component-design)
   - [6.1 Scale the design](#61-scale-the-design)
   - [6.2 Partition and Replication (core of a distributed system, to scale out the system)](#62-partition-and-replication-core-of-a-distributed-system-to-scale-out-the-system)
@@ -781,20 +781,67 @@ Most real-world systems combine multiple storage types:
 - Object Storage → large files.
 - Cache/CDN → latency reduction.
 
-# 5 High-Level Design — This is pretty much a template, you can put in front of interviewers.
-**Goal** 
-* The candidate should identify various system entities, how they will interact with each other, and how data would be flowing in the system
-* static: components, their relationship and connections
-* dynamic: workflow, how these components interact with each other, event/time sequences
+# 5 High-Level Design — This is pretty much a template, you can put in front of interviewers
+
+- **Goal**
+  - The candidate should identify various **system entities**, how they will **interact** with each other, and how data would be **flowing** in the system
+  - **Static Structure**: components, their relationship and connections
+  - **Dynamic Behavior**: workflow, how these components interact with each other, event/time sequences
   
-**Steps**
-* Outline a high level design with all important components and connections 
-  * Draw a block diagram with 5-6 core components of the system, which are enough to solve the actual problem from end to end.
-  * Map features to modules
-  * Create micro-services based on features or APIs (e.g. which micro-service should handle request and reply with a response)
-  * Sketch the main components and connections
-  * Justify your ideas
-* involved in the request flow from the client until the response is passed to the client. Describe the workflow based on the required operations
+- **Steps**
+  - **Outline core components and connections (static)**
+    - Draw a block diagram with **5-6 core components** of the system, which are enough to solve the actual problem from end to end.
+    - Map **features → modules**
+    - Define micro-services based on features/APIs (e.g. which micro-service should handle request and reply with a response)
+    - Sketch the **main components + connections**
+    - Justify each design choice
+  - **Describe Request Workflow (Dynamic)**
+    - Walk through what happens **from client request → backend processing → response**.
+    - Explain how data flows across components.
+    - Highlight interactions (synchronous vs asynchronous).
+  - **Defend Trade-offs**
+    - Why these components?
+    - Why this communication style (REST, gRPC, message queue)?
+    - Where are bottlenecks mitigated?
+
+- **Common Components (Static View)**: A typical scalable, reliable system often includes:
+
+1. **Client** (web/mobile app, API consumer)
+2. **Load Balancer** (distributes traffic, prevents overload)
+3. **Web Tier**
+   - Web server / reverse proxy (e.g., Nginx, Envoy).
+   - WebSockets for real-time systems.
+   - API Gateway if multiple services.
+4. **Application/Service Layer**
+   - Microservices (feature-based, API-based).
+   - Service partitioning for scaling.
+5. **Cache Layer**
+   - Redis, Memcached, CDN.
+   - Used at multiple levels (client-side, service-side, DB-side).
+6. **Database Layer**
+   - SQL/NoSQL depending on use case.
+   - Master-slave or leader-follower clusters.
+   - Sharding, replication, partitioning for scale.
+
+- **Supporting Components (Optional but Good to Mention)**
+
+1. **VPCs & Networking**
+   - Public vs private subnets.
+   - API gateway in public, DB in private.
+2. **Rate Limiter**
+   - Protects from abuse (DDoS, API overuse).
+3. **Admin / Manager Node**
+   - Access privileges, dashboards, console.
+4. **Monitoring & Logging**
+   - Metrics (Prometheus, Grafana).
+   - Alerts, logs (ELK stack, Datadog).
+5. **Backup & Disaster Recovery**
+   - Snapshots, multi-region replication.
+
+- Notes
+  - Application layer = **brains** → handles all incoming & outgoing requests.
+  - Use **Single Responsibility Principle**: small, autonomous services that scale independently.
+  - In interview: **start simple**, then **iterate with scaling, caching, failover** when asked.
 
 **Structure/Components (static):** 
 Usually, a scalable system include (The Single Responsibility Principle advocates for small and autonomous services that work together to allow scale and configure them independently)
