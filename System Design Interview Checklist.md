@@ -124,6 +124,21 @@
   - [17.4 Common Single Points of Failure (SPOFs):](#174-common-single-points-of-failure-spofs)
   - [17.5 Common Bottlenecks:](#175-common-bottlenecks)
   - [17.6 Mitgation SPOFs and addressing bottlenecks involves](#176-mitgation-spofs-and-addressing-bottlenecks-involves)
+- [18 Terms](#18-terms)
+  - [**API Gateway**](#api-gateway)
+    - [Why it’s useful:](#why-its-useful)
+    - [Common Features of API Gateway:](#common-features-of-api-gateway)
+    - [Examples:](#examples)
+    - [✅ Pros of API Gateway](#-pros-of-api-gateway)
+    - [❌ Cons of API Gateway](#-cons-of-api-gateway)
+    - [**When do you need a Load Balancer with an API Gateway?**](#when-do-you-need-a-load-balancer-with-an-api-gateway)
+    - [**Connection Setup (Typical Flow)**](#connection-setup-typical-flow)
+    - [**Key Notes for Interviews**](#key-notes-for-interviews)
+  - [**Example: AWS Setup with API Gateway + Load Balancer**](#example-aws-setup-with-api-gateway--load-balancer)
+    - [**Scenario**](#scenario)
+    - [**Architecture Flow**](#architecture-flow)
+    - [**Why Both?**](#why-both)
+    - [**In an Interview, You Can Say:**](#in-an-interview-you-can-say)
 
 
 <!-- TOC -->
@@ -789,39 +804,39 @@ Most real-world systems combine multiple storage types:
   - **Dynamic Behavior**: workflow, how these components interact with each other, event/time sequences
   
 - **Steps**
-  - **Outline core components and connections (static)**
-    - Draw a block diagram with **5-6 core components** of the system, which are enough to solve the actual problem from end to end.
+  - **Outline core components and connections (Static)**
+    - Draw a block diagram with **5-6 core components/entities** of the system, which are enough to solve the actual problem from end to end.
     - Map **features → modules**
     - Define micro-services based on features/APIs (e.g. which micro-service should handle request and reply with a response)
     - Sketch the **main components + connections**
     - Justify each design choice
   - **Describe Request Workflow (Dynamic)**
     - Walk through what happens **from client request → backend processing → response**.
-    - Explain how data flows across components.
-    - Highlight interactions (synchronous vs asynchronous).
+    - Explain **how data flows across components**.
+    - Highlight interactions (**synchronous vs asynchronous**).
   - **Defend Trade-offs**
     - Why these components?
     - Why this communication style (REST, gRPC, message queue)?
-    - Where are bottlenecks mitigated?
+    - **Where are bottlenecks mitigated?**
 
-- **Common Components (Static View)**: A typical scalable, reliable system often includes:
+- **Common Components (Static View)**: A typical scalable and reliable system often includes:
 
-1. **Client** (web/mobile app, API consumer)
-2. **Load Balancer** (distributes traffic, prevents overload)
-3. **Web Tier**
-   - Web server / reverse proxy (e.g., Nginx, Envoy).
-   - WebSockets for real-time systems.
-   - API Gateway if multiple services.
-4. **Application/Service Layer**
-   - Microservices (feature-based, API-based).
-   - Service partitioning for scaling.
-5. **Cache Layer**
-   - Redis, Memcached, CDN.
-   - Used at multiple levels (client-side, service-side, DB-side).
-6. **Database Layer**
-   - SQL/NoSQL depending on use case.
-   - Master-slave or leader-follower clusters.
-   - Sharding, replication, partitioning for scale.
+  1. **Client** (web/mobile app, API consumer)
+  2. **Load Balancer** (distributes traffic, prevents overload)
+  3. **Web Tier**
+     - Web server / reverse proxy (e.g., Nginx, Envoy).
+     - WebSockets for real-time systems.
+     - API Gateway if multiple services.
+  4. **Application/Service Layer**
+     - Microservices (feature-based, API-based).
+     - Service partitioning for scaling.
+  5. **Cache Layer**
+     - Redis, Memcached, CDN.
+     - Used at multiple levels (client-side, service-side, DB-side).
+  6. **Database Layer**
+     - SQL/NoSQL depending on use case.
+     - Master-slave or leader-follower clusters.
+     - Sharding, replication, partitioning for scale.
 
 - **Supporting Components (Optional but Good to Mention)**
 
@@ -1895,3 +1910,197 @@ Why the API Gateway in front of ELB is often the preferred architecture:
 * performance optimization
 
 A well-designed system considers these factors to ensure reliability, availability, and optimal performance.
+
+# 18 Terms
+
+## **API Gateway** 
+
+is a **single entry point** for all client requests in a system with **multiple backend services (microservices)**.
+
+### Why it’s useful:
+
+- Without a gateway:
+
+  - Client must know each service’s URL.
+  - Client makes multiple requests (to service A, service B, etc.).
+  - Harder to manage authentication, rate limiting, logging across all services.
+
+- With an API Gateway:
+
+  - Client sends **one request to the gateway**.
+  - The gateway routes the request to the right microservice.
+  - It can also **aggregate responses** from multiple services and return a single result.
+
+### Common Features of API Gateway:
+
+- **Routing** → Send request to correct service.
+- **Aggregation** → Combine responses from multiple services.
+- **Security** → Centralized authentication, authorization, rate limiting.
+- **Monitoring** → Collect logs/metrics for all requests.
+- **Protocol translation** → e.g., client uses REST, backend uses gRPC.
+
+### Examples:
+
+- AWS API Gateway
+- Kong, NGINX, Envoy
+- Apigee
+
+---
+
+👉 In **System Design Interviews**, mention API Gateway when:
+
+- You have **multiple microservices**.
+- You want to **hide complexity from clients**.
+- You need **cross-cutting features** (auth, rate limiting, logging) in one place.
+
+---
+comparing without API Gateway vs with API Gateway
+
+- Without API Gateway → the client must directly call each service.
+- With API Gateway → the client calls only the gateway, which routes the requests to the right services.
+
+This reduces client complexity, centralizes cross-cutting concerns (auth, logging, caching, rate limiting), and improves maintainability.
+
+Great 👍 Here’s a concise **Pros & Cons of API Gateway** for your notes:
+
+---
+
+### ✅ Pros of API Gateway
+
+- **Single entry point** → client only needs to know the gateway, not all internal services.
+- **Simplifies client code** → no need to manage multiple endpoints.
+- **Centralized cross-cutting concerns** → authentication, authorization, logging, monitoring, caching, rate limiting, retries.
+- **Protocol translation** → e.g., client uses REST/HTTP, gateway talks gRPC, SOAP, WebSocket internally.
+- **Security** → hide internal service details, reduce attack surface.
+- **Versioning & routing** → can support multiple versions of APIs, route traffic to new services during migration.
+
+---
+
+### ❌ Cons of API Gateway
+
+- **Single point of failure** (needs redundancy + load balancing).
+- **Added latency** → extra network hop for every request.
+- **Operational complexity** → gateway itself must be maintained, scaled, monitored.
+- **Potential bottleneck** if not properly designed for high throughput.
+- **Coupling risk** → too much logic in gateway can make it a “monolith in disguise.”
+
+---
+
+👉 **Rule of Thumb**: Use an API Gateway when you have **multiple microservices** and need **centralized control & simplicity for clients**. For a small system with just a few services, it may add unnecessary complexity.
+
+---
+
+### **When do you need a Load Balancer with an API Gateway?**
+
+1. **API Gateway itself needs to scale**
+
+   - If you only run **one instance** of the API Gateway, it becomes a single point of failure.
+   - To handle **high traffic**, you run multiple instances of the gateway.
+   - A **Load Balancer (LB)** sits in front of them to distribute client requests evenly.
+
+2. **Microservices behind the Gateway also need scaling**
+
+   - Each microservice may run many instances.
+   - The API Gateway usually does **service discovery** + **internal load balancing**, but sometimes you add an internal load balancer in front of service clusters.
+
+---
+
+### **Connection Setup (Typical Flow)**
+
+```
+Client 
+   ↓
+[Load Balancer]  (distributes traffic across multiple API Gateway instances)
+   ↓
+[API Gateway Cluster]  (auth, routing, rate limiting, logging, etc.)
+   ↓
+[Internal Load Balancer / Service Discovery] 
+   ↓
+[Microservice Instances]  (e.g. User Service, Order Service, Payment Service)
+```
+
+---
+
+### **Key Notes for Interviews**
+
+- **External LB** → balances traffic across API Gateway nodes.
+- **API Gateway** → central entry point, routes to services.
+- **Internal LB or Service Discovery** → balances requests among service replicas.
+- In cloud setups (AWS/GCP/Azure), the **cloud provider’s LB** (e.g., AWS ELB/ALB) often handles the LB in front of API Gateways.
+
+---
+
+👉 So the **API Gateway doesn’t replace a Load Balancer**; instead, they complement each other:
+
+- **LB = distribute traffic**
+- **Gateway = manage + route traffic**
+
+---
+Perfect 👍 Let’s use **AWS** as a concrete real-world example (since it’s widely used and interviewers love it).
+
+---
+
+## **Example: AWS Setup with API Gateway + Load Balancer**
+
+### **Scenario**
+
+You’re building an **e-commerce platform** with multiple microservices:
+
+* **User Service**
+* **Order Service**
+* **Payment Service**
+
+Each service runs in **ECS/EKS (containers)** or EC2 instances.
+
+---
+
+### **Architecture Flow**
+
+```
+Client (mobile/web app)
+   ↓
+[Amazon CloudFront]  (CDN, optional but common for caching & edge delivery)
+   ↓
+[Elastic Load Balancer (ALB/NLB)]
+   ↓
+[API Gateway Cluster]  (AuthN/AuthZ, rate limiting, request validation, routing)
+   ↓
+Service Discovery (e.g., AWS Cloud Map) OR Internal Load Balancer
+   ↓
+[Microservices running on ECS/EKS]
+   ↓
+Databases / Caches / Object Storage
+```
+
+---
+
+### **Why Both?**
+
+1. **Elastic Load Balancer (ALB)**
+
+   - Distributes incoming traffic across **multiple API Gateway nodes**.
+   - Ensures **high availability** — if one API Gateway fails, traffic goes to others.
+
+2. **API Gateway**
+
+   - Acts as the **entry point** for all APIs.
+   - Handles **authentication** (JWT, OAuth, API keys), **rate limiting**, **logging**, and **routing**.
+   * Example: `/users/*` → User Service, `/orders/*` → Order Service.
+
+3. **Internal Load Balancers (optional)**
+
+   - Each microservice (e.g., User Service) may scale to many instances.
+   - API Gateway either calls them via:
+
+     - **Service discovery** (Cloud Map / Kubernetes service)
+     - or **another load balancer** in front of the service cluster.
+
+---
+
+### **In an Interview, You Can Say:**
+
+> “In a production-grade system, I’d typically place an external load balancer in front of API Gateways to handle traffic distribution and failover. The API Gateway then manages routing, authentication, and request transformation. For scaling microservices, the gateway either integrates with service discovery (like Kubernetes) or uses internal load balancers to distribute traffic among service replicas. For example, in AWS, I might use an Application Load Balancer in front of multiple API Gateway instances, and inside, the gateway routes requests to ECS services with auto-scaling enabled.”
+
+---
+
+Would you like me to **sketch this architecture into a diagram** (ASCII or structured) so you can memorize the flow more visually?
