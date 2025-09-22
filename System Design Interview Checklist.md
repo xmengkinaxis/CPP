@@ -43,7 +43,8 @@
     - [Database Options](#database-options)
     - [Hybrid Approach (Polyglot Persistence)](#hybrid-approach-polyglot-persistence)
 - [5 High-Level Design — This is pretty much a template, you can put in front of interviewers](#5-high-level-design--this-is-pretty-much-a-template-you-can-put-in-front-of-interviewers)
-- [6 Low-Level Design - Deep dive core components; detailed component design](#6-low-level-design---deep-dive-core-components-detailed-component-design)
+- [6 Low-Level Design (LLD) - Deep Dive into Core Components (Detailed Component Design)](#6-low-level-design-lld---deep-dive-into-core-components-detailed-component-design)
+  - [6.0 **LLD Deep Dive Lenses**: **short checklists** for common components that interviewers often ask you to deep dive](#60-lld-deep-dive-lenses-short-checklists-for-common-components-that-interviewers-often-ask-you-to-deep-dive)
   - [6.1 Scale the design](#61-scale-the-design)
   - [6.2 Partition and Replication (core of a distributed system, to scale out the system)](#62-partition-and-replication-core-of-a-distributed-system-to-scale-out-the-system)
     - [6.2.1 Replication](#621-replication)
@@ -807,7 +808,6 @@ Most real-world systems combine multiple storage types:
   - The candidate should identify various **system entities**, how they will **interact** with each other, and how data would be **flowing** in the system
   - **Static Structure**: components, their relationship and connections
   - **Dynamic Behavior**: workflow, how these components interact with each other, event/time sequences
-  - The **Single Responsibility Principle** advocates for small and autonomous services that work together to allow scale and configure them independently
   
 - **Steps**
   - **Outline core components and connections (Static)**
@@ -861,10 +861,226 @@ Most real-world systems combine multiple storage types:
 
 - Notes
   - Application layer = **brains** → handles all incoming & outgoing requests.
-  - Use **Single Responsibility Principle**: small, autonomous services that scale independently.
+  - Use **Single Responsibility Principle**: small, autonomous services that scale and configure independently.
   - In interview: **start simple**, then **iterate with scaling, caching, failover** when asked.
 
-# 6 Low-Level Design - Deep dive core components; detailed component design
+# 6 Low-Level Design (LLD) - Deep Dive into Core Components (Detailed Component Design)
+
+- **Purpose**
+  - Go deeper into the **design of 2–3 critical components** (**performance-sensitive or core to functionality**).
+  - Show understanding of **how data flows and how requests are handled at a detailed level**.
+  - Demonstrate ability to **evaluate trade-offs**, handle failures, and optimize performance.
+
+- **Approach**
+  
+  1. **Component Selection**
+     - Either pick components yourself or ask interviewers for guidance.
+     - Prioritize components that are **core to performance, reliability, or correctness**.
+
+  2. **Detail the Component Design**
+     - Describe how the component works internally (data structures, algorithms, APIs).
+     - Explain how it interacts with other components.
+     - Walk through **read and write flows** with examples.
+
+  3. **Failure Handling**
+     - What happens if a request fails? (e.g., duplicate key, timeout, partial write).
+     - How are retries, error handling, and fault tolerance designed?
+
+  4. **Design Alternatives**
+     - Present **2–3 possible approaches**, list **pros and cons**, and justify your choice.
+     - Always tie back to system constraints (scale, latency, cost, complexity).
+
+  5. **Performance Optimizations**: Reduce **latency** using:
+       - **Caching** (client, app, DB, CDN).
+       - **Prefetching / Pre-calculation** (e.g., pre-computing heavy queries).
+       - **Parallelization / Asynchronous processing** (async queues, background jobs)
+       - Example: Predict customer behavior and pre-cache heavy queries via a proxy.
+
+- **Low-Level Design (Component Deep Dive Template) - Diagram + Deep Dive Lenses** to have both a **visual map** and a **checklist** for interviews.
+
+``` arduino
++------------------------+
+| Client Request (R/W)   |
++------------------------+
+            |
+            v
++------------------------+
+| API / Service Layer    | <-- API Lens
+| - Validation, routing  |
++------------------------+
+            |
+     -------------------
+     | read-heavy      | write/async 
+     v                 v
++----------------+   +------------------+
+| Cache          |   | Queue / Async    |
+| (Hot Data)     |   | (Heavy jobs)     |
+| <-- Cache Lens |   | <-- Queue Lens   |
++----------------+   +------------------+
+        |                   |
+        v                   v
++---------------------------+
+| Core Component (Deep Dive)|
+| e.g., Feed Gen, Search    |
+| <-- Data Processing Lens  |
++---------------------------+
+            |
+            v
++------------------------+
+| Database / Storage     | <-- Database Lens
+| - Partition, Replica   |
++------------------------+
+            |
+            v
++------------------------+
+| Response / Error       |
++------------------------+
+```
+
+- **How to Use This in Interview**
+  1. **Start with the flow**: “Here’s how a request flows through validation, cache, main component logic, DB, and back.”
+  2. **Deep dive into one block**: For example, the **Core Component** (indexing engine, messaging queue, feed ranking, etc.).
+  3. **Show trade-offs**: Talk about caching vs. DB lookup, sync vs. async, partitioning vs. replication.
+  4. **Discuss failure handling**: e.g., cache miss, DB write failure, duplicate keys.
+
+- **How to Use in Interview**
+  1. **Draw the base skeleton** above (5–6 blocks).
+  2. Label each block with a **lens** (Cache Lens, DB Lens, Queue Lens, etc.).
+  3. When interviewer says “deep dive here,” **zoom in using the right lens checklist**.
+
+- **Example Walkthrough**
+*Interview prompt*: *“How does your system handle hot reads at scale?”*
+  - Point to the **Cache block** in diagram.
+  - Switch to **Cache Lens checklist**:
+    - Eviction policy? (LRU vs TTL)
+    - Write strategy? (write-through vs write-back)
+    - Consistency trade-off? (stale data vs DB load)
+  - Conclude with justification: *“I’d use write-through cache with TTL + LRU eviction, since freshness matters but occasional stale reads are tolerable.”*
+
+- **branching points** are mainly about *read vs write flows* for **Cache** and **Queue/Async**
+
+  - Rule of thumb for interviews: *Reads go cache-first; Writes go DB-first (with cache updated accordingly).*
+  - **Reads** (most common):
+
+    ``` arduino
+    Client → API Gateway → Cache
+                  |
+                  +-- [HIT] → return cached value
+                  +-- [MISS] → go to DB → update cache → return
+    ```
+
+  - **Writes** (update/create/delete):
+    - **Write-through**: write to DB *and* cache (synchronous, consistent).
+    - **Write-back**: write only to cache → flush to DB later (faster, but risky if cache crashes).
+    - **Write-around**: write directly to DB, cache updated on next read.
+
+- **Queue / Async Branching**
+
+  - **Synchronous Path (user-facing):**
+
+    ``` arduino
+    Client → API Gateway → Core Service → DB → Response
+    ```
+
+  - **Asynchronous Path (background tasks):**
+
+    ``` arduino
+    Client → API Gateway → Core Service
+                            |
+                            +--> Queue → Worker(s) → DB / External Service
+    ```
+
+- Rule of thumb: *If user doesn’t need the result immediately, branch into Queue.*
+- Examples:
+  - Email/SMS notification → push to queue, worker sends later.
+  - ML model scoring → async, return immediately, update later.
+  - Image/video processing → async workers.
+
+- **Combined Flow Example**
+
+  ``` arduino
+          ┌─────────── Cache (read-heavy)
+  Client ─► API Gateway ─┐
+          │             │
+          │             v
+          │         Core Service ──► DB
+          │             │
+          │             └─► Queue (async tasks)
+          │                   │
+          │                   v
+          │                 Worker(s) → DB / External API
+  ```
+
+  - Reads → Cache-first, DB fallback.
+  - Writes → DB-first (update cache after).
+  - Async tasks → Queue branch → processed by workers
+
+- So in interview diagrams:
+  - Draw **Cache** branch on **read-heavy path** (with arrows for read/write strategies).
+  - Draw **Queue** branch on **write/async path** (non-blocking, background).
+
+## 6.0 **LLD Deep Dive Lenses**: **short checklists** for common components that interviewers often ask you to deep dive
+
+- **Cache Lens**
+  - **Where to cache?** (client, CDN, app server, DB, object storage)
+  - **Eviction policy?** (LRU, LFU, TTL-based)
+  - **Consistency?**
+    - Write-through / Write-around / Write-back
+    - How to handle cache invalidation?
+  - **Failure handling**:
+    - Cache miss → fallback to DB
+    - Cache server failure → retry, degrade gracefully
+  - **Trade-offs**: Faster reads vs. stale data / higher memory cost
+
+- **Queue / Async Processing Lens**
+  - **When to use?** Heavy writes, async jobs, decoupling producers/consumers
+  - **Guarantees?** At-least-once vs. at-most-once vs. exactly-once delivery
+  - **Ordering?** FIFO, priority queues, partitioned streams
+  - **Failure handling**:
+    - Retry strategy (exponential backoff, DLQ – Dead Letter Queue)
+  - **Scaling**: Consumers can scale horizontally
+  - **Trade-offs**: Reliability vs. latency
+  
+- **Database Lens**
+  - **Model choice?** Relational, key-value, document, graph, time-series
+  - **Partitioning**: Sharding strategy (hash, range, geo-based)
+  - **Replication**: Sync vs. async, leader-follower vs. leaderless
+  - **Indexing**: Which fields to index? Trade-offs between query speed and write speed
+  - **Transactions**: ACID vs. BASE, consistency model (strong vs. eventual)
+  - **Failure handling**: Conflict resolution, failover strategy
+  - **Trade-offs**: Consistency vs. availability (CAP theorem)
+
+- **API / Service Lens**
+  - **API style**: REST, gRPC, GraphQL
+  - **Granularity**: Single responsibility (SRP) vs. coarse-grained APIs
+  - **Rate limiting**: How to protect downstream services?
+  - **Idempotency**: Safe retries for write requests
+  - **Versioning**: Backward compatibility
+  - **Trade-offs**: Simple APIs vs. chatty APIs; REST vs. RPC overhead
+
+- **Data Processing Lens** (e.g., Search, Feed Ranking, Analytics)
+  - **Pre-compute vs. On-demand**: Which parts are cached, which computed live?
+  - **Batch vs. Stream**: Hadoop/Spark vs. Kafka/Flink
+  - **Indexing**: Inverted index, B+ tree, bitmap index
+  - **Ranking / Aggregation**: Sorting, scoring functions, ML models
+  - **Failure handling**: Partial results, retries, degradation
+  - **Trade-offs**: Freshness vs. latency vs. cost
+
+- **Security & Reliability Lens**
+  - **Authentication & Authorization**: OAuth, JWT, API keys
+  - **Rate limiting & throttling**
+  - **Encryption**: Data at rest vs. data in transit
+  - **Monitoring & Alerting**: Metrics, logs, tracing
+  - **Disaster recovery**: Backups, failover plan
+  - **Trade-offs**: Security vs. performance; cost vs. redundancy
+
+- Note
+  - With these **lenses**, you can quickly zoom into whatever component the interviewer asks you to deep dive.
+  - For example:
+    - If asked “How would you design the feed generator?” → use **Data Processing Lens**.
+    - If asked “How would you handle caching for hot data?” → use **Cache Lens**
+
+
 Dig deeper into details of two or three major/core components; <br>
 Pick or ask for; The interviewers' feedback should always guide us to what specific parts need focus, elaborate on, and further discussion.  <br>
 (self choose some core components which are critical in performance)  <br>
