@@ -139,6 +139,11 @@
     - [**Architecture Flow**](#architecture-flow)
     - [**Why Both?**](#why-both)
     - [**In an Interview, You Can Say:**](#in-an-interview-you-can-say)
+    - [**1. Web Server / Reverse Proxy (Nginx, Envoy, HAProxy)**](#1-web-server--reverse-proxy-nginx-envoy-haproxy)
+    - [**2. WebSockets for Real-Time**](#2-websockets-for-real-time)
+    - [**3. API Gateway (if multiple services)**](#3-api-gateway-if-multiple-services)
+    - [✅ So, can API Gateway replace Web Server + WebSocket?](#-so-can-api-gateway-replace-web-server--websocket)
+    - [🔑 In your note, I’d refine it like this:](#-in-your-note-id-refine-it-like-this)
 
 
 <!-- TOC -->
@@ -802,6 +807,7 @@ Most real-world systems combine multiple storage types:
   - The candidate should identify various **system entities**, how they will **interact** with each other, and how data would be **flowing** in the system
   - **Static Structure**: components, their relationship and connections
   - **Dynamic Behavior**: workflow, how these components interact with each other, event/time sequences
+  - The **Single Responsibility Principle** advocates for small and autonomous services that work together to allow scale and configure them independently
   
 - **Steps**
   - **Outline core components and connections (Static)**
@@ -840,41 +846,23 @@ Most real-world systems combine multiple storage types:
 
 - **Supporting Components (Optional but Good to Mention)**
 
-1. **VPCs & Networking**
-   - Public vs private subnets.
-   - API gateway in public, DB in private.
-2. **Rate Limiter**
-   - Protects from abuse (DDoS, API overuse).
-3. **Admin / Manager Node**
-   - Access privileges, dashboards, console.
-4. **Monitoring & Logging**
-   - Metrics (Prometheus, Grafana).
-   - Alerts, logs (ELK stack, Datadog).
-5. **Backup & Disaster Recovery**
-   - Snapshots, multi-region replication.
+  1. **VPCs & Networking**
+     - Public vs private subnets.
+     - API gateway in public, DB in private.
+  2. **Rate Limiter**
+     - Protects from abuse (DDoS, API overuse).
+  3. **Admin / Manager Node**
+     - Access privileges, dashboards, console.
+  4. **Monitoring & Logging Services**
+     - Metrics (Prometheus, Grafana).
+     - Alerts, logs (ELK stack, Datadog).
+  5. **Backup & Disaster Recovery**
+     - Snapshots, multi-region replication.
 
 - Notes
   - Application layer = **brains** → handles all incoming & outgoing requests.
   - Use **Single Responsibility Principle**: small, autonomous services that scale independently.
   - In interview: **start simple**, then **iterate with scaling, caching, failover** when asked.
-
-**Structure/Components (static):** 
-Usually, a scalable system include (The Single Responsibility Principle advocates for small and autonomous services that work together to allow scale and configure them independently)
-1. Client
-2. Load balancer
-3. WebServer (reverse proxy) / WebSocket / Front-end servers
-4. Services (application layer, aka. platform layer) (Service Partition; list different services required, micro-services) 
-5. Caching system
-6. Database (master/slave cluster, partition and replication)
-
-Others <br>
-7. VPCs (publics, privates)<br>
-8. Rate limiter<br>
-9. Manager node: access privilege, console<br>
-10. Monitoring service<br>
-
-NOTE: 
-Application layer will process all incoming and outgoing requests. 
 
 # 6 Low-Level Design - Deep dive core components; detailed component design
 Dig deeper into details of two or three major/core components; <br>
@@ -2104,3 +2092,57 @@ Databases / Caches / Object Storage
 ---
 
 Would you like me to **sketch this architecture into a diagram** (ASCII or structured) so you can memorize the flow more visually?
+
+Good question 👍
+
+The short answer is: **API Gateway can sometimes replace a web server, but not always**. Let’s break it down:
+
+---
+
+### **1. Web Server / Reverse Proxy (Nginx, Envoy, HAProxy)**
+
+- Handles **static content** (HTML, CSS, JS, images).
+- Acts as a **reverse proxy** to backend services.
+- Provides **basic load balancing**, TLS termination, and sometimes caching.
+- Can support **WebSockets** for real-time connections.
+
+👉 If your system needs to serve static assets or handle custom proxy logic, you **still need a web server**.
+
+---
+
+### **2. WebSockets for Real-Time**
+
+- Used for **bi-directional communication** (chat, gaming, live dashboards).
+- Web servers like **Nginx** or specialized infra (e.g., AWS AppSync, Socket.IO servers) usually handle this.
+- Many **API Gateways (including AWS API Gateway)** do support WebSockets now, but with **limitations** (scaling, cost, advanced pub-sub).
+
+---
+
+### **3. API Gateway (if multiple services)**
+
+- Designed as the **entry point for microservices**.
+- Provides **routing**, **authentication**, **rate limiting**, and **observability**.
+- Not great at serving **static content** or directly managing **long-lived WebSocket connections** (though some gateways do support WebSockets).
+- Typically integrates with **load balancers** or service discovery to talk to backends.
+
+---
+
+### ✅ So, can API Gateway replace Web Server + WebSocket?
+
+- **If you only need API routing (REST/GraphQL/gRPC)** → Yes, API Gateway can replace a reverse proxy.
+- **If you need static file serving** → Keep a web server (or use CDN like CloudFront).
+- **If you need WebSockets at scale** → Better to use specialized infra (Nginx, Envoy, or AWS AppSync/Kafka pub-sub), not API Gateway alone.
+
+---
+
+### 🔑 In your note, I’d refine it like this:
+
+**Web Tier**
+
+- **Web server / reverse proxy** (e.g., Nginx, Envoy) → static assets, TLS termination, reverse proxy.
+- **WebSockets** for real-time systems (chat, gaming, dashboards).
+- **API Gateway** if multiple backend services (REST/GraphQL/gRPC), mainly for routing, auth, rate limiting.
+
+---
+
+👉 This way, it’s clear API Gateway **complements** web servers, not always replaces them.
