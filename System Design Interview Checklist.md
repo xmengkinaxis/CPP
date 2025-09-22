@@ -44,7 +44,7 @@
     - [Hybrid Approach (Polyglot Persistence)](#hybrid-approach-polyglot-persistence)
 - [5 High-Level Design — This is pretty much a template, you can put in front of interviewers](#5-high-level-design--this-is-pretty-much-a-template-you-can-put-in-front-of-interviewers)
 - [6 Low-Level Design (LLD) - Deep Dive into Core Components (Detailed Component Design)](#6-low-level-design-lld---deep-dive-into-core-components-detailed-component-design)
-  - [6.0 **LLD Deep Dive Lenses**: **short checklists** for common components that interviewers often ask you to deep dive](#60-lld-deep-dive-lenses-short-checklists-for-common-components-that-interviewers-often-ask-you-to-deep-dive)
+  - [6.0 **LLD Deep Dive Lenses**: **short checklists** for common components to deep dive](#60-lld-deep-dive-lenses-short-checklists-for-common-components-to-deep-dive)
   - [6.1 Scale the design](#61-scale-the-design)
   - [6.2 Partition and Replication (core of a distributed system, to scale out the system)](#62-partition-and-replication-core-of-a-distributed-system-to-scale-out-the-system)
     - [6.2.1 Replication](#621-replication)
@@ -867,19 +867,19 @@ Most real-world systems combine multiple storage types:
 # 6 Low-Level Design (LLD) - Deep Dive into Core Components (Detailed Component Design)
 
 - **Purpose**
-  - Go deeper into the **design of 2–3 critical components** (**performance-sensitive or core to functionality**).
+  - Go deeper into the **design of 2–3 critical components** (**performance-sensitive** or **core to functionality**).
   - Show understanding of **how data flows and how requests are handled at a detailed level**.
-  - Demonstrate ability to **evaluate trade-offs**, handle failures, and optimize performance.
+  - Demonstrate ability to **evaluate trade-offs, handle failures, and optimize performance**.
 
 - **Approach**
   
   1. **Component Selection**
-     - Either pick components yourself or ask interviewers for guidance.
-     - Prioritize components that are **core to performance, reliability, or correctness**.
+     - Either pick components yourself or ask interviewers for guidance. The interviewers' feedback should always guide us to what specific parts need focus, elaborate on, and further discussion.
+     - **Prioritize** components that are **core to performance, reliability, or correctness**.
 
   2. **Detail the Component Design**
-     - Describe how the component works internally (data structures, algorithms, APIs).
-     - Explain how it interacts with other components.
+     - Describe how the component works internally (data structures, algorithms, APIs) (Static as class defintion: internal state, functionality, and external APIs).
+     - Explain how it **interacts** with other components (Dynamic behavior).
      - Walk through **read and write flows** with examples.
 
   3. **Failure Handling**
@@ -888,11 +888,11 @@ Most real-world systems combine multiple storage types:
 
   4. **Design Alternatives**
      - Present **2–3 possible approaches**, list **pros and cons**, and justify your choice.
-     - Always tie back to system constraints (scale, latency, cost, complexity).
+     - Always tie back to **system constraints (scale, latency, cost, complexity)** which are principles to choose and justify the approaches. Consider and Discuss potential solutions and trade-offs between different options while keeping system constrains in mind
 
   5. **Performance Optimizations**: Reduce **latency** using:
        - **Caching** (client, app, DB, CDN).
-       - **Prefetching / Pre-calculation** (e.g., pre-computing heavy queries).
+       - **Prefetching / Pre-calculation** (e.g., pre-computing heavy queries). Customer behavior can be predicted, and heavy customer requests can be pre-calculated and saved using customer proxy pre-cache.
        - **Parallelization / Asynchronous processing** (async queues, background jobs)
        - Example: Predict customer behavior and pre-cache heavy queries via a proxy.
 
@@ -959,7 +959,7 @@ Most real-world systems combine multiple storage types:
 
 - **branching points** are mainly about *read vs write flows* for **Cache** and **Queue/Async**
 
-  - Rule of thumb for interviews: *Reads go cache-first; Writes go DB-first (with cache updated accordingly).*
+  - Rule of thumb for interviews: **Reads go cache-first; Writes go DB-first (with cache updated accordingly).**
   - **Reads** (most common):
 
     ``` arduino
@@ -969,10 +969,10 @@ Most real-world systems combine multiple storage types:
                   +-- [MISS] → go to DB → update cache → return
     ```
 
-  - **Writes** (update/create/delete):
-    - **Write-through**: write to DB *and* cache (synchronous, consistent).
-    - **Write-back**: write only to cache → flush to DB later (faster, but risky if cache crashes).
-    - **Write-around**: write directly to DB, cache updated on next read.
+  - **Writes** (update/create/delete): (Struture: Cache + DB)
+    - **Write-through**: write to DB *and* cache (synchronous, consistent). (through both Cache and DB)
+    - **Write-back**: write only to cache → flush to DB later (faster, but risky if cache crashes). (Write to Cache and back, later to flush to DB)
+    - **Write-around**: write directly to DB, cache updated on next read. (Write around Cache and directly to DB; later read to update Cache)
 
 - **Queue / Async Branching**
 
@@ -990,7 +990,7 @@ Most real-world systems combine multiple storage types:
                             +--> Queue → Worker(s) → DB / External Service
     ```
 
-- Rule of thumb: *If user doesn’t need the result immediately, branch into Queue.*
+- Rule of thumb: **If user doesn’t need the result immediately, branch into Queue.**
 - Examples:
   - Email/SMS notification → push to queue, worker sends later.
   - ML model scoring → async, return immediately, update later.
@@ -1017,12 +1017,12 @@ Most real-world systems combine multiple storage types:
 
 - So in interview diagrams:
   - Draw **Cache** branch on **read-heavy path** (with arrows for read/write strategies).
-  - Draw **Queue** branch on **write/async path** (non-blocking, background).
+  - Draw **Queue** branch on **write/async path** (**non-blocking**, background).
 
-## 6.0 **LLD Deep Dive Lenses**: **short checklists** for common components that interviewers often ask you to deep dive
+## 6.0 **LLD Deep Dive Lenses**: **short checklists** for common components to deep dive
 
 - **Cache Lens**
-  - **Where to cache?** (client, CDN, app server, DB, object storage)
+  - **Where to cache?** (different component/layer: client, CDN, app server, DB, object storage)
   - **Eviction policy?** (LRU, LFU, TTL-based)
   - **Consistency?**
     - Write-through / Write-around / Write-back
@@ -1033,7 +1033,7 @@ Most real-world systems combine multiple storage types:
   - **Trade-offs**: Faster reads vs. stale data / higher memory cost
 
 - **Queue / Async Processing Lens**
-  - **When to use?** Heavy writes, async jobs, decoupling producers/consumers
+  - **When to use?** Heavy writes, async jobs, decoupling producers/consumers (why???)
   - **Guarantees?** At-least-once vs. at-most-once vs. exactly-once delivery
   - **Ordering?** FIFO, priority queues, partitioned streams
   - **Failure handling**:
@@ -1080,21 +1080,8 @@ Most real-world systems combine multiple storage types:
     - If asked “How would you design the feed generator?” → use **Data Processing Lens**.
     - If asked “How would you handle caching for hot data?” → use **Cache Lens**
 
+## 6.1 Scale the design
 
-Dig deeper into details of two or three major/core components; <br>
-Pick or ask for; The interviewers' feedback should always guide us to what specific parts need focus, elaborate on, and further discussion.  <br>
-(self choose some core components which are critical in performance)  <br>
-
-Present different approaches, their pros and cons, and explain why we will prefer one approach over the other;  <br> 
-Consider and Discuss potential solutions and trade-offs between different options while keeping system constrains in mind; <br>
-
-How to handle XXX (a write or a read) request? If failed (such duplicated key), how to handle? <br>
-pull vs push <br>
-
-reduce latency by prefetch/pre-calculate, caching, parallelization/Asynchronous loading
-Customer behavior can be predicted, and heavy customer requests can be pre-calculated and saved using customer proxy pre-cache.
-
-## 6.1 Scale the design 
 **Purpose** <br>
 Identify, address, and mitigate bottlenecks and single point of failures using principles of scalable system design. <br>
 1. Is there any single point of failure? a standby replica; Discuss as many bottlenecks as possible and different approaches to mitigate them
