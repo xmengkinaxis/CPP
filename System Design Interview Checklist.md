@@ -46,6 +46,9 @@
 - [6 Low-Level Design (LLD) - Deep Dive into Core Components (Detailed Component Design)](#6-low-level-design-lld---deep-dive-into-core-components-detailed-component-design)
   - [6.0 **LLD Deep Dive Lenses**: **short checklists** for common components to deep dive](#60-lld-deep-dive-lenses-short-checklists-for-common-components-to-deep-dive)
   - [6.1 Scale the design](#61-scale-the-design)
+    - [6.1.1 Purpose](#611-purpose)
+    - [6.1.2 Approaches / Methods](#612-approaches--methods)
+    - [6.1.3 Interview Strategy](#613-interview-strategy)
   - [6.2 Partition and Replication (core of a distributed system, to scale out the system)](#62-partition-and-replication-core-of-a-distributed-system-to-scale-out-the-system)
     - [6.2.1 Replication](#621-replication)
     - [6.2.2 Partition](#622-partition)
@@ -1081,6 +1084,72 @@ Most real-world systems combine multiple storage types:
     - If asked “How would you handle caching for hot data?” → use **Cache Lens**
 
 ## 6.1 Scale the design
+
+Scaling ensures the system can handle increased **traffic, data, and complexity** while maintaining **performance, reliability, and availability**.
+
+### 6.1.1 Purpose
+
+- **Identify bottlenecks and single points of failure (SPOF).**
+  - Example: database master, single cache node, central message broker.
+  - Mitigation: standby replicas, failover, partitioning, distributed clusters.
+- **Mitigate bottlenecks with scalable design principles, given the constraints.**
+  - Always consider **trade-offs**: consistency vs availability, latency vs cost, complexity vs simplicity.
+
+### 6.1.2 Approaches / Methods
+
+- Load Balancing
+  - **Why**: Prevents dynamic overheating (spikes) or static overloading (long-term imbalance).
+  - **What to balance**:
+    - App servers.
+    - Databases (read replicas).
+    - Caches and queues.
+  - **How**: Use L4/L7 load balancers (e.g., Nginx, Envoy, ELB) with health checks and failover.
+
+- Caching
+  - **Where**:
+    - **Client-side** (store metadata, UI assets).
+    - **Server-side** (distributed caches like Redis, Memcached).
+    - **Edge** (CDN for static content).
+  - **What**: Different objects for different services (user profile, hot content, search results).
+  - **Benefits**: Reduce latency, offload DB, improve throughput.
+  - **Challenges**: Cache invalidation, stale data, write policies (write-through, write-back, write-around).
+
+- Partitioning (Sharding)
+  - **Why**: Horizontally scale data storage and processing.
+  - **How**:
+    - Range-based, hash-based, or directory-based partitioning.
+    - Split large tables/files into multiple shards.
+  - **Considerations**:
+    - Avoid uneven distribution (overload).
+    - Prevent hotspots (popular users/content all on one shard).
+    - Handle abusive users (rate limit per shard).
+  - **Tools**: Partition mapping service or consistent hashing.
+
+- Replication
+  - **Why**: Improve availability and read scalability.
+  - **How**: Master–slave (leader–follower) replication, multi-leader, or quorum-based replication.
+  - **Challenges**: Consistency (eventual vs strong), replication lag, failover complexity.
+  - **Use cases**:
+    - Reads go to replicas.
+    - Writes go to leader
+
+- Database Indexing
+  - **Why**: Speed up search and list operations.
+  - **How**:
+    - Build indexes on frequently queried fields.
+    - Use composite indexes for multi-column queries.
+  - **Trade-offs**:
+    - Pro: Faster reads.
+    - Con: Slower writes (inserts/updates/deletes)
+
+### 6.1.3 Interview Strategy
+
+When asked *“How would you scale this system?”*:
+
+1. Check for **single points of failure**.
+2. List **bottlenecks** (DB, cache, app servers, queues, storage, bandwidth).
+3. Propose **incremental fixes** (LB → cache → replication → partitioning → async workers).
+4. Discuss **trade-offs** at each step.
 
 **Purpose** <br>
 Identify, address, and mitigate bottlenecks and single point of failures using principles of scalable system design. <br>
