@@ -148,6 +148,12 @@
     - [**3. API Gateway (if multiple services)**](#3-api-gateway-if-multiple-services)
     - [✅ So, can API Gateway replace Web Server + WebSocket?](#-so-can-api-gateway-replace-web-server--websocket)
     - [🔑 In your note, I’d refine it like this:](#-in-your-note-id-refine-it-like-this)
+  - [Single Point of Failure (SPOF) vs Bottleneck](#single-point-of-failure-spof-vs-bottleneck)
+    - [🔹 **Single Point of Failure (SPOF)**](#-single-point-of-failure-spof)
+    - [🔹 **Bottleneck**](#-bottleneck)
+    - [🔹 **Key Differences**](#-key-differences-1)
+    - [🎯 System Design Interview Priority](#-system-design-interview-priority)
+    - [🔑 Rule of Thumb for Interviews](#-rule-of-thumb-for-interviews)
 
 
 <!-- TOC -->
@@ -1089,6 +1095,12 @@ Scaling ensures the system can handle increased **traffic, data, and complexity*
 
 ### 6.1.1 Purpose
 
+Identify, address, and mitigate single points of failure (SPOFs) and bottlenecks using principles of scalable system design.
+
+- Order of priority in interviews:
+  - First eliminate **SPOFs** (ensure availability and fault tolerance).
+  - Then address **bottlenecks** (improve performance and scalability).
+
 - **Identify bottlenecks and single points of failure (SPOF).**
   - Example: database master, single cache node, central message broker.
   - Mitigation: standby replicas, failover, partitioning, distributed clusters.
@@ -1097,7 +1109,17 @@ Scaling ensures the system can handle increased **traffic, data, and complexity*
 
 ### 6.1.2 Approaches / Methods
 
-- Load Balancing
+- **Single Point of Failure (SPOF)**
+  - Ask (How to identify): “If this component fails, does the whole system fail?”
+  - Fix: standby replicas, active-active load balancers, DB replication.
+  - Example: don’t rely on a single database, a single LB, or a single region.
+
+- **Bottlenecks**
+  - Ask: “Which component slows down or limits throughput as traffic grows?”
+  - Fix: scale horizontally, cache, shard, async queues.
+  - Example: DB hot spots, overloaded app servers, large fan-out queries.
+
+- Load Balancing: Distribute traffic across servers. Avoid dynamic hot spots and static overloaded nodes.
   - **Why**: Prevents dynamic overheating (spikes) or static overloading (long-term imbalance).
   - **What to balance**:
     - App servers.
@@ -1107,25 +1129,26 @@ Scaling ensures the system can handle increased **traffic, data, and complexity*
 
 - Caching
   - **Where**:
-    - **Client-side** (store metadata, UI assets).
-    - **Server-side** (distributed caches like Redis, Memcached).
+    - **Client-side** (store metadata locally, UI assets).
+    - **Server-side** cache objects at appropriate layers (service-level, DB-level) (distributed caches like Redis, Memcached).
     - **Edge** (CDN for static content).
   - **What**: Different objects for different services (user profile, hot content, search results).
-  - **Benefits**: Reduce latency, offload DB, improve throughput.
+  - **Benefits**: Reduce latency, offload DB/backend, improve throughput.
   - **Challenges**: Cache invalidation, stale data, write policies (write-through, write-back, write-around).
 
-- Partitioning (Sharding)
+- Partitioning (Sharding): Split data across multiple databases or storage nodes. Prevent uneven load distribution and hot partitions.
   - **Why**: Horizontally scale data storage and processing.
   - **How**:
     - Range-based, hash-based, or directory-based partitioning.
     - Split large tables/files into multiple shards.
   - **Considerations**:
     - Avoid uneven distribution (overload).
-    - Prevent hotspots (popular users/content all on one shard).
+    - Prevent hotspots (popular users/content all on one shard, overheated).
     - Handle abusive users (rate limit per shard).
+    - Requires careful shard key design.
   - **Tools**: Partition mapping service or consistent hashing.
 
-- Replication
+- Replication: Replicate data across servers/regions for high availability.
   - **Why**: Improve availability and read scalability.
   - **How**: Master–slave (leader–follower) replication, multi-leader, or quorum-based replication.
   - **Challenges**: Consistency (eventual vs strong), replication lag, failover complexity.
@@ -1138,7 +1161,7 @@ Scaling ensures the system can handle increased **traffic, data, and complexity*
   - **How**:
     - Build indexes on frequently queried fields.
     - Use composite indexes for multi-column queries.
-  - **Trade-offs**:
+  - **Trade-offs**: Balance write overhead vs read efficiency.
     - Pro: Faster reads.
     - Con: Slower writes (inserts/updates/deletes)
 
@@ -1150,20 +1173,6 @@ When asked *“How would you scale this system?”*:
 2. List **bottlenecks** (DB, cache, app servers, queues, storage, bandwidth).
 3. Propose **incremental fixes** (LB → cache → replication → partitioning → async workers).
 4. Discuss **trade-offs** at each step.
-
-**Purpose** <br>
-Identify, address, and mitigate bottlenecks and single point of failures using principles of scalable system design. <br>
-1. Is there any single point of failure? a standby replica; Discuss as many bottlenecks as possible and different approaches to mitigate them
-2. Identify and address bottlenecks, given the constraints.
-
-**Approaches/Methods** <br>
-1. Load balancer (avoid dynamic overheated or static overloaded) - What components need better load balancing? <br>
-2. Caching 
-   * client side - hold some meta data
-   * server side - How much and at which layer should we introduce cache to speed thing up? can cache different objects for different services
-3. Partition (horizontally scale, Database sharding); How to partition to distribute to multiple database (avoid uneven istribution [overloaded] and hotspot [overheated], user abuse behavior)
-4. Replication - Define how the data will be replicated across servers, to achieve high availability; need to deal with consistency <br>
-5. Index the database/tables to speed up list or search operations <br>
 
 ## 6.2 Partition and Replication (core of a distributed system, to scale out the system)
 To mitigate the single point of failure and the performance bottleneck:  <br>
@@ -2418,3 +2427,81 @@ The short answer is: **API Gateway can sometimes replace a web server, but not a
 ---
 
 👉 This way, it’s clear API Gateway **complements** web servers, not always replaces them.
+
+## Single Point of Failure (SPOF) vs Bottleneck
+Great question 👍 Bottlenecks and Single Points of Failure (SPOF) are **related but different concepts** in system design.
+
+---
+
+### 🔹 **Single Point of Failure (SPOF)**
+
+* **Definition:** A component that, if it fails, the entire system (or a critical function) goes down.
+* **Key idea:** It threatens **availability and reliability**.
+* **Examples:**
+
+  * Only one database server (if it crashes, no reads/writes can happen).
+  * A single load balancer without redundancy.
+  * A single power supply for the whole data center.
+
+---
+
+### 🔹 **Bottleneck**
+
+* **Definition:** A component that **limits the performance** (throughput or latency) of the entire system.
+* **Key idea:** It threatens **scalability and performance**.
+* **Examples:**
+
+  * A database that can’t handle more than 1,000 writes/sec, while the system needs 10,000.
+  * A single-threaded service in a distributed system.
+  * A network link capped at 100 Mbps while clients demand 1 Gbps.
+
+---
+
+### 🔹 **Key Differences**
+
+| Aspect           | Single Point of Failure (SPOF)         | Bottleneck                                          |
+| ---------------- | -------------------------------------- | --------------------------------------------------- |
+| **Focus**        | Reliability / Availability             | Performance / Scalability                           |
+| **Failure Mode** | If it goes down → system/service stops | If it slows down → system throughput is limited     |
+| **Solution**     | Redundancy, failover, replication      | Scaling out/in, partitioning, caching, optimization |
+| **Analogy**      | One weak link in a chain               | Narrowest pipe in a water system                    |
+
+---
+
+✅ **In interviews:** You usually want to check for **both**.
+
+* SPOFs → “Will my system stay up if X fails?”
+* Bottlenecks → “Will my system keep up if usage grows?”
+
+---
+Great question 👌 — and it actually depends a little on the **interviewer’s focus** and the **system you’re designing**. But generally:
+
+---
+
+### 🎯 System Design Interview Priority
+
+1. **First: SPOFs (availability & reliability)**
+
+   * If your system has a **single point of failure**, it doesn’t matter how fast it is — it can go down entirely.
+   * Interviewers usually expect you to show awareness of fault tolerance early, e.g.
+
+     * *“Our DB is a SPOF; let’s add replication.”*
+     * *“We need multiple load balancers in active-active.”*
+
+2. **Second: Bottlenecks (performance & scalability)**
+
+   * Once you’ve made the system resilient, you shift to **throughput and latency optimization**.
+   * Example:
+
+     * *“DB reads are a bottleneck; let’s introduce caching or read replicas.”*
+     * *“Uploads are slow; let’s shard storage by user ID.”*
+
+---
+
+### 🔑 Rule of Thumb for Interviews
+
+* **Reliability first, performance second.**
+* A good way to phrase it in interviews:
+
+  > “Let’s first ensure there’s no single point of failure so the system is resilient, then we can address performance bottlenecks as traffic grows.”
+
