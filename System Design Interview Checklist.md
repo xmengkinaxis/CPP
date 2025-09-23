@@ -49,7 +49,7 @@
     - [6.1.1 Purpose](#611-purpose)
     - [6.1.2 Approaches / Methods](#612-approaches--methods)
     - [6.1.3 Interview Strategy](#613-interview-strategy)
-  - [6.2 Partition and Replication (core of a distributed system, to scale out the system)](#62-partition-and-replication-core-of-a-distributed-system-to-scale-out-the-system)
+  - [6.2 Partition and Replication](#62-partition-and-replication)
     - [6.2.1 Replication](#621-replication)
     - [6.2.2 Partition](#622-partition)
       - [6.2.2.1 Horizontal Partitioning](#6221-horizontal-partitioning)
@@ -1174,11 +1174,34 @@ When asked *“How would you scale this system?”*:
 3. Propose **incremental fixes** (LB → cache → replication → partitioning → async workers).
 4. Discuss **trade-offs** at each step.
 
-## 6.2 Partition and Replication (core of a distributed system, to scale out the system)
-To mitigate the single point of failure and the performance bottleneck:  <br>
-1. single point of failure: backup (snapshot periodically and add logs) or failover (fault tolerance)
-2. bottleneck: improve load balancing and performance by creating duplicates/replication
-3. consistency: The new problem introduced by replication
+## 6.2 Partition and Replication
+
+- Why we need them
+  - Core of a distributed system, used to **scale out** and **increase availability**
+  - Partitioning and replication mitigate **single points of failure (SPOFs)** and **performance bottlenecks** in large-scale systems.
+
+- Handling Single Points of Failure
+  - **Backups**: periodic snapshots + logs for recovery.
+  - **Failover (fault tolerance)**: active-passive or active-active replicas to ensure continuity if one node fails.
+
+- Handling Bottlenecks
+  - **Partitioning (Sharding)**: splits data into smaller chunks across nodes → reduces overload and hotspots.
+  - **Replication**: duplicates data across nodes → enables parallel reads and improves availability.
+
+- New Challenge: Consistency; Replication introduces **consistency problems** (CAP theorem).
+  - **Strong consistency**: guaranteed correctness, but slower.
+  - **Eventual consistency**: higher availability and speed, but temporary data divergence possible.
+
+- **Partition vs. Replication**
+
+| Aspect                 | **Partitioning (Sharding)**                                                             | **Replication**                                                                 |
+| ---------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| **Definition**         | Splits data into subsets (shards) across multiple servers                               | Copies the same data across multiple servers                                    |
+| **Goal**               | Scale **write & storage** load (distribute data evenly)                                 | Scale **read throughput** and provide high availability                         |
+| **SPOF Mitigation**    | Not directly (if one shard fails, only part of data is lost)                            | Yes – if one replica fails, others can still serve traffic                      |
+| **Performance**        | Reduces bottlenecks by spreading load                                                   | Improves read latency and load balancing                                        |
+| **Consistency Impact** | Each shard is independent, no sync needed across shards (but adds complexity for joins) | Requires syncing data → introduces consistency challenges (eventual vs strong)  |
+| **Use Cases**          | Very large datasets, high write throughput (e.g., user data sharding by ID)             | Read-heavy workloads, high availability (e.g., product catalog, caching layers) |
 
 ### 6.2.1 Replication 
 **Replication:** the duplication of critical components or functions or data of a system, in the form of a backup or fail-safe (for fault tolerance) or to improve actual system performance (for load balancing); <br>
