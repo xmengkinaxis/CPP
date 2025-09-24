@@ -1251,12 +1251,12 @@ Organize into **sections** (definition → benefits → replication factor → r
   1. **Single Leader (Primary-Secondary / Master-Slave)**
      - All writes go to primary, then replicated to secondaries.
      - ✅ Simple, great for read-heavy workloads.
-     - ❌ Primary = bottleneck & single point of failure.
+     - ❌ Primary = bottleneck & single point of failure. Bad for write-heavy workloads.
 
   2. **Multi-Leader (Multi-Master)**
      - Multiple leaders accept writes, replicate to each other.
      - ✅ Better for geographically distributed writes.
-     - ❌ Conflict resolution needed (e.g., last-write-wins, custom merge logic).
+     - ❌ Conflict resolution needed (e.g., last-write-wins, custom merge logic). conflict when concurrent writes on the same data on the leaders.
 
   3. **Leaderless (Peer-to-Peer)**
      - Any node can accept reads/writes; replication managed with **quorums**.
@@ -1301,35 +1301,6 @@ Replication = keeping multiple copies of data across servers (often in different
 - **Trade-off**
   - Consistency vs Availability (CAP theorem).
   - Choose depending on workload (read vs write heavy, geo needs).
-
----
-
-**Replication:** the duplication of critical components or functions or data of a system, in the form of a backup or fail-safe (for fault tolerance) or to improve actual system performance (for load balancing); <br>
-refers to keeping multiple copies of the data at various nodes(preferably geographically distributed) to achieve availability, scalability, and performance; <br>
-the concepts of replication and partitioning go together; comes with the complexities, due to frequent changes, consistencies, concurrent writes, and fault tolerances<br>
-* make multiple copies of data and store them on different servers. sharing information must ensure consistency between redundant resources by synchronously replicate data
-* remove the single points of failures and provide backups in a crisis 
-* It improves the availability, durability, reliability of data across the system 
-* It can achieve load balance and fault tolerance. e.g. Primary and secondary, primary-replica relationship
-* Keeping data geographically closer to the consumers of data to improve performance by reducing latency
-* Tolerate failure in case some parts of the system fail.
-* Scale the number of machines that can serve read queries.
-* Replication factor: the number of copies of data, e.g. usually 3; for four copies: local copy to protect against server rank and drive failure, second copy in the other data center within the same region, and the third copy in a data center in different region to protect against regional disasters 
-
-**Replication types** (need a trade-off between data consistency and availability) (dimension #1 timing)
-* **Synchronous:** success after the primary node receive the acknowledgment from all secondary nodes; 
-  * replicate within a storage cluster
-  * pro: all secondary nodes are update to date; 
-  * con: high latency if a secondary crashed without any acknowledge
-* **Asynchronous:** report success after primary node updating itself; 
-  * replicate across data centers and regions
-  * pro: the primary can continue its work even if all secondary node are down; 
-  * con: written data might be lost if the primary node is down
-
-**Data replication models** (dimension #2 leadership)
-* Single leader or primary-secondary (master-slave) replication; appropriate for read-heavy and read resilient, but not for write-heavy; primary is the bottleneck and the single point of failure; 
-* Multi-leader (multi-master) replication;multiple servers can write data and are responsible for replicating data to each other. conflict when concurrent writes on the same data on the leaders; avoid conflicts, last-write-wins, or custom logic to handle conflicts
-* Peer-to-peer or leaderless replication; all servers can both read and write data and are responsible for replicating data to other servers. quorums to solve the write-write inconsistency; Pro: more flexibility and improve performance for write-heavy workloads; Con: more complex to setup and manage;
 
 ### 6.2.2 Partition
 **Partitioning (Horizontal or Vertical):** the technique to break a big Database into many smaller parts, and the process of distributing/splitting up a database/table across a set of servers. So that each database can only manage a subset of the data. <br> 
