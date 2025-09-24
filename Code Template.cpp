@@ -26,7 +26,9 @@ using namespace std;
 #define MINIMUM_POSSIBLE_ANSWER 1 
 #define MAXIMUM_POSSIBLE_ANSWER 1000 
 #define BASE_CASE true
-#define ITERATE_OVER_INPUT 1 : 1
+#define ITERATE_OVER_INPUT true
+#define STATE int
+#define OTHERS ...
 
 struct ListNode {
 	int val; 
@@ -272,8 +274,11 @@ string fnString(vector<char>& arr) {
 
 /* fast and slow pointers; a case of two pointers on the same data structure with the same direction, but moving speeds are different
 while-loop condition: fast && fast->next (1st and 2nd conditions: odd => 2nd is false; even => 1st is false) 
-odd number of items: fast is valid, but fast->next is nullptr, slow points to the exact middle node of list
-even number of items: fast is nullptr, and slow points to the second middle (right-middle) node 
+	odd number of items: fast is valid, but fast->next is nullptr, slow points to the exact middle node of list
+	even number of items: fast is nullptr, and slow points to the second middle (right-middle) node 
+If there is a loop in the data structure like linked list or array (287. Find the Duplicate Number):
+	After the while-loop, restart fast from the head or begin again, and move fast and slow at the same speed. 
+	When meeting again, the one is the first of the loop. Because in the first while-loop, fast finishes A+B+A+B, while slow finishes A+B. 
 283. Move Zeroes; https://leetcode.com/problems/move-zeroes/
 234. Palindrome Linked List; https://leetcode.com/problems/palindrome-linked-list/; need to distinguish odd or even numbers
 287. Find the Duplicate Number; https://leetcode.com/problems/find-the-duplicate-number/
@@ -1304,10 +1309,45 @@ sliding
 
 
 /* Cyclic Sorting
+	e.g. like Find Missing Number, Find All Duplicates, Find Duplicate Number, Find Disappeared Numbers etc.
+	Cyclic sort places each number num at index num-1.
+	While swapping, if we encounter that the target index already has the same number, that’s the duplicate.
+Cyclic Sort is a pattern useful when:
+	The array contains numbers in a known range (e.g., 1..n or 0..n).
+	The task involves finding duplicates, missing numbers, or placing numbers in the correct position.
+The core idea:
+	Each number has a "correct index".
+		For numbers in range 1..n → correct index = num - 1.
+		For numbers in range 0..n → correct index = num.
+	We try to place each number at its correct index by swapping.
+	After the array is rearranged, we can easily detect duplicates or missing numbers.
 41. First Missing Positive; https://leetcode.com/problems/first-missing-positive/
 	nums[i] - 1 == i || nums[nums[i] - 1] == nums[i]
 287. Find the Duplicate Number; https://leetcode.com/problems/find-the-duplicate-number/
+        const int size = nums.size(); 
+        for (int i = 0; i < size; ) {
+            if (nums[i] - 1 != i && nums[nums[i] - 1] != nums[i]) {
+                swap(nums[i], nums[nums[i] - 1]);
+            } else {
+                ++i;
+            }
+        }
+268. Find Missing Number
+442. Find all duplicates
 */
+// Cyclic Sort template for numbers in the range [1..n]
+void cyclicSort(vector<int>& nums) {
+    int i = 0;
+    while (i < nums.size()) {
+        int correctIdx = nums[i] - 1;  // correct position for nums[i]
+        if (nums[i] != nums[correctIdx]) {
+            swap(nums[i], nums[correctIdx]);  // put it in the right place
+        } else {
+            i++;
+        }
+    }
+}
+
 
 
 /* 2D array

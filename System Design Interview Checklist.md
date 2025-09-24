@@ -1196,7 +1196,7 @@ When asked *“How would you scale this system?”*:
 
 | Aspect                 | **Partitioning (Sharding)**                                                             | **Replication**                                                                 |
 | ---------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| **Definition**         | Splits data into subsets (shards) across multiple servers                               | Copies the same data across multiple servers                                    |
+| **Definition**         | **Splits** data into subsets (shards) across multiple servers                           | **Copies** the same data across multiple servers                                    |
 | **Goal**               | Scale **write & storage** load (distribute data evenly)                                 | Scale **read throughput** and provide high availability                         |
 | **SPOF Mitigation**    | Not directly (if one shard fails, only part of data is lost)                            | Yes – if one replica fails, others can still serve traffic                      |
 | **Performance**        | Reduces bottlenecks by spreading load                                                   | Improves read latency and load balancing                                        |
