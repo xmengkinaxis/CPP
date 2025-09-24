@@ -52,7 +52,6 @@
   - [6.2 Partition and Replication](#62-partition-and-replication)
     - [6.2.1 Replication](#621-replication)
     - [6.2.2 Partition](#622-partition)
-- [Partitioning (System Design)](#partitioning-system-design)
       - [6.2.2.1 Horizontal Partitioning](#6221-horizontal-partitioning)
       - [6.2.2.2 Vertical Partitioning](#6222-vertical-partitioning)
   - [6.3 Partitioning VS Sharding](#63-partitioning-vs-sharding)
@@ -1307,11 +1306,7 @@ Replication = keeping multiple copies of data across servers (often in different
 
 Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorganize** your note on Partition so it’s interview-ready, clear, and concise:
 
----
-
-# Partitioning (System Design)
-
-- Logic
+- Note Logic
   - what → why → benefits → how → notes
   - Definition → Benefits → Limitations → Extra notes
 
@@ -1344,13 +1339,6 @@ Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorgan
     - *Replication* = multiple copies of the same data for reliability. For fault tolerance and high availability.
     - Together, they balance **scale** and **fault tolerance**.
   - Partitioning relational data typically means breaking tables **horizontally (by rows)** or **vertically (by columns)**.
-
----
-
-**Partitioning (Horizontal or Vertical):** the technique to break a big Database into many smaller parts, and the process of distributing/splitting up a database/table across a set of servers. So that each database can only manage a subset of the data. <br> 
-**Benefit** It is to improve the manageability, performance, scalability, availability (fault tolerance, non-availability of one type of data will not affect others), and load balancing of an application; access only a smaller fraction of data to run a query faster as there is less data to scan; reduce the overall response time <br>
-Partitioning of relational data usually refers to decomposing your tables either row-wise (horizontally) or column-wise (vertically). <br>
-for higher efficiency and lower latencies <br>
 
 #### 6.2.2.1 Horizontal Partitioning
 **Scaling horizontally (or scaling out)** means adding more instances of an application or service to share the load. conversely, scaling vertically (or scaling up) is about adding more resources, like CPU power or memory, to an instance. <br>
