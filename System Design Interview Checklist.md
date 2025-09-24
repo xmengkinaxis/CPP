@@ -52,6 +52,7 @@
   - [6.2 Partition and Replication](#62-partition-and-replication)
     - [6.2.1 Replication](#621-replication)
     - [6.2.2 Partition](#622-partition)
+- [Partitioning (System Design)](#partitioning-system-design)
       - [6.2.2.1 Horizontal Partitioning](#6221-horizontal-partitioning)
       - [6.2.2.2 Vertical Partitioning](#6222-vertical-partitioning)
   - [6.3 Partitioning VS Sharding](#63-partitioning-vs-sharding)
@@ -1303,6 +1304,49 @@ Replication = keeping multiple copies of data across servers (often in different
   - Choose depending on workload (read vs write heavy, geo needs).
 
 ### 6.2.2 Partition
+
+Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorganize** your note on Partition so it’s interview-ready, clear, and concise:
+
+---
+
+# Partitioning (System Design)
+
+- Logic
+  - what → why → benefits → how → notes
+  - Definition → Benefits → Limitations → Extra notes
+
+- **Definition**
+  - Partitioning = splitting a large database or table into **smaller, more manageable parts**, and **distributing** them across multiple servers.
+    - Each partition stores only a **subset of the data**, reducing the load per server.
+    - Two main approaches: **Horizontal** (rows) and **Vertical** (columns).
+
+- **Goals / Benefits**
+  - **Scalability**: scale out and supports growth by distributing data across multiple servers.
+  - **Performance**: queries scan less data → lower latency.
+  - **Availability & Fault Tolerance**: failure in one partition does not impact others. No affect access to other partitions. 
+  - **Manageability**: smaller, simpler datasets are easier to back up, restore, and maintain.
+  - **Load Balancing**: spreads workload more evenly across servers for higher efficiency and lower latency.
+
+- **Key Idea**
+  - Partitioning enables **parallelism** — multiple servers can serve requests **simultaneously**.
+  - Works best when partition boundaries are **well chosen** (to avoid hotspots and skew).
+
+- **Limitations / Trade-offs**: low (Server and Database) to high (applications and queries, close to clients)
+  - **Data distribution**: Uneven partitioning (hot spots) can cause performance bottlenecks.
+  - **Rebalancing overhead**: Adding/removing servers requires redistributing data.
+  - **Application logic**: Sometimes apps must be aware of the partitioning strategy.
+  - **Complex queries**: Joins or aggregations across partitions are slower and more complex.
+  - **Consistency**: Maintaining global constraints (e.g., unique keys) is harder across partitions.
+
+- **Note**
+  - Partitioning is often combined with **Replication**:
+    - *partitioning* = splitting data into disjoint subsets for scale. To scale out.
+    - *Replication* = multiple copies of the same data for reliability. For fault tolerance and high availability.
+    - Together, they balance **scale** and **fault tolerance**.
+  - Partitioning relational data typically means breaking tables **horizontally (by rows)** or **vertically (by columns)**.
+
+---
+
 **Partitioning (Horizontal or Vertical):** the technique to break a big Database into many smaller parts, and the process of distributing/splitting up a database/table across a set of servers. So that each database can only manage a subset of the data. <br> 
 **Benefit** It is to improve the manageability, performance, scalability, availability (fault tolerance, non-availability of one type of data will not affect others), and load balancing of an application; access only a smaller fraction of data to run a query faster as there is less data to scan; reduce the overall response time <br>
 Partitioning of relational data usually refers to decomposing your tables either row-wise (horizontally) or column-wise (vertically). <br>
