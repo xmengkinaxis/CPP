@@ -54,6 +54,7 @@
     - [6.2.2 Partition](#622-partition)
       - [6.2.2.1 Horizontal Partitioning (Sharding)](#6221-horizontal-partitioning-sharding)
       - [6.2.2.2 Vertical Partitioning](#6222-vertical-partitioning)
+      - [6.2.2.3 Horizontal vs Vertical Partitioning](#6223-horizontal-vs-vertical-partitioning)
   - [6.3 Partitioning VS Sharding](#63-partitioning-vs-sharding)
     - [Partitioning](#partitioning)
     - [Sharding](#sharding)
@@ -1359,7 +1360,7 @@ Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorgan
 - **Methods**
   1. **Key-based (Hash) Partitioning**
      - Hash a key attribute → assign row to a partition.
-     - ✅ Pros: Even/random distribution, minimizes hot spots, easier to rebalance with *consistent hashing*, supports heterogeneous clusters.
+     - ✅ Pros: Even/random distribution, minimizes hot spots, easier to rebalance with *consistent hashing* after adding or removing nodes, supports heterogeneous clusters.
      - ❌ Cons: Queries spanning multiple shards require aggregation (scatter-gather).
 
   2. **Range-based Partitioning**
@@ -1384,8 +1385,8 @@ Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorgan
   - **Composite partitioning**: mix of above methods.
 
 - **Rebalancing Triggers**
-  - **Skewed distribution**: some partitions have much more data than others.
-  - **Hot spots**: a partition receives disproportionate query traffic.
+  - **Skewed distribution**: some partitions have much more data than others. The distribution is not uniform (not evenly distributed) [overloaded]
+  - **Hot spots**: a partition receives disproportionate query traffic. (hotspot) [overheated]
 
 - **Rebalancing Methods**
   - Add new partitions and redistribute data.
@@ -1426,42 +1427,70 @@ Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorgan
   - **Cross-shard queries** = higher latency (scatter-gather).
   - **Composite schemes** (e.g., Range + Hash) often used in practice.
 
-
-
-**Scaling horizontally (or scaling out)** means adding more instances of an application or service to share the load. conversely, scaling vertically (or scaling up) is about adding more resources, like CPU power or memory, to an instance. <br>
-
-**Pro:** less read and write traffic, less replication, and more cache hit. Allow write in parallel with increase throughput. Index size is also reduced, which generally improve performance with faster queries. 
-
-**Method:** 
- Horizontal partitioning (range based partitioning, Data Sharding) put different rows into different tables: 
-   * Pros: statically in a predictable manner; 
-   * Cons: unbalanced servers or hotspots, higher latencies, and unavailability)
-  
-e.g. Key-based (Hash) sharding; Range-based Sharding; Directory-Based Sharding (Dynamic Sharding)(by using a lookup table if the number is fixed) <br>
-   * Hash-based Partitioning -> overloaded partition -> Consistent Hashing; 
-     * Pros:evenly and randomly distribution, minimize hotspot, speed up the rebalancing process after adding or removing nodes, easier for clusters with heterogeneous machines; 
-     * Cons: need to ask all and then aggregate the results
-   * Range, list, hash partitioning; and combined partitioning (partition, and sub-partition); (partition based on the maximum capacity of the server); 
-     * Pro: static and a predictable manner; 
-     * Con: unbalanced
-   * Directory Based Partitioning: a loosely coupled approach; the lookup/dictionary server that holds the mappings between each tuple key to its DB server. 
-     * Pros: changing without an impact on the application
-
-**Criteria:** (hash, range, RR, composite)
-* Key or Hash-based partitioning; hash some key attributes of the storing entities to the partition number; consistent hashing to create a uniform distribution/allocation
-* List partitioning; each partition is assigned a list of (key) values (sometime, similar to a range based partitioning, sharding)
-* Round-robin partitioning
-* Composite partitioning; any combination of the above partitioning schemes to devise a new one
-
-**Rebalancing Reasons:** <br>
-a. the distribution is not uniform (not evenly distributed)[overloaded] <br>
-b. a lot of load on a partition (hotspot)[overheated] <br>
-
-**Method: **<br>
-a. Create more DB partitions; <br>
-b. Rebalance existing partitions <br>
+- Prioritization – interviewers usually care most about:
+  - *When to shard?* (when single DB is bottleneck)
+  - *How to shard?* (range/hash/directory)
+  - *Problems introduced?* (rebalancing, hotspots, cross-shard queries, joins)
+  - *Solutions to problems?* (consistent hashing, lookup service, denormalization, query routing)
 
 #### 6.2.2.2 Vertical Partitioning
+
+- Structure: **definition → benefits → challenges → design considerations**, which matches how interviewers expect you to structure the explanation.
+
+- Definition
+  - Vertical partitioning splits a database by **columns** (or by functional grouping of features).
+  - Related attributes are stored together on dedicated servers.
+  - This reduces table width and allows more focused queries.
+
+- Benefits
+  - **Straightforward** to implement, with relatively low impact on the application.
+  - **Smaller datasets per DB** → easier to fit into memory/cache.
+  - **Parallel writes** across partitions can improve throughput.
+  - **Federation (functional partitioning):** splitting by business function reduces replication lag, balances load, and isolates workloads (e.g., separate DBs for users, orders, analytics).
+
+- Challenges
+  - **Complex joins & denormalization:** queries requiring data across partitions are slower and may cause consistency issues.
+  - **Referential integrity:** foreign keys across partitions are difficult to enforce; must often be handled in application logic.
+  - **Application changes:** logic must know which partition to query or write to.
+  - **Rebalancing issues:**
+    - Uneven load (overloaded/underloaded partitions).
+    - Hotspots (too much activity concentrated on a partition).
+
+- Design Considerations
+  - **Logical vs Physical Partitions:**
+    - Maintain more logical partitions than physical servers for flexibility.
+    - Use a configuration layer to map logical partitions to physical servers so they can be moved as load grows.
+  - **Placement strategies:**
+    - *Co-resident partitioning:* keep partitions on the same machine to reduce index size and I/O.
+    - *Remote partitioning:* spread across machines to leverage more RAM, disk I/O, and network capacity.
+  - **Data movement & balancing:**
+    - Minimize re-sharding cost with **consistent hashing** or metadata lookup services.
+  - **Load distribution:** aim for even spread to avoid hotspots.
+
+---
+
+- **Horizontal vs Vertical Partitioning**
+
+| Aspect          | **Horizontal Partitioning (Sharding)**                                                                                                                                | **Vertical Partitioning**                                                                                                                                                                                 |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Definition**  | Splits a table by **rows** across multiple servers (e.g., users A–M on one DB, N–Z on another).                                                                       | Splits a table by **columns/features** (e.g., user profile fields on one DB, user preferences on another).                                                                                                |
+| **Goal**        | Distribute data volume and queries evenly across servers to scale out.                                                                                                | Reduce table width, isolate workloads by feature, and improve manageability.                                                                                                                              |
+| **Benefits**    | - Better scalability for large datasets. <br> - Allows parallel writes/reads across servers. <br> - Smaller index per shard → faster queries.                         | - Simple to implement initially. <br> - Smaller DB per partition → easier caching and fits in memory. <br> - Functional isolation (e.g., separate DBs by business module).                                |
+| **Challenges**  | - Uneven distribution can cause hotspots. <br> - Rebalancing data when adding/removing servers is complex. <br> - Queries spanning shards require scatter-gather.     | - Cross-partition joins are expensive and complex. <br> - Referential integrity (foreign keys) often must be enforced at app level. <br> - Application logic needs awareness of which partition to query. |
+| **When to Use** | - Extremely large datasets that cannot fit in a single DB. <br> - High throughput systems with heavy writes/reads. <br> - User-based partitioning (e.g., by user ID). | - Applications with clear functional boundaries (e.g., users, payments, logs). <br> - Reducing contention on wide tables. <br> - When scaling out by business domain is more natural than by row.         |
+| **Example**     | Twitter user timeline: users are partitioned by ID hash across shards.                                                                                                | E-commerce: orders DB separate from payments DB.                                                                                                                                                          |
+
+---
+
+- takeaway:
+  - **Horizontal = scaling out rows** (good for *large datasets & parallelism*).
+  - **Vertical = scaling out features/functions** (good for *isolation & modularity*).
+
+---
+
+Would you like me to also **merge this table into your Partition note** (so that Partition, Horizontal, and Vertical are in one structured place)? That way you’ll have a single clean reference.
+
+
 Vertical partitioning: manually partition; divide data to store tables (divide table to store its columns) related to a specific feature/need in their own servers: 
 * Pro: straightforward to implement and low impact on application; 
 * Con: additional growth->further partition, joining two tables in two separate Db can cause performance and consistency issues;  <br>
@@ -1483,7 +1512,23 @@ How to map a particular piece of data to its node? How to move and minimize data
 
 Other consideration: evenly distribute the load, no hotspot
 
+#### 6.2.2.3 Horizontal vs Vertical Partitioning
+
+| Aspect          | **Horizontal Partitioning (Sharding)**                                                                                                                                | **Vertical Partitioning**                                                                                                                                                                                 |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Definition**  | Splits a table by **rows** across multiple servers (e.g., users A–M on one DB, N–Z on another).                                                                       | Splits a table by **columns/features** (e.g., user profile fields on one DB, user preferences on another).                                                                                                |
+| **Goal**        | Distribute data volume and queries evenly across servers to scale out.                                                                                                | Reduce table width, isolate workloads by feature, and improve manageability.                                                                                                                              |
+| **Benefits**    | - Better scalability for large datasets. <br> - Allows parallel writes/reads across servers. <br> - Smaller index per shard → faster queries.                         | - Simple to implement initially. <br> - Smaller DB per partition → easier caching and fits in memory. <br> - Functional isolation (e.g., separate DBs by business module).                                |
+| **Challenges**  | - Uneven distribution can cause hotspots. <br> - Rebalancing data when adding/removing servers is complex. <br> - Queries spanning shards require scatter-gather.     | - Cross-partition joins are expensive and complex. <br> - Referential integrity (foreign keys) often must be enforced at app level. <br> - Application logic needs awareness of which partition to query. |
+| **When to Use** | - Extremely large datasets that cannot fit in a single DB. <br> - High throughput systems with heavy writes/reads. <br> - User-based partitioning (e.g., by user ID). | - Applications with clear functional boundaries (e.g., users, payments, logs). <br> - Reducing contention on wide tables. <br> - When scaling out by business domain is more natural than by row.         |
+| **Example**     | Twitter user timeline: users are partitioned by ID hash across shards.                                                                                                | E-commerce: orders DB separate from payments DB.                                                                                                                                                          |
+
+- Quick takeaway:
+  - **Horizontal = scaling out rows** (good for *large datasets & parallelism*).
+  - **Vertical = scaling out features/functions** (good for *isolation & modularity*).
+
 ## 6.3 Partitioning VS Sharding
+
 Great question — these two are often confused because they look similar. Let me break it down clearly:
 
 ---
