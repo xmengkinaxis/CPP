@@ -52,7 +52,7 @@
   - [6.2 Partition and Replication](#62-partition-and-replication)
     - [6.2.1 Replication](#621-replication)
     - [6.2.2 Partition](#622-partition)
-      - [6.2.2.1 Horizontal Partitioning](#6221-horizontal-partitioning)
+      - [6.2.2.1 Horizontal Partitioning (Sharding)](#6221-horizontal-partitioning-sharding)
       - [6.2.2.2 Vertical Partitioning](#6222-vertical-partitioning)
   - [6.3 Partitioning VS Sharding](#63-partitioning-vs-sharding)
     - [Partitioning](#partitioning)
@@ -1340,7 +1340,94 @@ Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorgan
     - Together, they balance **scale** and **fault tolerance**.
   - Partitioning relational data typically means breaking tables **horizontally (by rows)** or **vertically (by columns)**.
 
-#### 6.2.2.1 Horizontal Partitioning
+#### 6.2.2.1 Horizontal Partitioning (Sharding)
+
+- Note structure: Definition → Benefits → Methods → Criteria → Rebalancing → Limitations/Trade-offs
+
+- **Definition**
+  - Horizontal partitioning (also called **sharding**) splits a table by rows and distributes them across multiple tables or databases. Each shard contains a subset of the rows, but all shards share the same schema.
+  - It is a form of **scaling horizontally (scaling out)**: adding more database instances to share the load.
+  - By contrast, **scaling vertically (scaling up)** means adding more CPU, memory, or disk to a single instance.
+
+- **Benefits**
+  - Reduces read and write traffic per server.
+  - Improves cache hit rate (since each shard holds less data).
+  - Allows parallel writes, increasing overall throughput.
+  - Smaller indexes per shard → faster queries.
+  - Supports scaling out with cheaper commodity hardware.
+
+- **Methods**
+  1. **Key-based (Hash) Partitioning**
+     - Hash a key attribute → assign row to a partition.
+     - ✅ Pros: Even/random distribution, minimizes hot spots, easier to rebalance with *consistent hashing*, supports heterogeneous clusters.
+     - ❌ Cons: Queries spanning multiple shards require aggregation (scatter-gather).
+
+  2. **Range-based Partitioning**
+     - Rows are assigned to partitions based on a key range (e.g., `user_id 1–1000 → shard A`).
+     - ✅ Pros: Simple, predictable, good locality for range queries.
+     - ❌ Cons: Risk of unbalanced load (hot ranges), requires manual rebalance.
+
+  3. **Directory-based Partitioning**
+     - A lookup table/directory stores the mapping of keys → shards.
+     - ✅ Pros: Flexible, partitioning logic can change without affecting applications.
+     - ❌ Cons: Directory is a **single point of failure** and extra indirection adds latency.
+
+  4. **Composite / Hybrid Partitioning**
+     - Combines multiple strategies (e.g., range + hash, partition + sub-partition).
+     - Useful when one scheme alone cannot balance load effectively.
+
+- **Partitioning Criteria**
+  - **Hash partitioning**: hash(key) → partition.
+  - **Range partitioning**: rows fall into defined ranges.
+  - **List partitioning**: explicit sets of key values per partition.
+  - **Round-robin partitioning**: rows distributed cyclically.
+  - **Composite partitioning**: mix of above methods.
+
+- **Rebalancing Triggers**
+  - **Skewed distribution**: some partitions have much more data than others.
+  - **Hot spots**: a partition receives disproportionate query traffic.
+
+- **Rebalancing Methods**
+  - Add new partitions and redistribute data.
+  - Rebalance existing partitions (e.g., via consistent hashing).
+
+- **Limitations / Trade-offs**
+  - Cross-shard joins and aggregations are complex and slow.
+  - Uneven workload distribution still possible if partitioning keys are poorly chosen.
+  - Rebalancing data is costly and can cause downtime or high latency.
+  - Directory-based sharding adds a dependency and risk of failure.
+
+- Horizontal Partitioning (Sharding) – Quick Reference
+
+```
+                 ┌───────────────────────────┐
+                 │     Horizontal Partition   │
+                 │       (Sharding)           │
+                 └───────────────────────────┘
+                          │
+        ┌─────────────────┼──────────────────┐
+        │                 │                  │
+        ▼                 ▼                  ▼
+ ┌────────────┐    ┌───────────────┐    ┌─────────────────┐
+ │ Hash-Based │    │ Range-Based   │    │ Directory-Based  │
+ └────────────┘    └───────────────┘    └─────────────────┘
+   - Even/random      - Predictable,       - Flexible
+     distribution       simple ranges        (lookup table)
+   - Minimizes hot    - Good for range     - Change logic
+     spots              queries              w/o app change
+   - Needs scatter-   - Risk of hot spots  - Single point of
+     gather for         & skewed load        failure risk
+     cross-shard       - Manual rebal.     - Extra latency
+     queries
+```
+
+- **Trade-offs & Notes**
+  - **Rebalancing** needed if data distribution becomes uneven or hot spots appear.
+  - **Cross-shard queries** = higher latency (scatter-gather).
+  - **Composite schemes** (e.g., Range + Hash) often used in practice.
+
+
+
 **Scaling horizontally (or scaling out)** means adding more instances of an application or service to share the load. conversely, scaling vertically (or scaling up) is about adding more resources, like CPU power or memory, to an instance. <br>
 
 **Pro:** less read and write traffic, less replication, and more cache hit. Allow write in parallel with increase throughput. Index size is also reduced, which generally improve performance with faster queries. 
