@@ -61,11 +61,15 @@
     - [6.3.3 Key Differences (Quick Recall)](#633-key-differences-quick-recall)
     - [6.3.4 Comparison: Partitioning vs. Sharding](#634-comparison-partitioning-vs-sharding)
 - [7 Evaluation and Optimization](#7-evaluation-and-optimization)
+- [7. Evaluation and Optimization](#7-evaluation-and-optimization-1)
   - [7.1 Evaluation](#71-evaluation)
   - [7.2 Security and Permissions](#72-security-and-permissions)
-  - [7.3 Analytics - users behavior](#73-analytics---users-behavior)
-  - [7.4 Performance monitor - system performance (telemetry)](#74-performance-monitor---system-performance-telemetry)
-  - [7.5 Identify and solve bottlenecks](#75-identify-and-solve-bottlenecks)
+  - [7.3 Analytics (User Behavior)](#73-analytics-user-behavior)
+  - [7.4 Monitoring and Telemetry](#74-monitoring-and-telemetry)
+  - [7.5 Bottleneck Identification and Mitigation](#75-bottleneck-identification-and-mitigation)
+  - [7.6 **Sample Wrap-up Answer (concise, interview-style):** 2–3 minute spoken version](#76-sample-wrap-up-answer-concise-interview-style-23-minute-spoken-version)
+  - [7.7 **1-Minute Wrap-up Answer:**](#77-1-minute-wrap-up-answer)
+  - [7.8 Words in Interview](#78-words-in-interview)
 - [8 Trade-off](#8-trade-off)
   - [8.1 Common Trade-off](#81-common-trade-off)
   - [8.2 Partition](#82-partition)
@@ -1556,60 +1560,96 @@ Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorgan
   - In practice, teams often start with partitioning, and move to sharding only when scale demands it.
 
 # 7 Evaluation and Optimization
+Got it ✅ I reorganized, corrected grammar, removed redundancy, and improved flow/clarity of your section on **Evaluation and Optimization**. I also made the structure more consistent so it feels like a clean note you could reuse in interviews.
 
-Compare your design to the requirements, and acknowledge any trade-offs made and improving aspects of design 
+Here’s the revised version:
 
-## 7.1 Evaluation 
-* Goal: Evaluate how the system fulfill the non-functional requirements, 
-* What to evaluate: 
-  * Availability
-  * Scalability
-  * Reliability
-  * Consistency
-  * Fraud detection
-  * anything in non-functional requirements
-* How to evaluate: 
-  * Evaluate each component from front to end, including load balancer, CDN, web servers, application servers, database, blob storage, Cache
-  * Evaluate each non-functional requirement
+---
+
+# 7. Evaluation and Optimization
+
+After finishing the design, compare it against the requirements and evaluate trade-offs. The goal is to identify gaps, acknowledge compromises, and suggest improvements.
+
+## 7.1 Evaluation
+
+- **Goal:** Ensure the system meets non-functional requirements.
+- **What to evaluate:**
+  - Availability
+  - Scalability
+  - Reliability
+  - Consistency
+  - Security & privacy
+  - Fraud detection
+  - Other non-functional requirements
+- **How to evaluate:**
+  - Review each component end-to-end (load balancer, CDN, web servers, application servers, databases, blob storage, caches).
+  - Check how each component contributes to non-functional goals.
 
 ## 7.2 Security and Permissions
-1. Privacy  
-2. Security (certification and authentication)
-3. Throttle (API rate limiting) (against abusive behaviors, misbehavior, spikiness in traffic) 
-	* Rate Limiting is limiting the amount of operation that can be done in a limited amount of time. e.g. security ramification, performance ramification. 
-	* It is a defensive measure for services, protect the system from flooding with the traffic, for denial of service (DOS)
-	* types: Hard throttling (hard limit, discard when exceed), Soft throttling (can exceed by a certain percentage), Elastic or dynamic throttling (can cross the predefined limit if the system has excess resources available)
-4. International Law (e.g. restriction on video contents)
 
-## 7.3 Analytics - users behavior 
-Purpose: Get some insight on how users use the system 
-a. Collect information on user behaviors from where ???
-b. Analyze
-c. Predict or forecast
-d. Adjust based on the user's usage/login pattern (when and frequency)
+- **Privacy:** Protect user data.
+- **Security:** Authentication, authorization, encryption, certificates.
+- **Rate limiting / Throttling:** Prevent abuse, DoS, and traffic spikes.
+  - Hard throttling → strict limit, excess requests dropped.
+  - Soft throttling → small tolerance above limit.
+  - Elastic throttling → dynamic limit if resources allow.
+- **Compliance:** Handle international laws and regulations (e.g., content restrictions, GDPR).
 
-logging request and response ???
+## 7.3 Analytics (User Behavior)
 
-## 7.4 Performance monitor - system performance (telemetry)
-Performance: low latency (for single request) and high throughput (most/overall requests) for the clients; <br>
-Purpose: Get an instant insight on how our system is doing (get an understanding of the performance of the service); address latency and throughput; 
-Is the visibility to system health, system performance, and general statics; gather meaningful matrix (metrics/counters) and have tools to monitor these matrix;
-a proper monitoring and logging system. 
+- **Purpose:** Gain insight into how users interact with the system.
+  1. Collect logs and metrics (requests, responses, session data).
+  2. Analyze usage patterns (time of day, frequency, geography).
+  3. Predict trends (e.g., load forecasting, feature adoption).
+  4. Adapt system features or optimizations based on usage.
 
-* Collect data constantly - which component do so?
-How many are the actual daily active users? user locations, date and time of their access
-When is the daily peak?
-How is the average latency?
+## 7.4 Monitoring and Telemetry
 
-* Alert when critical component fail or their performance degrade
-* Determine if we need more load balancing (scaling), or caching, or replication, or further partitioning. 
+- **Purpose:** Provide visibility into system health and performance.
+  - Track latency (per request) and throughput (aggregate).
+  - Gather meaningful metrics (e.g., DAU, peak load, error rate, average latency).
+  - Set up alerts for component failures or performance degradation.
+  - Use monitoring insights to decide on scaling, caching, replication, or partitioning.
 
-## 7.5 Identify and solve bottlenecks
-Try to discuss as many bottlenecks as possible and different approaches to mitigate them. 
-* any single point of failure
-* enough replicas of the data in case we lose a few servers 
-* enough copies of different services running to avoid the total system shutdown
-* monitoring the performance of our services and get alerts whenever critical components fails or their performance degrades
+## 7.5 Bottleneck Identification and Mitigation
+
+- **Goal:** Find and address weak points in the system.
+  - Eliminate single points of failure.
+  - Maintain enough replicas of data and services.
+  - Continuously monitor and alert on degraded performance.
+  - Apply techniques like load balancing, caching, partitioning, or replication to relieve bottlenecks.
+
+## 7.6 **Sample Wrap-up Answer (concise, interview-style):** 2–3 minute spoken version
+
+> To evaluate my design, I’d look at the **key non-functional requirements**: availability, scalability, reliability, and consistency. For example, I’d check whether replication and partitioning give us enough availability, and whether the caching and load balancer help us scale.
+>
+> On the **security side**, I’d enforce authentication and authorization, apply **rate limiting** to protect against abuse or DDoS, and also account for privacy and regional regulations like content restrictions.
+>
+> Next, I’d add **monitoring and analytics**. On the analytics side, I’d capture user behavior — things like peak traffic times and feature usage — to forecast growth and adapt capacity. On the monitoring side, I’d track latency, throughput, error rates, and set up alerts if any component degrades.
+>
+> Finally, I’d think about **bottlenecks** and mitigation: eliminate single points of failure with replication, ensure services have redundancy, and plan rebalancing if partitions or shards become unbalanced.
+>
+> Overall, the design balances **performance, reliability, and scalability**, and I’ve identified where trade-offs are needed, like extra replicas improving availability but adding cost.
+
+---
+
+⏱ This version takes about **2–3 minutes to speak** at a steady pace, and it hits all the categories from your note:
+
+- Evaluation
+- Security
+- Analytics & Monitoring
+- Bottlenecks / trade-offs
+
+## 7.7 **1-Minute Wrap-up Answer:**
+
+> To evaluate the design, I’d check the main non-functional goals: **availability, scalability, reliability, and consistency**. I’d ensure redundancy and partitioning to remove single points of failure, caching and load balancing for performance, and monitoring to track latency, throughput, and errors.
+>
+> On the **security side**, I’d enforce authentication, permissions, and **rate limiting** to defend against abuse. Finally, I’d add analytics and monitoring so we can understand user behavior, detect bottlenecks, and adjust capacity as the system grows.
+>
+## 7.8 Words in Interview
+
+- “We’ve discussed the design. To evaluate: we need to ensure scalability via partitioning/sharding, availability via replication, security via authentication and rate limiting, monitoring for performance, and awareness of bottlenecks.”
+- Just naming the categories (without deep-diving into each) usually takes 2 minutes and leaves a strong impression.
 
 # 8 Trade-off 
 * Goal
