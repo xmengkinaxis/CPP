@@ -71,10 +71,19 @@
   - [7.7 **1-Minute Wrap-up Answer:**](#77-1-minute-wrap-up-answer)
   - [7.8 Words in Interview](#78-words-in-interview)
 - [8 Trade-off](#8-trade-off)
+- [8. Trade-offs](#8-trade-offs)
+    - [Goal](#goal)
+    - [Steps](#steps)
+    - [Considerations](#considerations)
+  - [8.1 Common Trade-offs](#81-common-trade-offs)
+  - [8.2 Partitioning Trade-offs](#82-partitioning-trade-offs)
+  - [8.3 User Connections: HTTP vs WebSocket](#83-user-connections-http-vs-websocket)
+  - [8.4 CDN: Push vs Pull](#84-cdn-push-vs-pull)
+  - [8.5 Newsfeed: Push vs Pull (Fanout Models)](#85-newsfeed-push-vs-pull-fanout-models)
   - [8.1 Common Trade-off](#81-common-trade-off)
   - [8.2 Partition](#82-partition)
-  - [8.3 User connections (HTTP vs WebSocket)](#83-user-connections-http-vs-websocket)
-  - [8.4 CDN Push vs Pull](#84-cdn-push-vs-pull)
+  - [8.3 User connections (HTTP vs WebSocket)](#83-user-connections-http-vs-websocket-1)
+  - [8.4 CDN Push vs Pull](#84-cdn-push-vs-pull-1)
   - [8.5 Newsfeed Push vs Pull](#85-newsfeed-push-vs-pull)
 - [9 System Design Principles](#9-system-design-principles)
 - [10 System Design Best Practices](#10-system-design-best-practices)
@@ -1652,6 +1661,181 @@ After finishing the design, compare it against the requirements and evaluate tra
 - Just naming the categories (without deep-diving into each) usually takes 2 minutes and leaves a strong impression.
 
 # 8 Trade-off 
+
+
+Got it 👍 I’ll help you clean this part up: correct grammar, reorganize flow, and keep the content structured but concise so it’s easier to recall during an interview.
+
+Here’s the revised version of your **Trade-offs** note:
+
+---
+
+# 8. Trade-offs
+
+### Goal
+
+Every design choice comes with trade-offs. The goal is to choose the solution whose trade-offs do not severely impact the **most important requirements** of the system.
+
+### Steps
+
+1. Explore alternative solutions.
+2. Identify and explain their major trade-offs.
+3. Make informed decisions to balance those trade-offs against requirements.
+
+### Considerations
+
+Trade-offs should be evaluated in the context of:
+
+* User needs
+* Business goals
+* Resource limitations
+* Conflicting requirements
+* Design constraints
+* Prioritized use cases
+
+---
+
+## 8.1 Common Trade-offs
+
+* **Consistency vs Availability**
+
+  * Strong consistency reduces availability; prioritizing availability often leads to eventual consistency.
+  * Example: WhatsApp may prioritize consistency over availability in message delivery.
+
+* **Performance vs Scalability**
+
+  * Complex data structures improve performance but may limit scalability.
+
+* **Data Integrity vs Performance**
+
+  * Strong constraints ensure integrity but slow down write-heavy systems.
+
+* **Short-Term vs Long-Term Goals**
+
+  * Quick solutions may create technical debt; sustainable solutions may delay delivery.
+
+* **Reliability vs Cost**
+
+  * More replicas improve reliability but increase infrastructure cost.
+
+* **Security vs Usability**
+
+  * Stricter security makes user experience less convenient.
+
+* **Security vs Latency**
+
+  * Encryption adds latency; WhatsApp prioritizes security over minimal latency.
+
+* **Monolithic vs Microservices**
+
+  * Monolithic: simpler, faster to build, but harder to scale/fault isolate.
+  * Microservices: scalable and fault-tolerant, but complex in deployment and communication.
+
+* **Real-time vs Batch Processing**
+
+  * Real-time is immediate but costly; batch is cheaper but delayed.
+
+* **Normalization vs Denormalization**
+
+  * Normalization reduces redundancy but slows some queries.
+  * Denormalization speeds queries but risks inconsistency.
+
+* **Caching vs Freshness**
+
+  * Cache improves speed but risks stale data.
+
+* **Centralized vs Decentralized Control**
+
+  * Centralization simplifies management but risks single point of failure.
+  * Decentralization increases resilience but may cause inconsistency.
+
+---
+
+## 8.2 Partitioning Trade-offs
+
+* **User ID partitioning**
+
+  * ✅ Enables user-specific transactions
+  * ❌ Hotspots: one user with heavy activity overloads a partition; all of a user’s data unavailable if their partition fails
+
+* **Tweet/Item ID partitioning**
+
+  * ✅ Evenly distributed across servers (e.g., even/odd ID split)
+  * ❌ Hard to run batch operations across ranges
+
+* **Creation Time partitioning**
+
+  * ✅ Supports time-based queries naturally
+  * ❌ Risk of uneven distribution if traffic spikes at certain times
+
+* **Hybrid (e.g., Tweet ID + Timestamp)**
+
+  * ✅ Better distribution and avoids hotspots
+
+* **Partitioning schemes**: range-based, hash-based, or hybrid
+
+* **Database choice**: SQL vs NoSQL (transactional integrity vs horizontal scalability)
+
+---
+
+## 8.3 User Connections: HTTP vs WebSocket
+
+* **HTTP (Polling)**
+
+  * Short/long polling: client repeatedly asks for updates.
+  * ❌ Delays, bandwidth waste, higher server load.
+
+* **WebSocket**
+
+  * Persistent, bidirectional connection.
+  * ✅ Real-time updates with lower overhead.
+  * ❌ Requires more server resources per connection.
+
+---
+
+## 8.4 CDN: Push vs Pull
+
+* **Pull CDN**
+
+  * Content fetched from origin on first request; cached afterward.
+  * ✅ Simpler to configure, less storage needed.
+  * ✅ Better for dynamic/frequently updated content.
+  * ❌ First request is slower.
+
+* **Push CDN**
+
+  * Content preloaded into CDN nodes.
+  * ✅ Faster for static content, fewer cache misses.
+  * ❌ Requires more replicas and storage, manual upload/config.
+
+* **Rule of thumb**:
+
+  * Heavy traffic → Pull CDN
+  * Low/medium traffic or static content → Push CDN
+
+---
+
+## 8.5 Newsfeed: Push vs Pull (Fanout Models)
+
+* **Push (Fanout-on-Write)**
+
+  * Posts are pushed to all followers immediately.
+  * ✅ Real-time updates.
+  * ❌ Not scalable for celebrities with millions of followers.
+
+* **Pull (Fanout-on-Load)**
+
+  * Posts are fetched when a user loads their feed.
+  * ✅ Scales better for high-fanout users.
+  * ❌ Feeds may be stale; wasted queries when no updates exist.
+
+* **Hybrid**
+
+  * Push updates for most users.
+  * Pull for high-fanout users or when updates are frequent.
+  * Sometimes: push notifications → pull feed content.
+
+---
+
 * Goal
 Every solutions comes with a trade-off. The goal is to choose the solution with the most workable trade-off, which does not severely impact the most importatnt requirements of the system. <br>
 
