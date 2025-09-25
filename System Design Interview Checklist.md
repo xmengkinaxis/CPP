@@ -1488,28 +1488,7 @@ Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorgan
   - **Horizontal = scaling out rows** (good for *large datasets & parallelism*).
   - **Vertical = scaling out features/functions** (good for *isolation & modularity*).
 
---- 
-- **Horizontal vs Vertical Partitioning**
-
-| Aspect          | **Horizontal Partitioning (Sharding)**                                                                                                                                | **Vertical Partitioning**                                                                                                                                                                                 |
-| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Definition**  | Splits a table by **rows** across multiple servers (e.g., users A–M on one DB, N–Z on another).                                                                       | Splits a table by **columns/features** (e.g., user profile fields on one DB, user preferences on another).                                                                                                |
-| **Goal**        | Distribute data volume and queries evenly across servers to scale out.                                                                                                | Reduce table width, isolate workloads by feature, and improve manageability.                                                                                                                              |
-| **Benefits**    | - Better scalability for large datasets. <br> - Allows parallel writes/reads across servers. <br> - Smaller index per shard → faster queries.                         | - Simple to implement initially. <br> - Smaller DB per partition → easier caching and fits in memory. <br> - Functional isolation (e.g., separate DBs by business module).                                |
-| **Challenges**  | - Uneven distribution can cause hotspots. <br> - Rebalancing data when adding/removing servers is complex. <br> - Queries spanning shards require scatter-gather.     | - Cross-partition joins are expensive and complex. <br> - Referential integrity (foreign keys) often must be enforced at app level. <br> - Application logic needs awareness of which partition to query. |
-| **When to Use** | - Extremely large datasets that cannot fit in a single DB. <br> - High throughput systems with heavy writes/reads. <br> - User-based partitioning (e.g., by user ID). | - Applications with clear functional boundaries (e.g., users, payments, logs). <br> - Reducing contention on wide tables. <br> - When scaling out by business domain is more natural than by row.         |
-| **Example**     | Twitter user timeline: users are partitioned by ID hash across shards.                                                                                                | E-commerce: orders DB separate from payments DB.                                                                                                                                                          |
-
----
-
-- takeaway:
-  - **Horizontal = scaling out rows** (good for *large datasets & parallelism*).
-  - **Vertical = scaling out features/functions** (good for *isolation & modularity*).
 ## 6.3 Partitioning VS Sharding
-
-Great question — these two are often confused because they look similar. Let me break it down clearly:
-
----
 
 ### Partitioning
 
