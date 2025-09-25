@@ -1441,6 +1441,12 @@ Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorgan
   - Vertical partitioning splits a database by **columns** (or by functional grouping of features).
   - Related attributes are stored together on dedicated servers.
   - This reduces table width and allows more focused queries.
+  - ? Vertical partitioning: manually partition; divide data to store tables (divide table to store its columns) related to a specific feature/need in their own servers;
+    - Pro: straightforward to implement and low impact on application;
+    - Con: additional growth->further partition, joining two tables in two separate Db can cause performance and consistency issues;
+  - ??? Federation (functional partitioning) splits up databases by function, resulting in less read and write traffic to each database and therefore less replication lag;
+    - Pro: the database is smaller, easier to fit in memory and cache; write in parallel, increasing throughput
+    - Con: Update application logic to determine which database to read and write; join is more complex; more hardware and additional complexity.
 
 - Benefits
   - **Straightforward** to implement, with relatively low impact on the application.
@@ -1449,16 +1455,16 @@ Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorgan
   - **Federation (functional partitioning):** splitting by business function reduces replication lag, balances load, and isolates workloads (e.g., separate DBs for users, orders, analytics).
 
 - Challenges
-  - **Complex joins & denormalization:** queries requiring data across partitions are slower and may cause consistency issues.
+  - **Complex joins & denormalization:** queries requiring data across partitions are slower and may cause consistency issues. A large number of logical partitions to accommodate future data growth, vs a few physical database server. Such database server can have multiple database instances running on it. Use a configuration file to map the logical partitions to database server. So that can move partitions around easily.
   - **Referential integrity:** foreign keys across partitions are difficult to enforce; must often be handled in application logic.
   - **Application changes:** logic must know which partition to query or write to.
   - **Rebalancing issues:**
-    - Uneven load (overloaded/underloaded partitions).
+    - Uneven load (overloaded/underloaded partitions, unbalanced).
     - Hotspots (too much activity concentrated on a partition).
 
 - Design Considerations
   - **Logical vs Physical Partitions:**
-    - Maintain more logical partitions than physical servers for flexibility.
+    - Maintain more logical partitions than physical servers for flexibility. For better performance and scalability, we can keep more shard than these just required.
     - Use a configuration layer to map logical partitions to physical servers so they can be moved as load grows.
   - **Placement strategies:**
     - *Co-resident partitioning:* keep partitions on the same machine to reduce index size and I/O.
@@ -1466,51 +1472,6 @@ Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorgan
   - **Data movement & balancing:**
     - Minimize re-sharding cost with **consistent hashing** or metadata lookup services.
   - **Load distribution:** aim for even spread to avoid hotspots.
-
----
-
-- **Horizontal vs Vertical Partitioning**
-
-| Aspect          | **Horizontal Partitioning (Sharding)**                                                                                                                                | **Vertical Partitioning**                                                                                                                                                                                 |
-| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Definition**  | Splits a table by **rows** across multiple servers (e.g., users A–M on one DB, N–Z on another).                                                                       | Splits a table by **columns/features** (e.g., user profile fields on one DB, user preferences on another).                                                                                                |
-| **Goal**        | Distribute data volume and queries evenly across servers to scale out.                                                                                                | Reduce table width, isolate workloads by feature, and improve manageability.                                                                                                                              |
-| **Benefits**    | - Better scalability for large datasets. <br> - Allows parallel writes/reads across servers. <br> - Smaller index per shard → faster queries.                         | - Simple to implement initially. <br> - Smaller DB per partition → easier caching and fits in memory. <br> - Functional isolation (e.g., separate DBs by business module).                                |
-| **Challenges**  | - Uneven distribution can cause hotspots. <br> - Rebalancing data when adding/removing servers is complex. <br> - Queries spanning shards require scatter-gather.     | - Cross-partition joins are expensive and complex. <br> - Referential integrity (foreign keys) often must be enforced at app level. <br> - Application logic needs awareness of which partition to query. |
-| **When to Use** | - Extremely large datasets that cannot fit in a single DB. <br> - High throughput systems with heavy writes/reads. <br> - User-based partitioning (e.g., by user ID). | - Applications with clear functional boundaries (e.g., users, payments, logs). <br> - Reducing contention on wide tables. <br> - When scaling out by business domain is more natural than by row.         |
-| **Example**     | Twitter user timeline: users are partitioned by ID hash across shards.                                                                                                | E-commerce: orders DB separate from payments DB.                                                                                                                                                          |
-
----
-
-- takeaway:
-  - **Horizontal = scaling out rows** (good for *large datasets & parallelism*).
-  - **Vertical = scaling out features/functions** (good for *isolation & modularity*).
-
----
-
-Would you like me to also **merge this table into your Partition note** (so that Partition, Horizontal, and Vertical are in one structured place)? That way you’ll have a single clean reference.
-
-
-Vertical partitioning: manually partition; divide data to store tables (divide table to store its columns) related to a specific feature/need in their own servers: 
-* Pro: straightforward to implement and low impact on application; 
-* Con: additional growth->further partition, joining two tables in two separate Db can cause performance and consistency issues;  <br>
-
-Federation (functional partitioning) splits up databases by function, resulting in less read and write traffic to each database and therefore less replication lag; the database is smaller, easier to fit in memory and cache; write in parallel, increasing throughput. <br>
-* Con: Update application logic to determine which database to read and write; join is more complex; more hardware and additional complexity.  <br>
-
-**Problem:** on a partitioned database, there are some extra constraints on the operations that can be performed, esp. operations that across multiple tables or multiple rows in the same table, but on different servers <br>
-* join and denormalization(data inconsistency): perform a cross-partition query on a partitioned database is not feasible; <br>
-* Referential integrity (application have to enforce this); enforcing data integrity constraints such as foreign keys in a partitioned database can be extremely difficult; Database does not support; application that require referential integrity on partitioned database often have to enforce it in application code; <br> 
-* Rebalancing: data distribution is not uniform (uneven, unbalanced, overloaded/underloaded); a lot of load on a partition (hotspot); <br> 
-
-A large number of logical partitions to accommodate future data growth, vs a few physical database server. Such database server can have multiple database instances running on it. Use a configuration file to map the logical partitions to database server. So that can move partitions around easily.  <br>
-For better performance and scalability, we can keep more shard than these just required.  <br>
-Co-resident partitioning(on the same machine) is to reduce the size of individual indexes and reduce the amount of I/O (input/output) when updating records; <br>
-Remote partitioning is to increase the bandwidth of access to the data by having more RAM, avoiding disk access, have more network interface and disk I/O channels available.  <br>
-
-How to map a particular piece of data to its node? How to move and minimize data movement when adding or removing nodes? => consistent Hash. 
-
-Other consideration: evenly distribute the load, no hotspot
 
 #### 6.2.2.3 Horizontal vs Vertical Partitioning
 
@@ -1527,6 +1488,23 @@ Other consideration: evenly distribute the load, no hotspot
   - **Horizontal = scaling out rows** (good for *large datasets & parallelism*).
   - **Vertical = scaling out features/functions** (good for *isolation & modularity*).
 
+--- 
+- **Horizontal vs Vertical Partitioning**
+
+| Aspect          | **Horizontal Partitioning (Sharding)**                                                                                                                                | **Vertical Partitioning**                                                                                                                                                                                 |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Definition**  | Splits a table by **rows** across multiple servers (e.g., users A–M on one DB, N–Z on another).                                                                       | Splits a table by **columns/features** (e.g., user profile fields on one DB, user preferences on another).                                                                                                |
+| **Goal**        | Distribute data volume and queries evenly across servers to scale out.                                                                                                | Reduce table width, isolate workloads by feature, and improve manageability.                                                                                                                              |
+| **Benefits**    | - Better scalability for large datasets. <br> - Allows parallel writes/reads across servers. <br> - Smaller index per shard → faster queries.                         | - Simple to implement initially. <br> - Smaller DB per partition → easier caching and fits in memory. <br> - Functional isolation (e.g., separate DBs by business module).                                |
+| **Challenges**  | - Uneven distribution can cause hotspots. <br> - Rebalancing data when adding/removing servers is complex. <br> - Queries spanning shards require scatter-gather.     | - Cross-partition joins are expensive and complex. <br> - Referential integrity (foreign keys) often must be enforced at app level. <br> - Application logic needs awareness of which partition to query. |
+| **When to Use** | - Extremely large datasets that cannot fit in a single DB. <br> - High throughput systems with heavy writes/reads. <br> - User-based partitioning (e.g., by user ID). | - Applications with clear functional boundaries (e.g., users, payments, logs). <br> - Reducing contention on wide tables. <br> - When scaling out by business domain is more natural than by row.         |
+| **Example**     | Twitter user timeline: users are partitioned by ID hash across shards.                                                                                                | E-commerce: orders DB separate from payments DB.                                                                                                                                                          |
+
+---
+
+- takeaway:
+  - **Horizontal = scaling out rows** (good for *large datasets & parallelism*).
+  - **Vertical = scaling out features/functions** (good for *isolation & modularity*).
 ## 6.3 Partitioning VS Sharding
 
 Great question — these two are often confused because they look similar. Let me break it down clearly:
