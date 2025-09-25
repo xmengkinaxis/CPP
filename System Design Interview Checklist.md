@@ -56,12 +56,10 @@
       - [6.2.2.2 Vertical Partitioning](#6222-vertical-partitioning)
       - [6.2.2.3 Horizontal vs Vertical Partitioning](#6223-horizontal-vs-vertical-partitioning)
   - [6.3 Partitioning VS Sharding](#63-partitioning-vs-sharding)
-    - [Partitioning](#partitioning)
-    - [Sharding](#sharding)
-    - [🎯 Key Differences (Quick Recall)](#-key-differences-quick-recall)
-    - [Partitioning](#partitioning-1)
-    - [Sharding](#sharding-1)
-    - [🎯 Key Differences](#-key-differences)
+    - [6.3.1 Partitioning](#631-partitioning)
+    - [6.3.2 Sharding](#632-sharding)
+    - [6.3.3 Key Differences (Quick Recall)](#633-key-differences-quick-recall)
+    - [6.3.4 Comparison: Partitioning vs. Sharding](#634-comparison-partitioning-vs-sharding)
 - [7 Evaluation and Optimization](#7-evaluation-and-optimization)
   - [7.1 Evaluation](#71-evaluation)
   - [7.2 Security and Permissions](#72-security-and-permissions)
@@ -152,7 +150,7 @@
   - [Single Point of Failure (SPOF) vs Bottleneck](#single-point-of-failure-spof-vs-bottleneck)
     - [🔹 **Single Point of Failure (SPOF)**](#-single-point-of-failure-spof)
     - [🔹 **Bottleneck**](#-bottleneck)
-    - [🔹 **Key Differences**](#-key-differences-1)
+    - [🔹 **Key Differences**](#-key-differences)
     - [🎯 System Design Interview Priority](#-system-design-interview-priority)
     - [🔑 Rule of Thumb for Interviews](#-rule-of-thumb-for-interviews)
 
@@ -1490,129 +1488,70 @@ Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorgan
 
 ## 6.3 Partitioning VS Sharding
 
-### Partitioning
+### 6.3.1 Partitioning
 
-* **Definition**: Splitting a large database table (or index, or dataset) into **smaller parts** for manageability and performance.
-* **Scope**: Usually happens **inside a single database system** (same server or cluster).
-* **Types**:
+- **Definition**: Splitting **one large table inside a single database** into **smaller parts** for manageability and performance.
+- **Scope**: Usually happens **inside a single database system** (same server or cluster).
+- Managed by the **DB engine**
+- **Types**:
+  - **Horizontal partitioning**: rows split by range/hash/list (e.g., `UserID 1–1000 → partition A`).
+  - **Vertical partitioning**: columns split into different tables (e.g., profile info vs authentication info).
+- **Goal**: Manage **big tables** more efficiently → faster queries, better maintenance.
+- Example: 
+  - In Postgres, a `users` table is partitioned into `users_2024`, `users_2025` by `creation_date`. 
+  - Or Postgres `users` table partitioned by `region_id` → still one DB.
 
-  * **Horizontal partitioning**: rows split by range/hash/list (e.g., `UserID 1–1000 → partition A`).
-  * **Vertical partitioning**: columns split into different tables (e.g., profile info vs authentication info).
-* **Goal**: Manage **big tables** more efficiently → faster queries, better maintenance.
+### 6.3.2 Sharding
 
-👉 Example: In Postgres, a `users` table is partitioned into `users_2024`, `users_2025` by `creation_date`.
+- **Definition**: A **form of horizontal partitioning** where data is split across **multiple independent database servers/nodes (shards)**.
+- **Scope**: Distributed systems, each shard is an independent DB instance with its own copy of schema.
+- Managed by the **application or middleware layer**, not the DB engine alone.
+- Goal: true horizontal scaling (support billions of rows/users).
+- **Key feature**: Each shard handles a portion of the load → enables **horizontal scaling**.
+- **Trade-offs**:
+  - Pros: scales to billions of rows, parallel processing, removes bottleneck.
+  - Cons: cross-shard queries are expensive, re-sharding is hard.
+- Example: A global app splits users:
+  - Shard 1 → users in North America
+  - Shard 2 → users in Europe
+  - Shard 3 → users in Asia
 
----
-
-### Sharding
-
-* **Definition**: A **form of horizontal partitioning** where data is split across **multiple independent database servers/nodes** (shards).
-* **Scope**: Distributed systems, each shard can be seen as its own DB instance.
-* **Key feature**: Each shard handles a portion of the load → enables **horizontal scaling**.
-* **Trade-offs**:
-
-  * Pros: scales to billions of rows, parallel processing, removes bottleneck.
-  * Cons: cross-shard queries are expensive, re-sharding is hard.
-
-👉 Example: A global app splits users:
-
-* Shard 1 → users in North America
-* Shard 2 → users in Europe
-* Shard 3 → users in Asia
-
----
-
-### 🎯 Key Differences (Quick Recall)
+### 6.3.3 Key Differences (Quick Recall)
 
 | Aspect                    | Partitioning                    | Sharding                                       |
 | ------------------------- | ------------------------------- | ---------------------------------------------- |
 | **Where?**                | Within a single DB instance     | Across multiple DB servers                     |
 | **Who manages?**          | The DB engine                   | The application / middleware                   |
+| **Query**                  | Easy cross-partition joins      | Hard/expensive cross-shard joins               |
 | **Use case**              | Handle large tables efficiently | Scale system horizontally to billions of users |
 | **Cross-partition query** | Easy (same DB)                  | Hard/expensive (cross-shard joins)             |
 
----
+- **Memory Hook:**
+  - Partitioning = splitting tables inside a DB.
+  - Sharding = partitioning data across multiple DBs.
 
-⚡ **Memory Hook:**
+### 6.3.4 Comparison: Partitioning vs. Sharding
 
-> Partitioning = splitting data inside a DB.
-> Sharding = partitioning data across multiple DBs.
+| **Aspect**         | **Partitioning**                                                                              | **Sharding**                                                                                               |
+| ------------------ | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Definition**     | Splitting a single database (one DBMS instance) into logical/physical partitions.             | Splitting data across multiple independent databases (shards) on different servers.                        |
+| **Scope**          | Within a single database server.                                                              | Across multiple database servers.                                                                          |
+| **Management**     | Managed internally by the database system.                                                    | Requires application-level or middleware logic to route queries to the correct shard.                      |
+| **Use Case**       | Optimizing large single-database performance (e.g., table partitioning in PostgreSQL, MySQL). | Scaling out when a single database server can’t handle the data volume or query load.                      |
+| **Scalability**    | Limited (vertical scaling, still bound to one machine).                                       | High (horizontal scaling across many machines).                                                            |
+| **Complexity**     | Low – transparent to applications, handled by DB engine.                                      | High – query routing, shard key design, and rebalancing are needed.                                        |
+| **Failure Impact** | If the database fails, all partitions are affected (single point of failure).                 | A shard failure only affects part of the dataset (but requires careful HA design).                         |
+| **Examples**       | Table partitioning by range, list, or hash inside MySQL/Postgres.                             | MongoDB sharding, Cassandra, custom shard key in MySQL/Postgres clusters.                                  |
+| **Pros**           | • Simple to implement <br> • Efficient query pruning <br> • Managed by DB engine              | • Scales horizontally <br> • Reduces per-node data load <br> • Supports very large datasets                |
+| **Cons**           | • Still tied to single-machine limits <br> • Doesn’t solve extreme scalability issues         | • More complex development & operations <br> • Harder joins across shards <br> • Rebalancing can be tricky |
+| **Trade-offs**     | Good first step to improve single-node performance, but eventually hits machine limits.       | Higher scalability but adds significant complexity in design, operations, and consistency.                 |
 
----
+- **Rule of thumb**
+  - Use **Partitioning** if your workload is big but still fits on a single powerful server.
+  - Use **Sharding** if you need to scale beyond a single machine.
 
-Would you like me to also give you **a diagram** that visually contrasts sharding vs partitioning? It’s often easier to remember with a picture.
-
-
-Here’s the difference in short, and then I can also make a visual diagram if you want:
-
----
-
-### Partitioning
-
-* Splits **one table inside a single database** into smaller chunks.
-* Managed by the **DB engine**.
-* Types: Horizontal (by rows), Vertical (by columns), Range/Hash/List partitioning.
-* Goal: easier query optimization and maintenance.
-  👉 Example: Postgres `users` table partitioned by `region_id` → still one DB.
-
----
-
-### Sharding
-
-* Splits **data across multiple database servers (shards)**.
-* Managed by the **application or middleware layer**, not the DB engine alone.
-* Each shard is an independent DB instance with its own copy of schema.
-* Goal: true horizontal scaling (support billions of rows/users).
-  👉 Example: Global user DB → Shard A (US users), Shard B (EU users), Shard C (Asia users).
-
----
-
-### 🎯 Key Differences
-
-| Aspect   | Partitioning               | Sharding                         |
-| -------- | -------------------------- | -------------------------------- |
-| Location | Within one DB instance     | Across multiple DB instances     |
-| Manager  | Database engine            | Application / middleware         |
-| Query    | Easy cross-partition joins | Hard/expensive cross-shard joins |
-| Use case | Optimize large tables      | Scale out across machines        |
-
----
-
-⚡ **Memory Hook:**
-👉 Partitioning = “slicing tables inside one DB”
-👉 Sharding = “partitioning across many DBs”
-
----
-**comparison table** between **Partitioning** and **Sharding**, with pros, cons, and trade-offs:
-
-| Aspect             | **Partitioning**                                                                              | **Sharding**                                                                          |
-| ------------------ | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| **Definition**     | Splitting a single database (one DBMS instance) into logical/physical partitions.             | Splitting data across multiple independent databases (shards) on different servers.   |
-| **Scope**          | Within a single database server.                                                              | Across multiple database servers.                                                     |
-| **Management**     | Managed internally by the database system.                                                    | Requires application-level or middleware logic to route queries to the correct shard. |
-| **Use Case**       | Optimizing large single-database performance (e.g., table partitioning in PostgreSQL, MySQL). | Scaling out when a single database server can’t handle the data volume or query load. |
-| **Scalability**    | Limited (vertical scaling, still bound to one machine).                                       | High (horizontal scaling across many machines).                                       |
-| **Complexity**     | Low – transparent to applications, handled by DB engine.                                      | High – query routing, shard key design, and rebalancing are needed.                   |
-| **Failure Impact** | If the database fails, all partitions are affected (single point of failure).                 | A shard failure only affects part of the dataset (but requires careful HA design).    |
-| **Examples**       | Table partitioning by range, list, or hash inside MySQL/Postgres.                             | MongoDB sharding, Cassandra, custom shard key in MySQL/Postgres clusters.             |
-| **Pros**           | - Simple to implement                                                                         |                                                                                       |
-
-* Efficient query pruning
-* Managed by DB | - Scales horizontally
-* Reduces per-node data load
-* Supports huge datasets |
-  \| **Cons** | - Still tied to single machine limits
-* Doesn’t solve extreme scalability issues | - More complex dev & ops
-* Harder joins across shards
-* Rebalancing can be tricky |
-
-👉 **Rule of thumb**:
-
-* Use **Partitioning** if your workload is big but still fits on a single powerful server.
-* Use **Sharding** if you need to scale beyond a single machine.
-
-Would you like me to also add a **real-world example (like Twitter or Instagram)** to show *why they need sharding instead of just partitioning*?
-
+- Takeaway:
+Partitioning is a useful optimization within a single database, improving query performance and manageability without adding much complexity. However, it’s still bound by the limits of one machine. Sharding, on the other hand, distributes data across multiple servers to achieve true horizontal scalability. It enables handling massive datasets and traffic, but comes at the cost of more complex query routing, consistency management, and operational overhead. In practice, teams often start with partitioning, and move to sharding only when scale demands it.
 
 # 7 Evaluation and Optimization
 Compare your design to the requirements, and acknowledge any trade-offs made and improving aspects of design 
