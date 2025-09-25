@@ -1551,9 +1551,12 @@ Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorgan
   - Use **Sharding** if you need to scale beyond a single machine.
 
 - Takeaway:
-Partitioning is a useful optimization within a single database, improving query performance and manageability without adding much complexity. However, it’s still bound by the limits of one machine. Sharding, on the other hand, distributes data across multiple servers to achieve true horizontal scalability. It enables handling massive datasets and traffic, but comes at the cost of more complex query routing, consistency management, and operational overhead. In practice, teams often start with partitioning, and move to sharding only when scale demands it.
+  - Partitioning is a useful optimization within a single database, improving query performance and manageability without adding much complexity. However, it’s still bound by the limits of one machine. 
+  - Sharding, on the other hand, distributes data across multiple servers to achieve true horizontal scalability. It enables handling massive datasets and traffic, but comes at the cost of more complex query routing, consistency management, and operational overhead. 
+  - In practice, teams often start with partitioning, and move to sharding only when scale demands it.
 
 # 7 Evaluation and Optimization
+
 Compare your design to the requirements, and acknowledge any trade-offs made and improving aspects of design 
 
 ## 7.1 Evaluation 
