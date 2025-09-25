@@ -323,10 +323,10 @@ similar e.g. 219. Contains Duplicate II; https://leetcode.com/problems/contains-
 int fnFindSubarrays(vector<int>& arr, int k) {
 	// 0. define the map and initialize it properly
 	// using a map to look up quickly; and it serves as a memo/dp, so it needs the initialization
-	// mapping a pre-sum to the index (for maximum size or longest), or counting the frequency of a pre-sum (for how many / total)
+	// counting the frequency of a pre-sum (for how many / total), or mapping a pre-sum to the index (for maximum size or longest),
 	unordered_map<int, int> counts;  // choose the proper name for this map according to the problem; the map serves as a dp array too
 	counts[0] = 1; // must initialize counts[0], but its value will depend on the problem; dp array needs a base case
-					// might be memo[0] = -1, if the value is the index of the array
+					// might be memo[0] = -1, if the value is the index of the array, e.g. 523. Continuous Subarray Sum
 	int ans = 0, curr = 0; // curr might be the current pre sum; 
 
 	for (int num : arr) { // in this loop, search the map first and then add the curr into map later
