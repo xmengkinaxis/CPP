@@ -132,3 +132,126 @@
 * [347. Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/)
 * [215. Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/) // use minus to create a minHeap
 * [1337. The K Weakest Rows in a Matrix](https://leetcode.com/problems/the-k-weakest-rows-in-a-matrix/)
+
+## Binary Search
+
+### Binary Search Basic
+
+* [81. Search in Rotated Sorted Array II](https://leetcode.com/problems/search-in-rotated-sorted-array-ii/)
+* [82. Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/) // for (int low = 0, high = M; low <= high; )
+
+### Left Most
+
+* [852. Peak Index in a Mountain Array](https://leetcode.com/problems/peak-index-in-a-mountain-array/)
+* [1870. Minimum Speed to Arrive on Time](https://leetcode.com/problems/minimum-speed-to-arrive-on-time/)
+* [1539. Kth Missing Positive Number](https://leetcode.com/problems/kth-missing-positive-number/)
+* [778. Swim in Rising Water](https://leetcode.com/problems/swim-in-rising-water/) //why not binaryMinimum ?
+* [658. Find K Closest Elements](https://leetcode.com/problems/find-k-closest-elements/)
+
+### Right Most
+
+* [1060. Missing Element in Sorted Array](https://leetcode.com/problems/missing-element-in-sorted-array/)
+* [162. Find Peak Element](https://leetcode.com/problems/find-peak-element/) // right = nums.size() - 1 and if (nums[mid] > nums[mid + 1])
+* [34. Find First and Last Position of Element in Sorted Array](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
+
+### Greedy: minimum
+
+* [1011. Capacity To Ship Packages Within D Days](https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/)
+* [378. Kth Smallest Element in a Sorted Matrix](https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/)
+
+### Greedy: maximum
+
+* [1891. Cutting Ribbons](https://leetcode.com/problems/cutting-ribbons/)
+
+## Backtrack
+
+* [17. Letter Combinations of a Phone Number](https://leetcode.com/problems/letter-combinations-of-a-phone-number/)
+* [78. Subsets](https://leetcode.com/problems/subsets/)
+* [301. Remove Invalid Parentheses](https://leetcode.com/problems/remove-invalid-parentheses/)
+* [46. Permutations](https://leetcode.com/problems/permutations/)
+* [77. Combinations](https://leetcode.com/problems/combinations/)
+* [140. Word Break II](https://leetcode.com/problems/word-break-ii/)
+* [282. Expression Add Operators](https://leetcode.com/problems/expression-add-operators/)
+*[ 490. The Maze](https://leetcode.com/problems/the-maze/) // return bool; keep going on one direction
+* [79. Word Search](https://leetcode.com/problems/word-search/)
+
+## Trie
+
+* [212. Word Search II](https://leetcode.com/problems/word-search-ii/)
+* [642. Design Search Autocomplete System](https://leetcode.com/problems/design-search-autocomplete-system/)
+
+## Disjoint Set Union (DSU)
+
+* [721. Accounts Merge](https://leetcode.com/problems/accounts-merge/)
+* [1584. Min Cost to Connect All Points](https://leetcode.com/problems/min-cost-to-connect-all-points/)
+
+## Parentheses
+
+* [921. Minimum Add to Make Parentheses Valid](https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/)
+* [301. Remove Invalid Parentheses](https://leetcode.com/problems/remove-invalid-parentheses/) // two rounds; first from left to right, second from right to left; in order to find the balance
+* [1249. Minimum Remove to Make Valid Parentheses](https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/)
+* [32. Longest Valid Parentheses](https://leetcode.com/problems/longest-valid-parentheses/)
+* [20. Valid Parentheses](https://leetcode.com/problems/valid-parentheses/)
+
+## Intervals
+
+* [56. Merge Intervals](https://leetcode.com/problems/merge-intervals/)
+* [253. Meeting Rooms II](https://leetcode.com/problems/meeting-rooms-ii/)
+* [163. Missing Ranges](https://leetcode.com/problems/missing-ranges/)
+* [986. Interval List Intersections](https://leetcode.com/problems/interval-list-intersections/)
+* [435. Non-overlapping Intervals](https://leetcode.com/problems/non-overlapping-intervals/)
+
+## Multiple Data Structures
+
+### Unordered_map + List
+
+* [146. LRU Cache](https://leetcode.com/problems/lru-cache/)
+
+### Unordered_map + Vector
+
+* [380. Insert Delete GetRandom O(1)](https://leetcode.com/problems/insert-delete-getrandom-o1/)
+
+### Stack + Vector
+
+* [895. Maximum Frequency Stack](https://leetcode.com/problems/maximum-frequency-stack/) // stack of stack; 2D stack;
+
+### Two Sets as Stacks
+
+* [716. Max Stack](https://leetcode.com/problems/max-stack/)
+
+## Parsing Strings
+
+### String into Integer
+
+* [8. String to Integer (atoi)](https://leetcode.com/problems/string-to-integer-atoi/)
+* [65. Valid Number](https://leetcode.com/problems/valid-number/) // use four flags
+
+### Calculator
+
+* [224. Basic Calculator](https://leetcode.com/problems/basic-calculator/)
+* [227. Basic Calculator II](https://leetcode.com/problems/basic-calculator-ii/)
+* [772. Basic Calculator III](https://leetcode.com/problems/basic-calculator-iii/)
+* [282. Expression Add Operators](https://leetcode.com/problems/expression-add-operators/)
+
+## Dynamic Programming (DP)
+
+### Basic DP
+
+* [91. Decode Ways](https://leetcode.com/problems/decode-ways/)
+* [53. Maximum Subarray](https://leetcode.com/problems/maximum-subarray) // sliding
+
+### 1D DP
+
+* [139. Word Break](https://leetcode.com/problems/word-break/)
+* [2369. Check if There is a Valid Partition For The Array](https://leetcode.com/problems/check-if-there-is-a-valid-partition-for-the-array/)
+* [646. Maximum Length of Pair Chain](https://leetcode.com/problems/maximum-length-of-pair-chain/)
+* [377. Combination Sum IV](https://leetcode.com/problems/combination-sum-iv)
+* [746. Min Cost Climbing Stairs](https://leetcode.com/problems/min-cost-climbing-stairs/) // from right to left
+* [279. Perfect Squares](https://leetcode.com/problems/perfect-squares)
+
+### 2D DP
+
+* [63. Unique Paths II](https://leetcode.com/problems/unique-paths-ii/) //grid, up or left
+* [518. Coin Change II](https://leetcode.com/problems/coin-change-ii/) //not adjacent
+* [1216. Valid Palindrome III](https://leetcode.com/problems/valid-palindrome-iii/) //upper triangular matrix; -/|
+* [97. Interleaving String](https://leetcode.com/problems/interleaving-string/)
