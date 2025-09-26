@@ -327,6 +327,7 @@ int fnFindSubarrays(vector<int>& arr, int k) {
 	unordered_map<int, int> counts;  // choose the proper name for this map according to the problem; the map serves as a dp array too
 	counts[0] = 1; // must initialize counts[0], but its value will depend on the problem; dp array needs a base case
 					// might be memo[0] = -1, if the value is the index of the array, e.g. 523. Continuous Subarray Sum
+					// or initialize nothing, e.g. 219. Contains Duplicate II
 	int ans = 0, curr = 0; // curr might be the current pre sum; 
 
 	for (int num : arr) { // in this loop, search the map first and then add the curr into map later
