@@ -1,5 +1,54 @@
 # LeetCode Question List
 
+- [LeetCode Question List](#leetcode-question-list)
+  - [Two Pointers on the same data structure with the opposite directions](#two-pointers-on-the-same-data-structure-with-the-opposite-directions)
+  - [Two Pointers for two arrays with the same direction](#two-pointers-for-two-arrays-with-the-same-direction)
+  - [Sliding Window](#sliding-window)
+  - [Fast and Slow Pointers](#fast-and-slow-pointers)
+  - [Find Numbers of Sub-arrays that fit an exact criteria](#find-numbers-of-sub-arrays-that-fit-an-exact-criteria)
+  - [Monotonic Stack](#monotonic-stack)
+  - [DFS on a Tree](#dfs-on-a-tree)
+    - [PreOrder](#preorder)
+    - [InOrder](#inorder)
+    - [PostOrder](#postorder)
+    - [InOrder + PostOrder](#inorder--postorder)
+    - [DFS Stack](#dfs-stack)
+  - [BFS on a Tree](#bfs-on-a-tree)
+  - [DFS on a Graph](#dfs-on-a-graph)
+  - [BFS on a Graph](#bfs-on-a-graph)
+  - [Heap](#heap)
+  - [Unordered\_map and Map](#unordered_map-and-map)
+  - [Stack](#stack)
+  - [Multiset](#multiset)
+  - [Binary Search](#binary-search)
+    - [Binary Search Basic](#binary-search-basic)
+    - [Left Most](#left-most)
+    - [Right Most](#right-most)
+    - [Greedy: minimum](#greedy-minimum)
+    - [Greedy: maximum](#greedy-maximum)
+  - [Backtrack](#backtrack)
+  - [Trie](#trie)
+  - [Disjoint Set Union (DSU)](#disjoint-set-union-dsu)
+  - [Parentheses](#parentheses)
+  - [Intervals](#intervals)
+  - [Multiple Data Structures](#multiple-data-structures)
+    - [Unordered\_map + List](#unordered_map--list)
+    - [Unordered\_map + Vector](#unordered_map--vector)
+    - [Stack + Vector](#stack--vector)
+    - [Two Sets as Stacks](#two-sets-as-stacks)
+  - [Parsing Strings](#parsing-strings)
+    - [String into Integer](#string-into-integer)
+    - [Calculator](#calculator)
+  - [Dynamic Programming (DP)](#dynamic-programming-dp)
+    - [Basic DP](#basic-dp)
+    - [1D DP](#1d-dp)
+    - [2D DP](#2d-dp)
+  - [Palindrome](#palindrome)
+  - [Greedy](#greedy)
+  - [Cyclic Sorting](#cyclic-sorting)
+  - [2D Array](#2d-array)
+  - [Linked List](#linked-list)
+
 ## Two Pointers on the same data structure with the opposite directions
 
 * [647. Palindromic Substrings](https://leetcode.com/problems/palindromic-substrings/)
@@ -132,6 +181,28 @@
 * [347. Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/)
 * [215. Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/) // use minus to create a minHeap
 * [1337. The K Weakest Rows in a Matrix](https://leetcode.com/problems/the-k-weakest-rows-in-a-matrix/)
+* [215. Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/)
+* [253. Meeting Rooms II](https://leetcode.com/problems/meeting-rooms-ii/)
+* [767. Reorganize String](https://leetcode.com/problems/reorganize-string/)
+
+## Unordered_map and Map
+
+* [249. Group Shifted Strings](https://leetcode.com/problems/group-shifted-strings/)
+* [146. LRU Cache](https://leetcode.com/problems/lru-cache/)
+* [13. Roman to Integer](https://leetcode.com/problems/roman-to-integer/)
+* [953. Verifying an Alien Dictionary](https://leetcode.com/problems/verifying-an-alien-dictionary/)
+
+## Stack
+
+* [71. Simplify Path](https://leetcode.com/problems/simplify-path/)
+* [1209. Remove All Adjacent Duplicates in String II](https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string-ii/)
+* [1047. Remove All Adjacent Duplicates In String](https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/)
+* [20. Valid Parentheses](https://leetcode.com/problems/valid-parentheses/)
+* [1963. Minimum Number of Swaps to Make the String Balanced](https://leetcode.com/problems/minimum-number-of-swaps-to-make-the-string-balanced/)
+
+## Multiset
+
+* [218. The Skyline Problem](https://leetcode.com/problems/the-skyline-problem/)
 
 ## Binary Search
 
@@ -255,3 +326,35 @@
 * [518. Coin Change II](https://leetcode.com/problems/coin-change-ii/) //not adjacent
 * [1216. Valid Palindrome III](https://leetcode.com/problems/valid-palindrome-iii/) //upper triangular matrix; -/|
 * [97. Interleaving String](https://leetcode.com/problems/interleaving-string/)
+
+## Palindrome
+
+* [680. Valid Palindrome II](https://leetcode.com/problems/valid-palindrome-ii/)
+* [1216. Valid Palindrome III](https://leetcode.com/problems/valid-palindrome-iii/) //2D DP
+
+## Greedy
+
+* [135. Candy](https://leetcode.com/problems/candy/)
+* [455. Assign Cookies](https://leetcode.com/problems/assign-cookies/description/)
+* [435. Non-overlapping Intervals](https://leetcode.com/problems/non-overlapping-intervals/)
+* [605. Can Place Flowers](https://leetcode.com/problems/can-place-flowers/)
+* [670. Maximum Swap](https://leetcode.com/problems/maximum-swap/)
+* [767. Reorganize String](https://leetcode.com/problems/reorganize-string/)
+* [1647. Minimum Deletions to Make Character Frequencies Unique](https://leetcode.com/problems/minimum-deletions-to-make-character-frequencies-unique/)
+* [1996. The Number of Weak Characters in the Game](https://leetcode.com/problems/the-number-of-weak-characters-in-the-game/)
+
+## Cyclic Sorting
+
+* [41. First Missing Positive](https://leetcode.com/problems/first-missing-positive/) // nums[i] - 1 == i || nums[nums[i] - 1] == nums[i]
+* [287. Find the Duplicate Number](https://leetcode.com/problems/find-the-duplicate-number/)
+
+* [268. Find Missing Number](https://leetcode.com/problems/missing-number/description/)
+* [442. Find all duplicates](https://leetcode.com/problems/find-all-duplicates-in-an-array/)
+
+## 2D Array
+
+* [498. Diagonal Traverse](https://leetcode.com/problems/diagonal-traverse/)
+
+## Linked List
+
+* [708. Insert into a Sorted Circular Linked List](https://leetcode.com/problems/insert-into-a-sorted-circular-linked-list/)

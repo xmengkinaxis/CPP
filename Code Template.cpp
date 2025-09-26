@@ -1333,8 +1333,8 @@ The core idea:
                 ++i;
             }
         }
-268. Find Missing Number
-442. Find all duplicates
+268. Find Missing Number https://leetcode.com/problems/missing-number/description/
+442. Find all duplicates https://leetcode.com/problems/find-all-duplicates-in-an-array/
 */
 // Cyclic Sort template for numbers in the range [1..n]
 void cyclicSort(vector<int>& nums) {
