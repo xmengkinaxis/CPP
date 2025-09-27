@@ -352,6 +352,10 @@ int fnFindSubarrays(vector<int>& arr, int k) {
 		increase: > (remove all items in the stack whose values are larger than the current value, to make the current value largest in the stack)
 		decrease: < (remove all items in the stack whose values are less than the current value, to make the current value smallest in the stack)
 	Each item will be eventually pushed into the stack after the stack is updated accordingly
+https://www.geeksforgeeks.org/dsa/introduction-to-monotonic-queues/
+A monotonic Queue is a data structure the elements from the front to the end is strictly either increasing or decreasing.
+	Monotonic increasing queue: to push an element e, starts from the rear element, we pop out element s≥e(violation);
+	Monotonic decreasing queue: we pop out element s<=e (violation).
 1944. Number of Visible People in a Queue https://leetcode.com/problems/number-of-visible-people-in-a-queue/
 1762. Buildings With an Ocean View https://leetcode.com/problems/buildings-with-an-ocean-view/ 
 316. Remove Duplicate Letters; https://leetcode.com/problems/remove-duplicate-letters/
