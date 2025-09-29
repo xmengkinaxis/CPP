@@ -148,6 +148,7 @@ Binary Search: use left / right when searching array indices or intervals; using
 17. Converting an integer into a string is the quicker way of getting the digits from a number
 18. can use minus to convert a maxHeap to minHeap, instead of creating a special comparison function
 19. Need to pay attention to or skip the same items when processing an array to avoid the duplicate result, e.g. 15. 3Sum
+20. Index Marking (Sign Flipping): negate the number at the index to mark it as visited, for an integer array nums of length n where all numbers are in the range [1, n], e.g. 442. Find All Duplicates in an Array
 */
 
 // ??? sort all problems of meta once a week into different algorithms, whose numbers are less than 23 and after 29
@@ -347,7 +348,8 @@ int fnFindSubarrays(vector<int>& arr, int k) {
 }
 
 /* the monotonic stack might contain values or some index; 
-	if the stack contains index, the while condition should be changed accordingly
+	if the stack contains index, the while condition should be changed accordingly;
+	the monotonic stack can be implemented as an array; 
 	when the top the stack is at left and the current value is at right, < and > is opposite to the order decreasing and increasing
 		increase: > (remove all items in the stack whose values are larger than the current value, to make the current value largest in the stack)
 		decrease: < (remove all items in the stack whose values are less than the current value, to make the current value smallest in the stack)
@@ -364,19 +366,21 @@ similar: 896. Monotonic Array; https://leetcode.com/problems/monotonic-array/
 456. 132 Pattern; https://leetcode.com/problems/132-pattern/
 739. Daily Temperatures; https://leetcode.com/problems/daily-temperatures/
 402. Remove K Digits; https://leetcode.com/problems/remove-k-digits
+1081. Smallest Subsequence of Distinct Characters; https://leetcode.com/problems/smallest-subsequence-of-distinct-characters
 */
 int fnMonotonicIncreasingStack(vector<int>& arr) {
 	stack<int> stack; 
 	int ans = 0;
 
 	for (int n : arr) {
-		// this is monotonic increasing
-		// for monotonic decrease, change > to < 
-		while (!stack.empty() && stack.top() > n) { // it is while-loop here
+		// Here could be a condition to determine if n should be in the monotonic stack
+		// this is monotonic increasing stack;
+		// for monotonic decreasing stack, change > to < ;
+		while (!stack.empty() && stack.top() > n) { // it is while-loop here; 
 			// do logic here
 			stack.pop(); 
 		}
-		// might do logic here too
+		// might do logic here too (with some condition)
 		stack.push(n); // might be index pushed into the stack
 	}
 }
