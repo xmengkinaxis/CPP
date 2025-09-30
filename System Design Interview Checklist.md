@@ -76,6 +76,8 @@
     - [8.4 CDN: Push vs Pull](#84-cdn-push-vs-pull)
     - [8.5 Newsfeed: Push vs Pull (Fanout Models)](#85-newsfeed-push-vs-pull-fanout-models)
   - [9 System Design Principles](#9-system-design-principles)
+    - [9.1 Prioritized System Design Principles (for large-scale/distributed systems)](#91-prioritized-system-design-principles-for-large-scaledistributed-systems)
+    - [9.2 Inaccurate Principles (Most are OOD in fact)](#92-inaccurate-principles-most-are-ood-in-fact)
   - [10 System Design Best Practices](#10-system-design-best-practices)
   - [11 Scale](#11-scale)
     - [11.1 Load Balancers \& its algorithms - How to scale web servers (reverse proxy)](#111-load-balancers--its-algorithms---how-to-scale-web-servers-reverse-proxy)
@@ -1817,6 +1819,55 @@ After finishing the design, compare it against the requirements and evaluate tra
 
 ## 9 System Design Principles
 
+### 9.1 Prioritized System Design Principles (for large-scale/distributed systems)
+
+- **1. Scalability**
+  - First priority: can the system handle future growth?
+  - Interviewers want to see if you design beyond the “toy” version.
+
+- **2. Reliability & Fault Tolerance**
+  - A system must still function despite hardware, network, or software failures.
+  - Reliability keeps user trust; downtime or data loss is often worse than slowness.
+
+- **3. Availability**
+  - Users expect the system to be **up nearly all the time** (e.g., “five nines” SLA).
+  - Often goes hand-in-hand with reliability, but availability focuses on uptime.
+
+- **4. Performance (Latency & Throughput)**
+  - After scaling and reliability, the next priority is **speed**.
+  - Users tolerate some errors more than they tolerate slowness.
+
+- **5. Consistency (Data Correctness)**
+  - Data must make sense (no missing transactions, no duplicate orders).
+  - Trade-offs with availability (CAP theorem), so it’s not always #1.
+
+- **6. Security & Privacy**
+  - Always important, but in interviews often assumed unless the question is security-focused.
+  - Still: mention authentication, authorization, encryption, and compliance.
+
+- **7. Cost Efficiency**
+- Comes after functional goals are met.
+- Optimize infra cost, storage, replication, and cloud spend.
+
+- **8. Simplicity & Maintainability**
+  - Simpler systems are easier to operate and evolve.
+  - Important but secondary in interviews: complexity is sometimes excused for scale.
+  
+- **9. Observability (Monitoring & Logging)**
+  - Enables performance tuning, debugging, incident response.
+  - Crucial in real systems, but in a 45-min interview often mentioned last.
+
+- **10. Graceful Degradation & Resilience**
+  - Bonus points in interviews if you mention “system still works partially under failure.”
+  - Often part of reliability, but good to explicitly mention.
+
+- **Why this order?**
+  - **Top 4 (Scalability, Reliability, Availability, Performance)** = what interviewers care most about.
+  - **Middle (Consistency, Security, Cost)** = depend on business requirements.
+  - **Last (Simplicity, Observability, Resilience)** = valuable, but rarely the primary design driver in interview settings.
+
+### 9.2 Inaccurate Principles (Most are OOD in fact)
+
 System design principles are **fundamental guidelines** and concepts that help software engineers and architects create effective, efficient, and maintainable software systems. These principles provide **a framework for making decisions about the architecture, structure, and behavior of a system**. They aim to ensure that the resulting system meets both its functional and non-functional requirements while **being adaptable to changes and scalable**. Here are some key system design principles:
 
 1. **Modularity and Separation of Concerns**:
@@ -1831,23 +1882,23 @@ System design principles are **fundamental guidelines** and concepts that help s
    - Restrict access to internal details of a component and expose only necessary functionalities.
    - Encapsulation promotes information hiding and helps manage complexity.
 
-4. **Single Responsibility Principle (SRP)**:
+4. **Single Responsibility Principle (SRP)**: 4-8 are **SOLID Principles (OOD)**
    - Each module or class should have a single reason to change.
    - Promotes maintainability by reducing the impact of changes.
 
-5. **Open/Closed Principle**:
+5. **Open/Closed Principle (OCP)**:
    - Software entities (classes, modules) should be open for extension but closed for modification.
    - Encourages designing systems that can be easily extended without altering existing code.
 
-6. **Dependency Inversion Principle**:
+6. **Dependency Inversion Principle (DIP)**:
    - Depend on abstractions rather than concrete implementations.
    - Helps reduce coupling between components and promotes flexibility.
 
-7. **Liskov Substitution Principle**:
+7. **Liskov Substitution Principle (LSP)**:
    - Objects of a derived class should be substitutable for objects of the base class without affecting program correctness.
    - Ensures that derived classes adhere to the behavior expected by clients.
 
-8. **Interface Segregation Principle**:
+8. **Interface Segregation Principle (ISP)**:
    - Clients should not be forced to depend on interfaces they do not use.
    - Encourages designing fine-grained interfaces tailored to specific client needs.
 
@@ -1864,7 +1915,7 @@ System design principles are **fundamental guidelines** and concepts that help s
     - DRY promotes maintainability and reduces the risk of inconsistencies.
 
 12. **Separation of Concerns (SoC)**:
-    - Divide a system into distinct sections that address different aspects (e.g., user interface, data storage, business logic).
+    - Divide a system into distinct sections that address different aspects (e.g., user interface, business logic, data storage).
     - Separation improves modularity and allows independent development of components.
 
 13. **Scalability**:
@@ -1881,8 +1932,8 @@ System design principles are **fundamental guidelines** and concepts that help s
 
 These principles guide architects and developers in making informed decisions throughout the system design process. Applying these principles leads to systems that are more maintainable, adaptable, and aligned with the goals of the project.
 
-
 ## 10 System Design Best Practices
+
 System design best practices are guidelines and strategies that help software architects and engineers create high-quality, efficient, scalable, and maintainable software systems. These practices are based on industry experience and lessons learned, aiming to ensure that the resulting systems meet both functional and non-functional requirements. Here are some key system design best practices:
 
 1. **Understand Requirements**:
