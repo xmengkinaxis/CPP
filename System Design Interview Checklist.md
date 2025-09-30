@@ -1,168 +1,168 @@
 # System Design Interviews checklist
 
 - [System Design Interviews checklist](#system-design-interviews-checklist)
-- [0 Interview Preparation](#0-interview-preparation)
-  - [0.1 Time Allocation](#01-time-allocation)
-  - [0.2 Tips on the process](#02-tips-on-the-process)
-  - [0.3 Communicate through process](#03-communicate-through-process)
-  - [0.4 Goal and Purpose](#04-goal-and-purpose)
-  - [0.5 Expectations](#05-expectations)
-  - [0.6 Should do](#06-should-do)
-- [1 Ask clarifying and high-level design questions to **scope** the problem well](#1-ask-clarifying-and-high-level-design-questions-to-scope-the-problem-well)
-  - [1.1 Functional Requirements (Product Features/Functionalities + User Requirements)](#11-functional-requirements-product-featuresfunctionalities--user-requirements)
-    - [1.1.1 Product Features/Functionalties](#111-product-featuresfunctionalties)
-    - [1.1.2 User requirements](#112-user-requirements)
-  - [1.2 Non-Functional Requirements (Product Properties + User Expectations in term of performance) (PACELC + Reliable + Scalability + Extensibility)](#12-non-functional-requirements-product-properties--user-expectations-in-term-of-performance-pacelc--reliable--scalability--extensibility)
-    - [Availability](#availability)
-    - [Consistency](#consistency)
-    - [Efficiency (Performance, Latency and Throughput)](#efficiency-performance-latency-and-throughput)
-    - [Scalability](#scalability)
-    - [Reliability](#reliability)
-    - [Concurrency](#concurrency)
-    - [Serviceability or Manageability (simplicity)](#serviceability-or-manageability-simplicity)
-    - [Durability](#durability)
-    - [Security](#security)
-  - [1.3 Achieve NFR (Non Functional Requirement)](#13-achieve-nfr-non-functional-requirement)
-  - [1.4 Prioritize requirements](#14-prioritize-requirements)
-  - [1.5 Design Considerations (no do, or assumption)](#15-design-considerations-no-do-or-assumption)
-- [2 Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation](#2-capacity-estimation-and-constraints-traffic-storage-networkbandwidth-memorycache-estimation)
-  - [2.0 The common data used in estimation (TODO from Meta system design post???)](#20-the-common-data-used-in-estimation-todo-from-meta-system-design-post)
-  - [2.1 Traffic in write/second, or read/second](#21-traffic-in-writesecond-or-readsecond)
-    - [**Users**](#users)
-    - [**Requests:** How many requests per second/day do we expect?](#requests-how-many-requests-per-secondday-do-we-expect)
-  - [2.2 Storage in TB or GB/year](#22-storage-in-tb-or-gbyear)
-  - [2.3 Bandwidth in KB/s or MB/s](#23-bandwidth-in-kbs-or-mbs)
-  - [2.4 Memory (cache) in GB or TB /day](#24-memory-cache-in-gb-or-tb-day)
-  - [2.5 Servers' capability](#25-servers-capability)
-- [3 System API design](#3-system-api-design)
-- [4 Database Design (Define Data Model and Choose Database)](#4-database-design-define-data-model-and-choose-database)
-  - [4.0 Data Model](#40-data-model)
-  - [4.1 Database Schema or components/classes and their relationship/connection (static)](#41-database-schema-or-componentsclasses-and-their-relationshipconnection-static)
-  - [4.2 Choose Database](#42-choose-database)
-    - [Key Factors to Consider](#key-factors-to-consider)
-    - [Database Options](#database-options)
-    - [Hybrid Approach (Polyglot Persistence)](#hybrid-approach-polyglot-persistence)
-- [5 High-Level Design — This is pretty much a template, you can put in front of interviewers](#5-high-level-design--this-is-pretty-much-a-template-you-can-put-in-front-of-interviewers)
-- [6 Low-Level Design (LLD) - Deep Dive into Core Components (Detailed Component Design)](#6-low-level-design-lld---deep-dive-into-core-components-detailed-component-design)
-  - [6.0 **LLD Deep Dive Lenses**: **short checklists** for common components to deep dive](#60-lld-deep-dive-lenses-short-checklists-for-common-components-to-deep-dive)
-  - [6.1 Scale the design](#61-scale-the-design)
-    - [6.1.1 Purpose](#611-purpose)
-    - [6.1.2 Approaches / Methods](#612-approaches--methods)
-    - [6.1.3 Interview Strategy](#613-interview-strategy)
-  - [6.2 Partition and Replication](#62-partition-and-replication)
-    - [6.2.1 Replication](#621-replication)
-    - [6.2.2 Partition](#622-partition)
-      - [6.2.2.1 Horizontal Partitioning (Sharding)](#6221-horizontal-partitioning-sharding)
-      - [6.2.2.2 Vertical Partitioning](#6222-vertical-partitioning)
-      - [6.2.2.3 Horizontal vs Vertical Partitioning](#6223-horizontal-vs-vertical-partitioning)
-  - [6.3 Partitioning VS Sharding](#63-partitioning-vs-sharding)
-    - [6.3.1 Partitioning](#631-partitioning)
-    - [6.3.2 Sharding](#632-sharding)
-    - [6.3.3 Key Differences (Quick Recall)](#633-key-differences-quick-recall)
-    - [6.3.4 Comparison: Partitioning vs. Sharding](#634-comparison-partitioning-vs-sharding)
-- [7 Evaluation and Optimization](#7-evaluation-and-optimization)
-  - [7.1 Evaluation](#71-evaluation)
-  - [7.2 Security and Permissions](#72-security-and-permissions)
-  - [7.3 Analytics (User Behavior)](#73-analytics-user-behavior)
-  - [7.4 Monitoring and Telemetry](#74-monitoring-and-telemetry)
-  - [7.5 Bottleneck Identification and Mitigation](#75-bottleneck-identification-and-mitigation)
-  - [7.6 **Sample Wrap-up Answer (concise, interview-style):** 2–3 minute spoken version](#76-sample-wrap-up-answer-concise-interview-style-23-minute-spoken-version)
-  - [7.7 **1-Minute Wrap-up Answer:**](#77-1-minute-wrap-up-answer)
-  - [7.8 Words in Interview](#78-words-in-interview)
-- [8 Trade-off](#8-trade-off)
-  - [8.1 Common Trade-offs](#81-common-trade-offs)
-  - [8.2 Partitioning Trade-offs](#82-partitioning-trade-offs)
-  - [8.3 User Connections: HTTP vs WebSocket](#83-user-connections-http-vs-websocket)
-  - [8.4 CDN: Push vs Pull](#84-cdn-push-vs-pull)
-  - [8.5 Newsfeed: Push vs Pull (Fanout Models)](#85-newsfeed-push-vs-pull-fanout-models)
-- [9 System Design Principles](#9-system-design-principles)
-- [10 System Design Best Practices](#10-system-design-best-practices)
-- [11 Scale](#11-scale)
-  - [11.1 Load Balancers \& its algorithms - How to scale web servers (reverse proxy)](#111-load-balancers--its-algorithms---how-to-scale-web-servers-reverse-proxy)
-    - [metrics:](#metrics)
-    - [algorithms:](#algorithms)
-  - [11.2 Caching - How to scale database?  Caching or vertically and horizontally](#112-caching---how-to-scale-database--caching-or-vertically-and-horizontally)
-    - [Cache eviction policies:](#cache-eviction-policies)
-    - [Cache expiration](#cache-expiration)
-    - [Cache strategy (Invalidation):](#cache-strategy-invalidation)
-  - [11.3 CDN -\> How to prepare our assets to deliver faster across the world?](#113-cdn---how-to-prepare-our-assets-to-deliver-faster-across-the-world)
-  - [11.4 Cache, Scale, and Shard result](#114-cache-scale-and-shard-result)
-    - [cache result==\> low latency, high throughput and high available (if db server is down for a while)](#cache-result-low-latency-high-throughput-and-high-available-if-db-server-is-down-for-a-while)
-    - [Scalability result ==\> low-latency and fault-tolerant by replicate (deal with lower performance)](#scalability-result--low-latency-and-fault-tolerant-by-replicate-deal-with-lower-performance)
-    - [Shard result==\> high performance by destructing the load and high available, and latency-free](#shard-result-high-performance-by-destructing-the-load-and-high-available-and-latency-free)
-- [12 Components](#12-components)
-  - [Load Balancers](#load-balancers)
-  - [Key Value Stores](#key-value-stores)
-  - [Blob Storage](#blob-storage)
-  - [Database](#database)
-  - [Rate Limiters](#rate-limiters)
-  - [Monitoring Systems](#monitoring-systems)
-  - [Distributed messaging queues](#distributed-messaging-queues)
-  - [Distributed unique ID generators](#distributed-unique-id-generators)
-  - [Distributed search](#distributed-search)
-  - [Distributed logging services](#distributed-logging-services)
-  - [Distributed task schedulers](#distributed-task-schedulers)
-  - [Others](#others)
-- [13 Common Design patterns](#13-common-design-patterns)
-  - [13.1 Microservices](#131-microservices)
-  - [13.2 Event Sourcing](#132-event-sourcing)
-  - [13.3 CQRS (Command Query Responsibility Segregation)](#133-cqrs-command-query-responsibility-segregation)
-  - [13.4 Circuit Breaker:](#134-circuit-breaker)
-  - [13.5 Backpressure](#135-backpressure)
-  - [13.6 Object Pool](#136-object-pool)
-- [14 Q\&A](#14-qa)
-  - [Single point of failure require--\> Redundancy and Replication](#single-point-of-failure-require---redundancy-and-replication)
-  - [Checkpointing \<-- Fault Tolerance](#checkpointing----fault-tolerance)
-  - [Fault Tolerance -\> Checkpointing, Load Balancer, Replication](#fault-tolerance---checkpointing-load-balancer-replication)
-  - [Asynchronism](#asynchronism)
-  - [Extensibility](#extensibility)
-  - [Ranking](#ranking)
-  - [Recommendation](#recommendation)
-  - [Popular services:](#popular-services)
-  - [Interview tool](#interview-tool)
-  - [Questions:](#questions)
-- [15 Future + ML](#15-future--ml)
-- [16 Review, Evaluate, and Evolve](#16-review-evaluate-and-evolve)
-- [17 Intervew Framework](#17-intervew-framework)
-  - [17.1 Framework:](#171-framework)
-  - [17.2 Strategy for NFR](#172-strategy-for-nfr)
-  - [17.3 API Gateway](#173-api-gateway)
-  - [17.4 Common Single Points of Failure (SPOFs):](#174-common-single-points-of-failure-spofs)
-  - [17.5 Common Bottlenecks:](#175-common-bottlenecks)
-  - [17.6 Mitgation SPOFs and addressing bottlenecks involves](#176-mitgation-spofs-and-addressing-bottlenecks-involves)
-- [18 Terms](#18-terms)
-  - [**API Gateway**](#api-gateway)
-    - [Why it’s useful:](#why-its-useful)
-    - [Common Features of API Gateway:](#common-features-of-api-gateway)
-    - [Examples:](#examples)
-    - [✅ Pros of API Gateway](#-pros-of-api-gateway)
-    - [❌ Cons of API Gateway](#-cons-of-api-gateway)
-    - [**When do you need a Load Balancer with an API Gateway?**](#when-do-you-need-a-load-balancer-with-an-api-gateway)
-    - [**Connection Setup (Typical Flow)**](#connection-setup-typical-flow)
-    - [**Key Notes for Interviews**](#key-notes-for-interviews)
-  - [**Example: AWS Setup with API Gateway + Load Balancer**](#example-aws-setup-with-api-gateway--load-balancer)
-    - [**Scenario**](#scenario)
-    - [**Architecture Flow**](#architecture-flow)
-    - [**Why Both?**](#why-both)
-    - [**In an Interview, You Can Say:**](#in-an-interview-you-can-say)
-    - [**1. Web Server / Reverse Proxy (Nginx, Envoy, HAProxy)**](#1-web-server--reverse-proxy-nginx-envoy-haproxy)
-    - [**2. WebSockets for Real-Time**](#2-websockets-for-real-time)
-    - [**3. API Gateway (if multiple services)**](#3-api-gateway-if-multiple-services)
-    - [✅ So, can API Gateway replace Web Server + WebSocket?](#-so-can-api-gateway-replace-web-server--websocket)
-    - [🔑 In your note, I’d refine it like this:](#-in-your-note-id-refine-it-like-this)
-  - [Single Point of Failure (SPOF) vs Bottleneck](#single-point-of-failure-spof-vs-bottleneck)
-    - [🔹 **Single Point of Failure (SPOF)**](#-single-point-of-failure-spof)
-    - [🔹 **Bottleneck**](#-bottleneck)
-    - [🔹 **Key Differences**](#-key-differences)
-    - [🎯 System Design Interview Priority](#-system-design-interview-priority)
-    - [🔑 Rule of Thumb for Interviews](#-rule-of-thumb-for-interviews)
+  - [0 Interview Preparation](#0-interview-preparation)
+    - [0.1 Time Allocation](#01-time-allocation)
+    - [0.2 Tips on the process](#02-tips-on-the-process)
+    - [0.3 Communicate through process](#03-communicate-through-process)
+    - [0.4 Goal and Purpose](#04-goal-and-purpose)
+    - [0.5 Expectations](#05-expectations)
+    - [0.6 Should do](#06-should-do)
+  - [1 Ask clarifying and high-level design questions to **scope** the problem well](#1-ask-clarifying-and-high-level-design-questions-to-scope-the-problem-well)
+    - [1.1 Functional Requirements (Product Features/Functionalities + User Requirements)](#11-functional-requirements-product-featuresfunctionalities--user-requirements)
+      - [1.1.1 Product Features/Functionalties](#111-product-featuresfunctionalties)
+      - [1.1.2 User requirements](#112-user-requirements)
+    - [1.2 Non-Functional Requirements (Product Properties + User Expectations in term of performance) (PACELC + Reliable + Scalability + Extensibility)](#12-non-functional-requirements-product-properties--user-expectations-in-term-of-performance-pacelc--reliable--scalability--extensibility)
+      - [Availability](#availability)
+      - [Consistency](#consistency)
+      - [Efficiency (Performance, Latency and Throughput)](#efficiency-performance-latency-and-throughput)
+      - [Scalability](#scalability)
+      - [Reliability](#reliability)
+      - [Concurrency](#concurrency)
+      - [Serviceability or Manageability (simplicity)](#serviceability-or-manageability-simplicity)
+      - [Durability](#durability)
+      - [Security](#security)
+    - [1.3 Achieve NFR (Non Functional Requirement)](#13-achieve-nfr-non-functional-requirement)
+    - [1.4 Prioritize requirements](#14-prioritize-requirements)
+    - [1.5 Design Considerations (no do, or assumption)](#15-design-considerations-no-do-or-assumption)
+  - [2 Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation](#2-capacity-estimation-and-constraints-traffic-storage-networkbandwidth-memorycache-estimation)
+    - [2.0 The common data used in estimation (TODO from Meta system design post???)](#20-the-common-data-used-in-estimation-todo-from-meta-system-design-post)
+    - [2.1 Traffic in write/second, or read/second](#21-traffic-in-writesecond-or-readsecond)
+      - [**Users**](#users)
+      - [**Requests:** How many requests per second/day do we expect?](#requests-how-many-requests-per-secondday-do-we-expect)
+    - [2.2 Storage in TB or GB/year](#22-storage-in-tb-or-gbyear)
+    - [2.3 Bandwidth in KB/s or MB/s](#23-bandwidth-in-kbs-or-mbs)
+    - [2.4 Memory (cache) in GB or TB /day](#24-memory-cache-in-gb-or-tb-day)
+    - [2.5 Servers' capability](#25-servers-capability)
+  - [3 System API design](#3-system-api-design)
+  - [4 Database Design (Define Data Model and Choose Database)](#4-database-design-define-data-model-and-choose-database)
+    - [4.0 Data Model](#40-data-model)
+    - [4.1 Database Schema or components/classes and their relationship/connection (static)](#41-database-schema-or-componentsclasses-and-their-relationshipconnection-static)
+    - [4.2 Choose Database](#42-choose-database)
+      - [Key Factors to Consider](#key-factors-to-consider)
+      - [Database Options](#database-options)
+      - [Hybrid Approach (Polyglot Persistence)](#hybrid-approach-polyglot-persistence)
+  - [5 High-Level Design — This is pretty much a template, you can put in front of interviewers](#5-high-level-design--this-is-pretty-much-a-template-you-can-put-in-front-of-interviewers)
+  - [6 Low-Level Design (LLD) - Deep Dive into Core Components (Detailed Component Design)](#6-low-level-design-lld---deep-dive-into-core-components-detailed-component-design)
+    - [6.0 **LLD Deep Dive Lenses**: **short checklists** for common components to deep dive](#60-lld-deep-dive-lenses-short-checklists-for-common-components-to-deep-dive)
+    - [6.1 Scale the design](#61-scale-the-design)
+      - [6.1.1 Purpose](#611-purpose)
+      - [6.1.2 Approaches / Methods](#612-approaches--methods)
+      - [6.1.3 Interview Strategy](#613-interview-strategy)
+    - [6.2 Partition and Replication](#62-partition-and-replication)
+      - [6.2.1 Replication](#621-replication)
+      - [6.2.2 Partition](#622-partition)
+        - [6.2.2.1 Horizontal Partitioning (Sharding)](#6221-horizontal-partitioning-sharding)
+        - [6.2.2.2 Vertical Partitioning](#6222-vertical-partitioning)
+        - [6.2.2.3 Horizontal vs Vertical Partitioning](#6223-horizontal-vs-vertical-partitioning)
+    - [6.3 Partitioning VS Sharding](#63-partitioning-vs-sharding)
+      - [6.3.1 Partitioning](#631-partitioning)
+      - [6.3.2 Sharding](#632-sharding)
+      - [6.3.3 Key Differences (Quick Recall)](#633-key-differences-quick-recall)
+      - [6.3.4 Comparison: Partitioning vs. Sharding](#634-comparison-partitioning-vs-sharding)
+  - [7 Evaluation and Optimization](#7-evaluation-and-optimization)
+    - [7.1 Evaluation](#71-evaluation)
+    - [7.2 Security and Permissions](#72-security-and-permissions)
+    - [7.3 Analytics (User Behavior)](#73-analytics-user-behavior)
+    - [7.4 Monitoring and Telemetry](#74-monitoring-and-telemetry)
+    - [7.5 Bottleneck Identification and Mitigation](#75-bottleneck-identification-and-mitigation)
+    - [7.6 **Sample Wrap-up Answer (concise, interview-style):** 2–3 minute spoken version](#76-sample-wrap-up-answer-concise-interview-style-23-minute-spoken-version)
+    - [7.7 **1-Minute Wrap-up Answer:**](#77-1-minute-wrap-up-answer)
+    - [7.8 Words in Interview](#78-words-in-interview)
+  - [8 Trade-off](#8-trade-off)
+    - [8.1 Common Trade-offs](#81-common-trade-offs)
+    - [8.2 Partitioning Trade-offs](#82-partitioning-trade-offs)
+    - [8.3 User Connections: HTTP vs WebSocket](#83-user-connections-http-vs-websocket)
+    - [8.4 CDN: Push vs Pull](#84-cdn-push-vs-pull)
+    - [8.5 Newsfeed: Push vs Pull (Fanout Models)](#85-newsfeed-push-vs-pull-fanout-models)
+  - [9 System Design Principles](#9-system-design-principles)
+  - [10 System Design Best Practices](#10-system-design-best-practices)
+  - [11 Scale](#11-scale)
+    - [11.1 Load Balancers \& its algorithms - How to scale web servers (reverse proxy)](#111-load-balancers--its-algorithms---how-to-scale-web-servers-reverse-proxy)
+      - [metrics:](#metrics)
+      - [algorithms:](#algorithms)
+    - [11.2 Caching - How to scale database?  Caching or vertically and horizontally](#112-caching---how-to-scale-database--caching-or-vertically-and-horizontally)
+      - [Cache eviction policies:](#cache-eviction-policies)
+      - [Cache expiration](#cache-expiration)
+      - [Cache strategy (Invalidation):](#cache-strategy-invalidation)
+    - [11.3 CDN -\> How to prepare our assets to deliver faster across the world?](#113-cdn---how-to-prepare-our-assets-to-deliver-faster-across-the-world)
+    - [11.4 Cache, Scale, and Shard result](#114-cache-scale-and-shard-result)
+      - [cache result==\> low latency, high throughput and high available (if db server is down for a while)](#cache-result-low-latency-high-throughput-and-high-available-if-db-server-is-down-for-a-while)
+      - [Scalability result ==\> low-latency and fault-tolerant by replicate (deal with lower performance)](#scalability-result--low-latency-and-fault-tolerant-by-replicate-deal-with-lower-performance)
+      - [Shard result==\> high performance by destructing the load and high available, and latency-free](#shard-result-high-performance-by-destructing-the-load-and-high-available-and-latency-free)
+  - [12 Components](#12-components)
+    - [Load Balancers](#load-balancers)
+    - [Key Value Stores](#key-value-stores)
+    - [Blob Storage](#blob-storage)
+    - [Database](#database)
+    - [Rate Limiters](#rate-limiters)
+    - [Monitoring Systems](#monitoring-systems)
+    - [Distributed messaging queues](#distributed-messaging-queues)
+    - [Distributed unique ID generators](#distributed-unique-id-generators)
+    - [Distributed search](#distributed-search)
+    - [Distributed logging services](#distributed-logging-services)
+    - [Distributed task schedulers](#distributed-task-schedulers)
+    - [Others](#others)
+  - [13 Common Design patterns](#13-common-design-patterns)
+    - [13.1 Microservices](#131-microservices)
+    - [13.2 Event Sourcing](#132-event-sourcing)
+    - [13.3 CQRS (Command Query Responsibility Segregation)](#133-cqrs-command-query-responsibility-segregation)
+    - [13.4 Circuit Breaker:](#134-circuit-breaker)
+    - [13.5 Backpressure](#135-backpressure)
+    - [13.6 Object Pool](#136-object-pool)
+  - [14 Q\&A](#14-qa)
+    - [Single point of failure require--\> Redundancy and Replication](#single-point-of-failure-require---redundancy-and-replication)
+    - [Checkpointing \<-- Fault Tolerance](#checkpointing----fault-tolerance)
+    - [Fault Tolerance -\> Checkpointing, Load Balancer, Replication](#fault-tolerance---checkpointing-load-balancer-replication)
+    - [Asynchronism](#asynchronism)
+    - [Extensibility](#extensibility)
+    - [Ranking](#ranking)
+    - [Recommendation](#recommendation)
+    - [Popular services:](#popular-services)
+    - [Interview tool](#interview-tool)
+    - [Questions:](#questions)
+  - [15 Future + ML](#15-future--ml)
+  - [16 Review, Evaluate, and Evolve](#16-review-evaluate-and-evolve)
+  - [17 Intervew Framework](#17-intervew-framework)
+    - [17.1 Framework:](#171-framework)
+    - [17.2 Strategy for NFR](#172-strategy-for-nfr)
+    - [17.3 API Gateway](#173-api-gateway)
+    - [17.4 Common Single Points of Failure (SPOFs):](#174-common-single-points-of-failure-spofs)
+    - [17.5 Common Bottlenecks:](#175-common-bottlenecks)
+    - [17.6 Mitgation SPOFs and addressing bottlenecks involves](#176-mitgation-spofs-and-addressing-bottlenecks-involves)
+  - [18 Terms](#18-terms)
+    - [**API Gateway**](#api-gateway)
+      - [Why it’s useful:](#why-its-useful)
+      - [Common Features of API Gateway:](#common-features-of-api-gateway)
+      - [Examples:](#examples)
+      - [✅ Pros of API Gateway](#-pros-of-api-gateway)
+      - [❌ Cons of API Gateway](#-cons-of-api-gateway)
+      - [**When do you need a Load Balancer with an API Gateway?**](#when-do-you-need-a-load-balancer-with-an-api-gateway)
+      - [**Connection Setup (Typical Flow)**](#connection-setup-typical-flow)
+      - [**Key Notes for Interviews**](#key-notes-for-interviews)
+    - [**Example: AWS Setup with API Gateway + Load Balancer**](#example-aws-setup-with-api-gateway--load-balancer)
+      - [**Scenario**](#scenario)
+      - [**Architecture Flow**](#architecture-flow)
+      - [**Why Both?**](#why-both)
+      - [**In an Interview, You Can Say:**](#in-an-interview-you-can-say)
+      - [**1. Web Server / Reverse Proxy (Nginx, Envoy, HAProxy)**](#1-web-server--reverse-proxy-nginx-envoy-haproxy)
+      - [**2. WebSockets for Real-Time**](#2-websockets-for-real-time)
+      - [**3. API Gateway (if multiple services)**](#3-api-gateway-if-multiple-services)
+      - [✅ So, can API Gateway replace Web Server + WebSocket?](#-so-can-api-gateway-replace-web-server--websocket)
+      - [🔑 In your note, I’d refine it like this:](#-in-your-note-id-refine-it-like-this)
+    - [Single Point of Failure (SPOF) vs Bottleneck](#single-point-of-failure-spof-vs-bottleneck)
+      - [🔹 **Single Point of Failure (SPOF)**](#-single-point-of-failure-spof)
+      - [🔹 **Bottleneck**](#-bottleneck)
+      - [🔹 **Key Differences**](#-key-differences)
+      - [🎯 System Design Interview Priority](#-system-design-interview-priority)
+      - [🔑 Rule of Thumb for Interviews](#-rule-of-thumb-for-interviews)
 
 
 <!-- TOC -->
 
-# 0 Interview Preparation
+## 0 Interview Preparation
 
-## 0.1 Time Allocation
+### 0.1 Time Allocation
 
 Clarify the problem, break down the complex problem into parts, discuss the overall design, and deep dive into some components; identify and analyze the tradeoffs, recover from the failures;
 
@@ -171,13 +171,13 @@ Clarify the problem, break down the complex problem into parts, discuss the over
 3. Design deep dive; 20 minutes (10 - 25 m)
 4. Wrap / Evaluation / feedback / discussion / question : 5 minutes (3 - 5 m)
 
-## 0.2 Tips on the process
+### 0.2 Tips on the process
 
 1. Manage your **time** efficiently
 2. Discuss **trade-offs** with your interviewers
 3. Start wide and end deep
 
-## 0.3 Communicate through process
+### 0.3 Communicate through process
 
 1. Start with the problem statement: clearly explain the problem and the requirements for the system; then explain your approach and how you plan to tackle the problem
 2. Break down the problem: divide the problem into smaller parts and explain how you will solve each part individually
@@ -195,7 +195,7 @@ Demonstrate your ability to anticipate and address potential issues in your desi
 - Consider security: protect sensitive data and ensure security
 - Be prepared to explain why you made certain design decisions and how they address edge cases and constraints.
 
-## 0.4 Goal and Purpose
+### 0.4 Goal and Purpose
 
 Interviewer:
 
@@ -209,7 +209,7 @@ Interviewee:
 - Demonstrate your thought process and domain-specific knowledge; Presentation matter.
 - It is critical to demonstrate your ability to recognize and evaluate trade-offs, as it reflects your understanding of various design aspects and their implications
 
-## 0.5 Expectations
+### 0.5 Expectations
 
 - Mid-level System Designers
   - Be able to identify and address performance, scalability, and reliability issues
@@ -226,7 +226,7 @@ Interviewee:
   - be **recognized** for designing and implementing complex and large-scale systems; (have a good reputation)
   - have a deep and thorough understanding of trade-offs, performance optimizations, and long-term scalability
 
-## 0.6 Should do
+### 0.6 Should do
 
 Start with process → methodology → scale → reliability → meta-mindset.
 
@@ -266,7 +266,7 @@ Start with process → methodology → scale → reliability → meta-mindset.
     - What APIs does it expose? (interface)
     - What data does it store/manage? (state/data)
 
-# 1 Ask clarifying and high-level design questions to **scope** the problem well
+## 1 Ask clarifying and high-level design questions to **scope** the problem well
 
 It is what an interviewer is expecting from us; the interviewer is evaluating your investigative abilities
 
@@ -276,16 +276,16 @@ whenever you interact with a platform; think of who, why, what, and how. Looking
 
 The functional requirements are the **features and functionalities** that the user will get, whereas the non-functional requirements are the **expectations in terms of performance** from the system.
 
-## 1.1 Functional Requirements (Product Features/Functionalities + User Requirements)
+### 1.1 Functional Requirements (Product Features/Functionalities + User Requirements)
 
-### 1.1.1 Product Features/Functionalties
+#### 1.1.1 Product Features/Functionalties
 
 - **Goal**: What is the goal?
 - **Functions**: What does the system do?
 - **Input and output**: What are the inputs and outputs of the system?
 - **Criticality**: What is the criticality of the system?
 
-### 1.1.2 User requirements
+#### 1.1.2 User requirements
 
 - **User types**: Who is going to use it? How many kinds of users are there? The categories of people. E.g. Creator, Viewer, and Advertiser.
 - **Purpose**: Why? Their incentives to use the system. We develop the whats (incentives/procedures) and the whys (why someone would interact with that kind of content).
@@ -295,14 +295,14 @@ The functional requirements are the **features and functionalities** that the us
   - What kind of **operations** does the system support?
   - Read-Heavery vs Write-Heavy
 
-## 1.2 Non-Functional Requirements (Product Properties + User Expectations in term of performance) (PACELC + Reliable + Scalability + Extensibility)
+### 1.2 Non-Functional Requirements (Product Properties + User Expectations in term of performance) (PACELC + Reliable + Scalability + Extensibility)
 
 CAP theory. CP or AP? **PACELC (When Partition, Availability or Consistency, Else Latency or Consistency)**; High reliable and high scalable;  
 Reliability, Redundant, Stable, Security, Availability 100 up-time?, Simplicity vs Complexity, Maintainability, Consistency, or eventual consistency <br>
 
 Need enough resources to handle the increasing load; the system must be simple so that it is easy to scale at any point in time; **performance should always be increased with scalability**.
 
-### Availability
+#### Availability
 
 - System must be highly available to keep the users **engaged** with the platform
 - **Every request received by a non-failing node in the system must result in a response**. Refers to the system's ability to remain accessible even if one or more nodes in the system to go down.
@@ -314,7 +314,7 @@ Need enough resources to handle the increasing load; the system must be simple s
 - Availability can be **achieved** through CDN (Cache), redundancy (replica of servers and data) , load balancing (distribute the requests only to the active healthy nodes by local LB and to different locations by global LB), choosing high availability databases
 - V.S. Reliable: if a system is reliable, it is available. However, if it is available, it is not necessarily reliable.
 
-### Consistency
+#### Consistency
 
 All nodes see the same data at the same time, no matter users read/write from/to any node. Equivalent to having a single up-to-date copy of the data. Consistency is the agreement between multiple nodes in a distributed system to achieve a certain value.
 
@@ -323,7 +323,7 @@ All nodes see the same data at the same time, no matter users read/write from/to
 - **Eventual consistency:** ensure data of each node of the database get consistent eventually; offers low latency at the risk of returning stale data.
 - high consistency on messages can be achieved with the help of a FIFO messaging queue with strict ordering
 
-### Efficiency (Performance, Latency and Throughput)
+#### Efficiency (Performance, Latency and Throughput)
 
 - Efficiency is measured mainly by:
   - Latency / Response Time
@@ -355,7 +355,7 @@ All nodes see the same data at the same time, no matter users read/write from/to
 - User Experience Angle
   - Efficiency isn’t just raw metrics — it’s about smooth experience (e.g., video streaming must feel seamless).
 
-### Scalability
+#### Scalability
 
 - **Definition & Core Idea**
   - Scalability = the ability of a distributed system to **handle growth** in workload, users, and data **without degradation in performance**.
@@ -403,7 +403,7 @@ All nodes see the same data at the same time, no matter users read/write from/to
 - increase resources and performance with increasing load and traffic over the existing system without affecting the complexity and performance; need enough resources to handle the increasing load, for it would be increased at any point in time; should be simple and easy to scale; performance should always be increased with scalability
 - The system should be able to scale up and down, depending on the number of requests; Auto-scaling policies are crucial for maintaining the desired level of performance, availability, and cost efficiency
 
-### Reliability
+#### Reliability
 
 - **Goal**: keep delivering its service even when one or several of its software or hardware components fail; handle faults, failures, and errors;  
   - A **fault** is a defect or flaw in the system's components. A fault is a defect or flaw in the system's hardware or software that can potentially cause the system to deviate from its expected behavior.
@@ -418,27 +418,27 @@ All nodes see the same data at the same time, no matter users read/write from/to
     - load balancer: achieve with health check (heartbeat protocol, gossip protocol), and monitoring services with alerts
     - services are decoupled and isolated
 
-### Concurrency
+#### Concurrency
 
 To maximize system's performance: high bandwidth and high throughput.
 
-### Serviceability or Manageability (simplicity)
+#### Serviceability or Manageability (simplicity)
 
 - is the **simplicity** and **speed** with which a system can be repaired or maintained.
   - The ease of diagnosing and understanding problems when they occur
   - The ease of making updates or modifications
   - how simple the system is to operate
 
-### Durability
+#### Durability
 
 - The data, once uploaded, shouldn't be lost unless users explicitly delete that data.
 - The replication and monitoring services ensure the durability of the data.
 
-### Security
+#### Security
 
 Be secure via end-to-end encryption
 
-## 1.3 Achieve NFR (Non Functional Requirement)
+### 1.3 Achieve NFR (Non Functional Requirement)
 
 The table summarizing how to achieve various important attributes in system design:
 
@@ -490,11 +490,11 @@ The table summarizing how to achieve various important attributes in system desi
 
 Remember that achieving these attributes often involves trade-offs, and **the strategies you choose will depend on your specific application requirements, budget, and the complexity you're willing to manage**.
 
-## 1.4 Prioritize requirements
+### 1.4 Prioritize requirements
 
 Break it down, to the most important, minimal features for your system.
 
-## 1.5 Design Considerations (no do, or assumption)
+### 1.5 Design Considerations (no do, or assumption)
 
 - Security: No user authentication or authorization; both are already completed
 - Result: **get all or nothing, not a partial result**
@@ -504,7 +504,7 @@ Break it down, to the most important, minimal features for your system.
   - add a rate limiter (prevent abuse behavior, provide a fair and reasonable use of the resource's capacity when sharing among many users, control the cost of operations and avoid excess costs)
 - Assumption: **surge in traffic**
 
-# 2 Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation
+## 2 Capacity Estimation and Constraints: Traffic, Storage, Network/Bandwidth, Memory(cache) Estimation
 
 - Goal
   - Estimate the **scale of the system** we are going to design.
@@ -522,13 +522,13 @@ Break it down, to the most important, minimal features for your system.
   - If this is a **read-heavy**, estimate **read throughput**
   - If a system is **write-heavy** then we need to estimate the **Storage** requirements per day, per year, and for 5–10 years
 
-## 2.0 The common data used in estimation (TODO from Meta system design post???)
+### 2.0 The common data used in estimation (TODO from Meta system design post???)
 
 - second per day? 86400 - > 10^5;
 
-## 2.1 Traffic in write/second, or read/second
+### 2.1 Traffic in write/second, or read/second
 
-### **Users**
+#### **Users**
 
 - User types, e.g. riders vs drivers, guest vs owner
 - Total user
@@ -537,7 +537,7 @@ Break it down, to the most important, minimal features for your system.
 - Active connections per minutes
 - Meta data required for each user
 
-### **Requests:** How many requests per second/day do we expect?
+#### **Requests:** How many requests per second/day do we expect?
 
 - Type: (read, write, search); fast reads, fast writes, or both?
 - Count: write and Read count in million per day
@@ -546,7 +546,7 @@ Break it down, to the most important, minimal features for your system.
 
 How much will it grow each year?
 
-## 2.2 Storage in TB or GB/year
+### 2.2 Storage in TB or GB/year
 
 - **Write**: Write count * write size; e.g. 400M * 300B = 120GB/day
 
@@ -561,7 +561,7 @@ How much will it grow each year?
   - **Replication:** replication for fault tolerance; e.g. 250TB * 2 = 500TB
   (500TB / 4T/server = 125 servers) (NOTE: too big for a single machine, so must be partitioned) (so is the cache)
 
-## 2.3 Bandwidth in KB/s or MB/s
+### 2.3 Bandwidth in KB/s or MB/s
 
 Bandwidth will decide how to manage traffic and balance load between servers. ???
 
@@ -569,7 +569,7 @@ Bandwidth will decide how to manage traffic and balance load between servers. ??
 - **Egress (download, outgoing):** read count per second/minute * read average size
 - **Ratio:** read or write intensive (need partition, or cache, or cache strategies)
 
-## 2.4 Memory (cache) in GB or TB /day
+### 2.4 Memory (cache) in GB or TB /day
 
 - 80-20 rule: 20% of hot pastes generate 80% of traffic, so only cache these 20% of pastes
 - 20% of daily traffic and based on client's usage patterns, can adjust how many cache servers we need
@@ -577,11 +577,11 @@ Bandwidth will decide how to manage traffic and balance load between servers. ??
 
 Benefit: Low latency (real time)
 
-## 2.5 Servers' capability
+### 2.5 Servers' capability
 
 Requests per second that a server can handle; used in estimating how many servers are required
 
-# 3 System API design
+## 3 System API design
 
 **Goal:**
 
@@ -652,9 +652,9 @@ Requests per second that a server can handle; used in estimating how many server
 e.g. This process returns a JSON object that contains a list of all the possible items in the specified category that also fall within the specified radius
 - Each entry has a place name, address, category, rating, and thumbnail
 
-# 4 Database Design (Define Data Model and Choose Database)
+## 4 Database Design (Define Data Model and Choose Database)
 
-## 4.0 Data Model
+### 4.0 Data Model
 
 **Benefit:** Defining the data model in the early part of the interview will
 
@@ -676,7 +676,7 @@ e.g. This process returns a JSON object that contains a list of all the possible
 - Separate the most frequently and less frequently accessed storage clusters from each other for optimal access time; then can apply different configurations, cache strategies, shardings, etc.
 - Separate the read and the write onto different database; CQRS (Command Query Responsibility Segregation) separates the responsibility of reading data (queries) from writing/updating data (commands) in a system；
 
-## 4.1 Database Schema or components/classes and their relationship/connection (static)
+### 4.1 Database Schema or components/classes and their relationship/connection (static)
 
 - emphasizes **scale + trade-offs** — which is exactly what interviewers want.
 - Entities + Relations → Metadata vs Objects → Indexing → Scaling (Sharding/Replication/Caching) → Trade-offs.
@@ -740,12 +740,12 @@ latest (CreationDate), popular (likes, comments, shares), relevant (used in rank
 Indexing needs a primary key on the table with a unique value; Using one or more columns <br>
 Ordered indexing (increasing or decreasing) or Hash-indexing <br>
 
-## 4.2 Choose Database
+### 4.2 Choose Database
 
 Choosing the proper database is a **critical decision** that significantly impacts **performance, scalability, reliability, and cost** of the system.
 **Structured for recall (Factors → Options → Hybrid).**
 
-### Key Factors to Consider
+#### Key Factors to Consider
 
 - **Data Model**
   - Structured: Relational (SQL).
@@ -786,7 +786,7 @@ Choosing the proper database is a **critical decision** that significantly impac
   - Licensing & cloud service costs.
   - Integration with existing tools, frameworks, monitoring.
 
-### Database Options
+#### Database Options
 
 - **Relational Databases (SQL)**
   - MySQL, PostgreSQL, Oracle.
@@ -804,7 +804,7 @@ Choosing the proper database is a **critical decision** that significantly impac
   - Best for large blobs (images, videos, logs).
   - Metadata stored separately (SQL/NoSQL).
 
-### Hybrid Approach (Polyglot Persistence)
+#### Hybrid Approach (Polyglot Persistence)
 
 Most real-world systems combine multiple storage types:
 
@@ -813,7 +813,7 @@ Most real-world systems combine multiple storage types:
 - Object Storage → large files.
 - Cache/CDN → latency reduction.
 
-# 5 High-Level Design — This is pretty much a template, you can put in front of interviewers
+## 5 High-Level Design — This is pretty much a template, you can put in front of interviewers
 
 - **Goal**
   - The candidate should identify various **system entities**, how they will **interact** with each other, and how data would be **flowing** in the system
@@ -875,7 +875,7 @@ Most real-world systems combine multiple storage types:
   - Use **Single Responsibility Principle**: small, autonomous services that scale and configure independently.
   - In interview: **start simple**, then **iterate with scaling, caching, failover** when asked.
 
-# 6 Low-Level Design (LLD) - Deep Dive into Core Components (Detailed Component Design)
+## 6 Low-Level Design (LLD) - Deep Dive into Core Components (Detailed Component Design)
 
 - **Purpose**
   - Go deeper into the **design of 2–3 critical components** (**performance-sensitive** or **core to functionality**).
@@ -1030,7 +1030,7 @@ Most real-world systems combine multiple storage types:
   - Draw **Cache** branch on **read-heavy path** (with arrows for read/write strategies).
   - Draw **Queue** branch on **write/async path** (**non-blocking**, background).
 
-## 6.0 **LLD Deep Dive Lenses**: **short checklists** for common components to deep dive
+### 6.0 **LLD Deep Dive Lenses**: **short checklists** for common components to deep dive
 
 - **Cache Lens**
   - **Where to cache?** (different component/layer: client, CDN, app server, DB, object storage)
@@ -1091,11 +1091,11 @@ Most real-world systems combine multiple storage types:
     - If asked “How would you design the feed generator?” → use **Data Processing Lens**.
     - If asked “How would you handle caching for hot data?” → use **Cache Lens**
 
-## 6.1 Scale the design
+### 6.1 Scale the design
 
 Scaling ensures the system can handle increased **traffic, data, and complexity** while maintaining **performance, reliability, and availability**.
 
-### 6.1.1 Purpose
+#### 6.1.1 Purpose
 
 Identify, address, and mitigate single points of failure (SPOFs) and bottlenecks using principles of scalable system design.
 
@@ -1109,7 +1109,7 @@ Identify, address, and mitigate single points of failure (SPOFs) and bottlenecks
 - **Mitigate bottlenecks with scalable design principles, given the constraints.**
   - Always consider **trade-offs**: consistency vs availability, latency vs cost, complexity vs simplicity.
 
-### 6.1.2 Approaches / Methods
+#### 6.1.2 Approaches / Methods
 
 - **Single Point of Failure (SPOF)**
   - Ask (How to identify): “If this component fails, does the whole system fail?”
@@ -1167,7 +1167,7 @@ Identify, address, and mitigate single points of failure (SPOFs) and bottlenecks
     - Pro: Faster reads.
     - Con: Slower writes (inserts/updates/deletes)
 
-### 6.1.3 Interview Strategy
+#### 6.1.3 Interview Strategy
 
 When asked *“How would you scale this system?”*:
 
@@ -1176,7 +1176,7 @@ When asked *“How would you scale this system?”*:
 3. Propose **incremental fixes** (LB → cache → replication → partitioning → async workers).
 4. Discuss **trade-offs** at each step.
 
-## 6.2 Partition and Replication
+### 6.2 Partition and Replication
 
 - Why we need them
   - Core of a distributed system, used to **scale out** and **increase availability**
@@ -1205,7 +1205,7 @@ When asked *“How would you scale this system?”*:
 | **Consistency Impact** | Each shard is independent, no sync needed across shards (but adds complexity for joins) | Requires syncing data → introduces consistency challenges (eventual vs strong)  |
 | **Use Cases**          | Very large datasets, high write throughput (e.g., user data sharding by ID)             | Read-heavy workloads, high availability (e.g., product catalog, caching layers) |
 
-### 6.2.1 Replication
+#### 6.2.1 Replication
 
 Organize into **sections** (definition → benefits → replication factor → replication types → replication models → trade-offs).
 
@@ -1304,7 +1304,7 @@ Replication = keeping multiple copies of data across servers (often in different
   - Consistency vs Availability (CAP theorem).
   - Choose depending on workload (read vs write heavy, geo needs).
 
-### 6.2.2 Partition
+#### 6.2.2 Partition
 
 Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorganize** your note on Partition so it’s interview-ready, clear, and concise:
 
@@ -1342,7 +1342,7 @@ Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorgan
     - Together, they balance **scale** and **fault tolerance**.
   - Partitioning relational data typically means breaking tables **horizontally (by rows)** or **vertically (by columns)**.
 
-#### 6.2.2.1 Horizontal Partitioning (Sharding)
+##### 6.2.2.1 Horizontal Partitioning (Sharding)
 
 - Note structure: Definition → Benefits → Methods → Criteria → Rebalancing → Limitations/Trade-offs
 
@@ -1434,7 +1434,7 @@ Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorgan
   - *Problems introduced?* (rebalancing, hotspots, cross-shard queries, joins)
   - *Solutions to problems?* (consistent hashing, lookup service, denormalization, query routing)
 
-#### 6.2.2.2 Vertical Partitioning
+##### 6.2.2.2 Vertical Partitioning
 
 - Structure: **definition → benefits → challenges → design considerations**, which matches how interviewers expect you to structure the explanation.
 
@@ -1474,7 +1474,7 @@ Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorgan
     - Minimize re-sharding cost with **consistent hashing** or metadata lookup services.
   - **Load distribution:** aim for even spread to avoid hotspots.
 
-#### 6.2.2.3 Horizontal vs Vertical Partitioning
+##### 6.2.2.3 Horizontal vs Vertical Partitioning
 
 | Aspect          | **Horizontal Partitioning (Sharding)**                                                                                                                                | **Vertical Partitioning**                                                                                                                                                                                 |
 | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1489,9 +1489,9 @@ Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorgan
   - **Horizontal = scaling out rows** (good for *large datasets & parallelism*).
   - **Vertical = scaling out features/functions** (good for *isolation & modularity*).
 
-## 6.3 Partitioning VS Sharding
+### 6.3 Partitioning VS Sharding
 
-### 6.3.1 Partitioning
+#### 6.3.1 Partitioning
 
 - **Definition**: Splitting **one large table inside a single database** into **smaller parts** for manageability and performance.
 - **Scope**: Usually happens **inside a single database system** (same server or cluster).
@@ -1504,7 +1504,7 @@ Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorgan
   - In Postgres, a `users` table is partitioned into `users_2024`, `users_2025` by `creation_date`. 
   - Or Postgres `users` table partitioned by `region_id` → still one DB.
 
-### 6.3.2 Sharding
+#### 6.3.2 Sharding
 
 - **Definition**: A **form of horizontal partitioning** where data is split across **multiple independent database servers/nodes (shards)**.
 - **Scope**: Distributed systems, each shard is an independent DB instance with its own copy of schema.
@@ -1519,7 +1519,7 @@ Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorgan
   - Shard 2 → users in Europe
   - Shard 3 → users in Asia
 
-### 6.3.3 Key Differences (Quick Recall)
+#### 6.3.3 Key Differences (Quick Recall)
 
 | Aspect                    | Partitioning                    | Sharding                                       |
 | ------------------------- | ------------------------------- | ---------------------------------------------- |
@@ -1533,7 +1533,7 @@ Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorgan
   - Partitioning = splitting tables inside a DB.
   - Sharding = partitioning data across multiple DBs.
 
-### 6.3.4 Comparison: Partitioning vs. Sharding
+#### 6.3.4 Comparison: Partitioning vs. Sharding
 
 | **Aspect**         | **Partitioning**                                                                              | **Sharding**                                                                                               |
 | ------------------ | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
@@ -1558,11 +1558,11 @@ Perfect — thanks for sharing your draft. I’ll **correct, refine, and reorgan
   - Sharding, on the other hand, distributes data across multiple servers to achieve true horizontal scalability. It enables handling massive datasets and traffic, but comes at the cost of more complex query routing, consistency management, and operational overhead. 
   - In practice, teams often start with partitioning, and move to sharding only when scale demands it.
 
-# 7 Evaluation and Optimization
+## 7 Evaluation and Optimization
 
 After finishing the design, compare it against the requirements and evaluate trade-offs. The goal is to identify gaps, acknowledge compromises, and suggest improvements.
 
-## 7.1 Evaluation
+### 7.1 Evaluation
 
 - **Goal:** Ensure the system meets **non-functional** requirements.
 - **What to evaluate:**
@@ -1577,7 +1577,7 @@ After finishing the design, compare it against the requirements and evaluate tra
   - Review each component end-to-end (load balancer, CDN, web servers, application servers, databases, blob storage, caches).
   - Check how each component contributes to non-functional goals.
 
-## 7.2 Security and Permissions
+### 7.2 Security and Permissions
 
 - **Privacy:** Protect user data.
 - **Security:** Authentication, authorization, encryption, certificates.
@@ -1587,7 +1587,7 @@ After finishing the design, compare it against the requirements and evaluate tra
   - Elastic throttling → dynamic limit if resources allow.
 - **Compliance:** Handle international laws and regulations (e.g., content restrictions, GDPR).
 
-## 7.3 Analytics (User Behavior)
+### 7.3 Analytics (User Behavior)
 
 - **Purpose:** Gain **insight into how users interact with the system**.
   1. Collect logs and metrics (requests, responses, session data).
@@ -1595,7 +1595,7 @@ After finishing the design, compare it against the requirements and evaluate tra
   3. Predict trends (e.g., load forecasting, feature adoption).
   4. Adapt system features or optimizations based on usage.
 
-## 7.4 Monitoring and Telemetry
+### 7.4 Monitoring and Telemetry
 
 - **Purpose:** Provide **visibility into system health and performance**.
   - Track latency (per request) and throughput (aggregate).
@@ -1603,7 +1603,7 @@ After finishing the design, compare it against the requirements and evaluate tra
   - Set up alerts for component failures or performance degradation.
   - Use monitoring insights to decide on scaling, caching, replication, or partitioning.
 
-## 7.5 Bottleneck Identification and Mitigation
+### 7.5 Bottleneck Identification and Mitigation
 
 - **Goal:** Find and address weak points in the system.
   - Eliminate single points of failure.
@@ -1611,7 +1611,7 @@ After finishing the design, compare it against the requirements and evaluate tra
   - Continuously monitor and alert on degraded performance.
   - Apply techniques like load balancing, caching, partitioning, or replication to relieve bottlenecks.
 
-## 7.6 **Sample Wrap-up Answer (concise, interview-style):** 2–3 minute spoken version
+### 7.6 **Sample Wrap-up Answer (concise, interview-style):** 2–3 minute spoken version
 
 > To evaluate my design, I’d look at the **key non-functional requirements**: availability, scalability, reliability, and consistency. For example, I’d check whether replication and partitioning give us enough availability, and whether the caching and load balancer help us scale.
 >
@@ -1632,18 +1632,18 @@ After finishing the design, compare it against the requirements and evaluate tra
 - Analytics & Monitoring
 - Bottlenecks / trade-offs
 
-## 7.7 **1-Minute Wrap-up Answer:**
+### 7.7 **1-Minute Wrap-up Answer:**
 
 > To evaluate the design, I’d check the main non-functional goals: **availability, scalability, reliability, and consistency**. I’d ensure redundancy and partitioning to remove single points of failure, caching and load balancing for performance, and monitoring to track latency, throughput, and errors.
 >
 > On the **security side**, I’d enforce authentication, permissions, and **rate limiting** to defend against abuse. Finally, I’d add analytics and monitoring so we can understand user behavior, detect bottlenecks, and adjust capacity as the system grows.
 >
-## 7.8 Words in Interview
+### 7.8 Words in Interview
 
 - “We’ve discussed the design. To evaluate: we need to ensure scalability via partitioning/sharding, availability via replication, security via authentication and rate limiting, monitoring for performance, and awareness of bottlenecks.”
 - Just naming the categories (without deep-diving into each) usually takes 2 minutes and leaves a strong impression.
 
-# 8 Trade-off
+## 8 Trade-off
 
 - Definition
   - When choose one solution, gain some advantages but also accept some disadvantages, compared to another solution.
@@ -1728,7 +1728,7 @@ After finishing the design, compare it against the requirements and evaluate tra
   - **Decision:** If we expect **billions of users and simple profile schema**, lean toward **NoSQL**. If we need **complex queries + strong consistency**, lean toward **SQL**.
   - This way, you don’t just say “SQL is consistent, NoSQL is scalable.” You show you can **evaluate trade-offs systematically** and **tie them back to requirements**.
 
-## 8.1 Common Trade-offs
+### 8.1 Common Trade-offs
 
 - **Consistency vs Availability**
   - Strong consistency reduces availability; prioritizing availability often leads to eventual consistency. choose based on business requirements in case of network partition
@@ -1759,7 +1759,7 @@ After finishing the design, compare it against the requirements and evaluate tra
   - Centralization simplifies management but risks single point of failure.
   - Decentralization increases resilience but may cause inconsistency.
 
-## 8.2 Partitioning Trade-offs
+### 8.2 Partitioning Trade-offs
 
 - **User ID partitioning**
   - ✅ Enables user-specific transactions
@@ -1775,7 +1775,7 @@ After finishing the design, compare it against the requirements and evaluate tra
 - **Partitioning schemes**: range-based, hash-based, or hybrid
 - **Database choice**: SQL vs NoSQL (transactional integrity vs horizontal scalability)
 
-## 8.3 User Connections: HTTP vs WebSocket
+### 8.3 User Connections: HTTP vs WebSocket
 
 - **HTTP (Polling)**
   - Short/long polling: client repeatedly asks for updates. client <- bandwidth -> server: have a delay on client, waste bandwidth, keep the server busy;
@@ -1785,7 +1785,7 @@ After finishing the design, compare it against the requirements and evaluate tra
   - ✅ Real-time updates with lower overhead.
   - ❌ Requires more server resources per connection.
 
-## 8.4 CDN: Push vs Pull
+### 8.4 CDN: Push vs Pull
 
 - **Pull CDN**
   - Content fetched from origin on first request; cached afterward.
@@ -1800,7 +1800,7 @@ After finishing the design, compare it against the requirements and evaluate tra
   - Heavy traffic → Pull CDN
   - Low/medium traffic or static content → Push CDN
 
-## 8.5 Newsfeed: Push vs Pull (Fanout Models)
+### 8.5 Newsfeed: Push vs Pull (Fanout Models)
 
 - **Push (Fanout-on-Write)**
   - Posts are pushed to all followers immediately.
@@ -1815,8 +1815,9 @@ After finishing the design, compare it against the requirements and evaluate tra
   - Pull for high-fanout users or when updates are frequent.
   - Sometimes: push notifications → pull feed content.
 
-# 9 System Design Principles
-System design principles are fundamental guidelines and concepts that help software engineers and architects create effective, efficient, and maintainable software systems. These principles provide **a framework for making decisions about the architecture, structure, and behavior of a system**. They aim to ensure that the resulting system meets both its functional and non-functional requirements while **being adaptable to changes and scalable**. Here are some key system design principles:
+## 9 System Design Principles
+
+System design principles are **fundamental guidelines** and concepts that help software engineers and architects create effective, efficient, and maintainable software systems. These principles provide **a framework for making decisions about the architecture, structure, and behavior of a system**. They aim to ensure that the resulting system meets both its functional and non-functional requirements while **being adaptable to changes and scalable**. Here are some key system design principles:
 
 1. **Modularity and Separation of Concerns**:
    - Divide the system into smaller, manageable modules with distinct responsibilities.
@@ -1881,7 +1882,7 @@ System design principles are fundamental guidelines and concepts that help softw
 These principles guide architects and developers in making informed decisions throughout the system design process. Applying these principles leads to systems that are more maintainable, adaptable, and aligned with the goals of the project.
 
 
-# 10 System Design Best Practices
+## 10 System Design Best Practices
 System design best practices are guidelines and strategies that help software architects and engineers create high-quality, efficient, scalable, and maintainable software systems. These practices are based on industry experience and lessons learned, aiming to ensure that the resulting systems meet both functional and non-functional requirements. Here are some key system design best practices:
 
 1. **Understand Requirements**:
@@ -1954,9 +1955,9 @@ System design best practices are guidelines and strategies that help software ar
 
 By following these best practices, you can create software systems that are more resilient, maintainable, and aligned with the needs of both users and stakeholders.
 
-# 11 Scale
+## 11 Scale
 
-## 11.1 Load Balancers & its algorithms - How to scale web servers (reverse proxy)
+### 11.1 Load Balancers & its algorithms - How to scale web servers (reverse proxy)
 LB helps to 
 * Scaling
   1. spread the traffic across a cluster of servers; facilitate scaling either up or down
@@ -1975,7 +1976,7 @@ To utilize full scalability and redundancy, try to balance the load at each laye
 faster, higher throughput, easier for administrators, predictive analytics to determine traffic bottlenecks, give actionable insights to automation and help drive business decisions.
 LB helps scale horizontally across an ever-increasing number of servers.<br>
 
-### metrics: 
+#### metrics: 
 * active Connections (session affinity or sticky session) <br> 
 * Latency <br>
 * Bandwidth(throughput) <br>
@@ -1999,7 +2000,7 @@ algorithm categories:
 	* tier - 2: layer 4 LB; maintain connections/sessions; consistent hashing; 
 	* tier - 3: layer 7 LB; enable scalability and provide high availability; offload TLS/SSL
 
-### algorithms: 
+#### algorithms: 
 * The choice of algorithm depends on the specific needs and characteristics of the system and the workload being handled<br>
 * Least connection Method, LCM (servers with fewest active connections)<br>
 * Least Response Time Method, LRM (servers with lowest average response time)<br>
@@ -2017,7 +2018,7 @@ a. performance bottleneck, if it does not have enough resources or it is not con
 b. increase the complexity (be stateless, session can be stored in a centralized data store)<br>
 c, single point of failure<br>
 
-## 11.2 Caching - How to scale database?  Caching or vertically and horizontally
+### 11.2 Caching - How to scale database?  Caching or vertically and horizontally
 Cache the DB results adding an extra caching layer between the servers and the database <br>
 A cache is a key-value store that reside between applications and data storage; <br>
 Redis is persistent while memcache scales well.
@@ -2034,7 +2035,7 @@ What should be cached? long-running queries on databases; high-latency network r
 **CDN (Content Delivery Network)** are a kind of cache that comes into play for sites serving large amounts of static media. Can replicate content in multiple places, based on user's geographic location and the original of the webpage; security improvement, increase in content availability and redundancy, better load times, low bandwidth cost.  <br>
 * type: Push and Pull, referring the data streaming upload and download???<br>
 
-### Cache eviction policies:
+#### Cache eviction policies:
 Eviction policy determines how the cache handles the replacement of old data with new data when the cache is full
 Policies: Order (first vs last), Recently (time: least vs most), Frequency (least), Random;<br>
 * Order
@@ -2047,11 +2048,11 @@ Policies: Order (first vs last), Recently (time: least vs most), Frequency (leas
 	* Least Frequently Used (LFU)<br>
 * Random Replacement (RR)<br>
 
-### Cache expiration
+#### Cache expiration
 Determine how long data is kept in the cache before it is considered stale and is removed.<br>
 A shorter expiration time can improve the freshness of the data, but increase the number of accesses to the underlying data source
 
-### Cache strategy (Invalidation): 
+#### Cache strategy (Invalidation): 
 Cache Invalidation: keep the cache coherent with the source of data (e.g. database);  <br>
 strategy: cache and permanent story like disk or database, write only one or both; depend on the data and data access patterns (how data is written and read)  <br>
 metrics: read-intensive vs write-intensive (write-write, write-reread); latency and throughput; consistency and data loss;<br>   
@@ -2062,57 +2063,57 @@ metrics: read-intensive vs write-intensive (write-write, write-reread); latency 
 * Write-around (storage only): data is written into the permanent storage only (bypassing the cache). pros: cache is not flooded with written operation which is not subsequently be re-read. con: higher latency for the recently written data, for cache-miss, so higher latency; <br>   
 * Write-back (write-behind)(cache only): the data is written to cache alone; asynchronously write entry to the data store. pros: low-latency and high-throughput for write-intensive applications. con: risk of data loss; more complex to implement, for its asynchronously writing.  <br> 
 
-## 11.3 CDN -> How to prepare our assets to deliver faster across the world?
+### 11.3 CDN -> How to prepare our assets to deliver faster across the world?
 Real-time and low-latency require
 * Replication of servers and server's location close to users (CDN) 
 * PULL vs PUSH: real-time (VOIP, video, notification system and real-time feeds) : push (message queue), not pull(expensive in bandwidth and unnecessary load on Servers and DB, not scalable)
 
-## 11.4 Cache, Scale, and Shard result
-### cache result==> low latency, high throughput and high available (if db server is down for a while)
+### 11.4 Cache, Scale, and Shard result
+#### cache result==> low latency, high throughput and high available (if db server is down for a while)
 caching will enable you to make vastly better use of the resources you already have; 
 application caching, database caching (need tweaking the configuration), in-memory caches
 
 In-memory caches: 
 precalculated results, pre-generating expensive indexes, storing copies of frequently accessed data in a faster backend
 
-### Scalability result ==> low-latency and fault-tolerant by replicate (deal with lower performance)
+#### Scalability result ==> low-latency and fault-tolerant by replicate (deal with lower performance)
 Scalability methods—With the architecture, there are many techniques and methods which can be used in order to customize and improve the design of a system.<br> 
 Some of the most widely used are: redundancy, partitioning, caching, indexing, load balancing, and queues.<br>
 
-### Shard result==> high performance by destructing the load and high available, and latency-free
+#### Shard result==> high performance by destructing the load and high available, and latency-free
 
-# 12 Components
+## 12 Components
 every building block in system design has functional and nonfunctional requirements that must be met.
 
-## Load Balancers
+### Load Balancers
 Evenly distributing the computational load allows for faster response times and the capacity for more web traffic.<br>
 * Scaling: Load balancers facilitate scaling, either up or down, by disguising changes made to the number of servers.
 * Availability: By dividing requests, load balancers maintain availability of the system even in the event of a server outage.
 * Performance: Directing requests to servers with low traffic decreases response time for the end user.
 
-## Key Value Stores
+### Key Value Stores
 Similar to Hash table or dictionaries. Store information as a pair in the Key and Value format, for easy retrieval. Distributed hash tables (DHT). <br>
 e.g. AWS DynamoDB, AWS ElastiCache (a managed in-memory data store serivce which supports caching, like Redis or Memcached) (Redis, in particular, supports advanced data structures and features that make it effective for caching.<br>
 When it comes to caching user information effectively, Amazon ElastiCache with Redis is often a preferred choice due to its advanced caching capabilities, data structures, and support for use cases like user sessions and frequently accessed data.  However, the choice of service will depend on factors such as the complexity of the data, required data structures, access patterns, and performance requirements. <br>
 
-## Blob Storage
+### Blob Storage
 Blob: Binary Large Object; a storage solution for unstructured data, such as photos, audios, multimedia, executable code; uses flat data organization pattern without hierarchy<br> 
 The main rule: write once, read many or WORM. Ensure the important dat is protected since once the data is written, it can be read, but not changed. <br>
 e.g. AWS S3
-## Database
+### Database
 A database is an organized collection of data that can be easily accessed and modified; make the process of storing, retrieving, modifying, and deleting data simpler. SQL vs NoSQL <br>
 
-## Rate Limiters
+### Rate Limiters
 It sets a limit for the numbers of requests a service will fulfill. It will throttle requests that cross this threshold.<br>
 It is an important line of defense for services and system; prevent services being flooded with requests; mitigate resource consumption.<br>
 e.g. AWS API Gateway(built-in rate limiting on request/API/method per second/minute/others), AWS WAF(Web Application Firewall, restrict requests from the specific IP address or IP address ranges); <br>
 AWS Lambda, AWS CloudFront (CDN, request rate limiting to prevent abuse and ensure a smooth experience for users), AWS ELB(Elastic Load Balancing, configure specific rules as rate limiting)
 
-## Monitoring Systems
+### Monitoring Systems
 It is a software that allow system administrators to monitor infrastructure. It creates one centralized location for observing the overall performance of a potentially large system of computers in real time. <br>
 It can monitor: CPU, memory, bandwidth, routers, switches, applications, etc. e.g. AWS CloudWatch; AWS CloudTrail, X-Ray, Inspector, Trusted Advisor, and Config
 
-## Distributed messaging queues
+### Distributed messaging queues
 A producer creates messages and consumers receive and process them. <br>
 * Improve performance through asynchronous communication since producers and consumers act independently of each other
 * Decouple or reduce dependency in the system
@@ -2124,12 +2125,12 @@ Usage:
  * Data post-processing: It can reduce end-user latency, by enabling offline time-consuming and resource-intensive process, such as processing image, video, multimedia to different formrat or platforms<br>
  * Recommender systems: use cookies to personalize a user’s content; retrieves the user data and processes it. A messaging queue can be incorporated to make this process more efficient as background data processing can be time consuming.
 
-## Distributed unique ID generators
+### Distributed unique ID generators
 It is important to tag entities in a system with a unique identifier. Millions of events may occur every second in a large distributed system, so we need a method of distinguishing them. A unique ID generator performs this task and enables the logging and tracking of event flows for debugging or maintenance purposes.<br>
 In most cases this is a universal unique ID (UUID). These are 128 bit numbers<br>
 Range handlers feature multiple servers that each cover a range of ID values.<br>
 
-## Distributed search
+### Distributed search
 Search systems are composed of three main entities: <br>
 * Crawler: finds/fetches content and creates documents
 * Indexer: builds a searchable index
@@ -2137,53 +2138,53 @@ Search systems are composed of three main entities: <br>
 Distributed search systems are reliable and ideal for horizontal scalability<br>
 E.g. Elasticsearch <br>
 
-## Distributed logging services
+### Distributed logging services
 Logging is the process of recording data, in particular the events that occur in a software system. A log file may document service actions, transactions, microservices, or any other data that may be helpful when debugging. <br>
 Logging in a microservice architecture is convenient because the logs can be traced along a flow of events from end-to-end. Since microservices can create interdependencies in a system, and a failure of one service can cascade to others, logging helps to determine the root cause of the failure.<br>
 e.g. AWS CloudWatch logs: Centralized Log Storage, Scalable and Distributed, Real-Time Monitoring, Search and Query, Retention and Archiving, Integration with Other AWS Services, Access Control and Security, CloudWatch Metrics Integration, Automated Actions <br>
 
-## Distributed task schedulers
+### Distributed task schedulers
 A **task** is a unit of work that requires computational resources, like CPU time, memory, storage, and network bandwidth, for some specified amount of time.<br>
 It is important for tasks like image uploading or social media posting to be asynchronous as to not hold the user waiting for background tasks to end.<br>
 Task schedulers mediate the supply-demand balance between tasks and resources to control the workflow of the system. By allocating resources task schedulers can ensure that task-level and system-level goals are met in an efficient manner. It is widely used in systems like Cloud Computing Services, Large Distributed Systems, and Single-OS-base nodes<br>
 
-## Others
+### Others
 * Domain Name System (DNS)
 * Content Delivery Network (CDN)
 * Distributed Caching
 * Publish-Subscribe System
 * Sharded Counters
 
-# 13 Common Design patterns
+## 13 Common Design patterns
 
-## 13.1 Microservices
+### 13.1 Microservices
 An application is broken down into a collection of small, independent services that communicate with each other over a network. Each service is responsible for a specific functionality and is developed, deployed, and scaled independently. <br>
 Pro: increased scalability, improved fault tolerance, and faster deployment cycles. <br>
 Con: additional complexity, such as service discovery and inter-service communication; <br>
 
-## 13.2 Event Sourcing 
+### 13.2 Event Sourcing 
 the state of an application is represented as a stream of events, rather than a snapshot of its current state. This pattern is often used in systems that need to handle a large number of concurrent updates, such as financial systems and gaming platforms. <br>
 Pro: easy replay of events, which can be useful for debugging and auditing<br>
 Con: requires additional storage and computational resources to maintain the event stream<br>
 
-## 13.3 CQRS (Command Query Responsibility Segregation)
+### 13.3 CQRS (Command Query Responsibility Segregation)
 separates the read and write operations of a system into separate models, allowing for optimized performance and scalability. This pattern can be useful in systems that handle a high volume of read and write operations, such as e-commerce websites<br>
 Pro: allows for different data stores and caching strategies to be used for read and write operations, improving the performance of both <br>
 Con: requires more complex design and more effort to maintain two separate models of the data. <br>
 
-## 13.4 Circuit Breaker: 
+### 13.4 Circuit Breaker: 
 can be used to prevent cascading failures in a distributed system. It works by monitoring the health of a service and, when it detects an issue, it “trips” and prevents further requests from being sent to that service. <br> 
 Pro: This helps to prevent a single point of failure from bringing down the entire system. <br>
 
-## 13.5 Backpressure
+### 13.5 Backpressure
 used to control the rate at which data is processed in a system, preventing it from being overwhelmed. This can be done by buffering incoming data and only processing it at a specific rate, or by rejecting incoming data if the system is unable to handle it.
 
-## 13.6 Object Pool
+### 13.6 Object Pool
 is used to improve the performance of a system by reusing objects, rather than creating new ones. Object pools are often used to manage the lifecycle of expensive resources, such as database connections or threads.
 
-# 14 Q&A
+## 14 Q&A
 
-## Single point of failure require--> Redundancy and Replication
+### Single point of failure require--> Redundancy and Replication
 HA Architecture - Micro services 
 
 **Redundancy**: the duplication of critical components or functions of a system with the intention of increasing the reliability of the system and to improve actual system performance. <br>
@@ -2221,12 +2222,12 @@ Replication can be:
 
 **Replication** : Sharing information to ensure consistency between redundant resources.
 
-## Checkpointing <-- Fault Tolerance
+### Checkpointing <-- Fault Tolerance
 Each server performs checkpointing periodically and dump a snapshot to all its data onto a remote server. This will ensure that if a sever dies down, another server can replace it by taking its data from the last snapshot. 
 
-## Fault Tolerance -> Checkpointing, Load Balancer, Replication
+### Fault Tolerance -> Checkpointing, Load Balancer, Replication
 
-## Asynchronism
+### Asynchronism
 pre-render massive framework dynamic content into static HTML files and store to Amazon S3 or content delivery network. This would make website super fast(handle millions of request per sec) 
 A script would do this job and would be called by cronjob every hour. This was one way of doing asynchronism.<br>
 If a user requests for a computation-intensive task, the front end of the website sends the job to the job queue and signals back to the user and lets the user browse the website meanwhile.<br> 
@@ -2248,13 +2249,13 @@ Synchronous and asynchronous communication patterns play vital roles in microser
 * While synchronous communication offers simplicity and immediate results, it can also introduce potential blocking and performance issues. 
 * On the other hand, asynchronous communication provides decoupling, better fault tolerance, and scalability, albeit at the cost of increased complexity.
 
-## Extensibility 
+### Extensibility 
 Our service should be designed to in a modular way with the expectation that new functionality will be added to it.<br> 
 
 Facebook System Design
 https://www.youtube.com/watch?v=hykjbT5Z0oE&t=1041s
 
-## Ranking
+### Ranking
 * Involves multiple advanced ranking and recommendation algorithms; it is a computationally intensive task
 * Consist of big-data processing systems that might utilize specialized hardware like graphics processing units (GPUs) and tensor processing units (TPUs)
 * Factor: a reference count, freshness, user's previous history, likes, dislikes, shares, comments, clicks, user location, language, personal history, demographics
@@ -2262,23 +2263,23 @@ https://www.youtube.com/watch?v=hykjbT5Z0oE&t=1041s
 * Select out a few top posts from a group of candidate posts based on the assigned scores
 * Sort and display these selected posts in decreasing order of the assigned scores 
 
-## Recommendation
+### Recommendation
 * Base on users' profiles, and also consider their interests, view and search history, subscribed channels, related topics, and activities such as comments and likes
 * Use machine learning in choosing/generating/filtering the candidates and ranking them according to user's interests and history. 
 
-## Popular services: 
+### Popular services: 
 Distributed cache: Redis<br>
 Search Index : Elastic<br>
 Message queue : Kafka<br>
 Databases NoSql : HBase<br>
 Databases Relational: MySql<br>
 
-## Interview tool
+### Interview tool
 Facebook offered me three choices - Google Drawings,
 BlueJeans Whiteboard, or ScreenShare your choice
 
 
-## Questions: 
+### Questions: 
 https://www.youtube.com/watch?v=hykjbT5Z0oE&list=PLCfguwhZH5DnHl2yldI781yR6FAgky0Np&index=1
 1. Design Facebook NewsFeed - xx
 2. Design Facebook Status Search - x
@@ -2301,7 +2302,7 @@ Design Ticketmaster - x
 Design an API rate limiter - x 
 Design YouTube - x
 
-# 15 Future + ML 
+## 15 Future + ML 
 1. Use two dimensions time and space for a topic. e.g. Netflix
 2. Synchronize post by topics
 3. Allow to take a deep dive into the particular topic. e.g. Netflix
@@ -2310,7 +2311,7 @@ Design YouTube - x
 6. Provider both positive and negative on the same topic; can configure the percentage
 7. Can follow up some topics a few days after first reviewing and get more new information about it
 
-# 16 Review, Evaluate, and Evolve
+## 16 Review, Evaluate, and Evolve
 Reviewing, evaluating, and evolving a system design is a crucial ongoing process to ensure that the design meets requirements, performs effectively, and can adapt to changing needs. Here's a step-by-step approach to achieve this:
 
 1. **Initial Review**:
@@ -2368,8 +2369,8 @@ Reviewing, evaluating, and evolving a system design is a crucial ongoing process
 
 By following these steps, you can create a systematic process for reviewing, evaluating, and evolving your system design, leading to a more robust, effective, and adaptable solution over time.
 
-# 17 Intervew Framework 
-## 17.1 Framework:
+## 17 Intervew Framework 
+### 17.1 Framework:
 1. Functional req (10m)
 	System
 	User
@@ -2409,7 +2410,7 @@ By following these steps, you can create a systematic process for reviewing, eva
 	7. Containerization
 	8. Portability (Infrastruture as Code)
 
-## 17.2 Strategy for NFR
+### 17.2 Strategy for NFR
 2. Non-functional req
 	1. Availability (LB, ASG, Micro)
 	2. Scalability (ASG, Cache, CDN, Async, Micro)
@@ -2418,7 +2419,7 @@ By following these steps, you can create a systematic process for reviewing, eva
 	5. Reliability (Redundancy, Backup, Replication, Failover)
 	6. Security (Authentication, Authorization, Encryption, Firewallm, VPC, Security Group)
 
-## 17.3 API Gateway
+### 17.3 API Gateway
 API Gateway: 
 * Authentication and Authorization
 * Request and Response Transformation
@@ -2437,7 +2438,7 @@ Why the API Gateway in front of ELB is often the preferred architecture:
 6. Security and Access Control: API Gateway offers extensive security features for API endpoints, including IAM roles, custom authorizers, and OAuth integration, enhancing the overall security posture.
 7. Multiple Backend Resources: API Gateway allows integration with various backend resources beyond just ELB, such as Lambda, HTTP endpoints, and AWS services.
 
-## 17.4 Common Single Points of Failure (SPOFs):
+### 17.4 Common Single Points of Failure (SPOFs):
 * Load Balancer: If a load balancer is the only entry point to a service and it fails, users can't access the service.
 * Authentication Services: A central authentication service that fails can prevent users from accessing multiple systems.
 * Database Server: A single database server can become a bottleneck or single point of failure if it experiences downtime or data corruption.
@@ -2446,7 +2447,7 @@ Why the API Gateway in front of ELB is often the preferred architecture:
 * Hardware Failure: If a critical hardware component, such as a server or storage device, fails, it can disrupt the entire system.
 * Network Dependency: Relying on a single network connection or router can result in connectivity issues if it fails.
 
-## 17.5 Common Bottlenecks:
+### 17.5 Common Bottlenecks:
 
 * Database Performance: Inefficient database queries, lack of indexing, or high database contention can lead to slow responses.
 * Sequential Processing: When tasks must be executed sequentially, it can create a bottleneck and slow down the overall process.
@@ -2460,7 +2461,7 @@ Why the API Gateway in front of ELB is often the preferred architecture:
 * Disk I/O: Slow disk I/O can cause delays in reading and writing data, affecting application performance.
 * Network Congestion: Heavy network traffic or limited bandwidth can result in delays and data transfer issues.
 
-## 17.6 Mitgation SPOFs and addressing bottlenecks involves 
+### 17.6 Mitgation SPOFs and addressing bottlenecks involves 
 * redundancy,
 
 * capacity planning. 
@@ -2470,13 +2471,13 @@ Why the API Gateway in front of ELB is often the preferred architecture:
 
 A well-designed system considers these factors to ensure reliability, availability, and optimal performance.
 
-# 18 Terms
+## 18 Terms
 
-## **API Gateway** 
+### **API Gateway** 
 
 is a **single entry point** for all client requests in a system with **multiple backend services (microservices)**.
 
-### Why it’s useful:
+#### Why it’s useful:
 
 - Without a gateway:
 
@@ -2490,7 +2491,7 @@ is a **single entry point** for all client requests in a system with **multiple 
   - The gateway routes the request to the right microservice.
   - It can also **aggregate responses** from multiple services and return a single result.
 
-### Common Features of API Gateway:
+#### Common Features of API Gateway:
 
 - **Routing** → Send request to correct service.
 - **Aggregation** → Combine responses from multiple services.
@@ -2498,7 +2499,7 @@ is a **single entry point** for all client requests in a system with **multiple 
 - **Monitoring** → Collect logs/metrics for all requests.
 - **Protocol translation** → e.g., client uses REST, backend uses gRPC.
 
-### Examples:
+#### Examples:
 
 - AWS API Gateway
 - Kong, NGINX, Envoy
@@ -2524,7 +2525,7 @@ Great 👍 Here’s a concise **Pros & Cons of API Gateway** for your notes:
 
 ---
 
-### ✅ Pros of API Gateway
+#### ✅ Pros of API Gateway
 
 - **Single entry point** → client only needs to know the gateway, not all internal services.
 - **Simplifies client code** → no need to manage multiple endpoints.
@@ -2535,7 +2536,7 @@ Great 👍 Here’s a concise **Pros & Cons of API Gateway** for your notes:
 
 ---
 
-### ❌ Cons of API Gateway
+#### ❌ Cons of API Gateway
 
 - **Single point of failure** (needs redundancy + load balancing).
 - **Added latency** → extra network hop for every request.
@@ -2549,7 +2550,7 @@ Great 👍 Here’s a concise **Pros & Cons of API Gateway** for your notes:
 
 ---
 
-### **When do you need a Load Balancer with an API Gateway?**
+#### **When do you need a Load Balancer with an API Gateway?**
 
 1. **API Gateway itself needs to scale**
 
@@ -2564,7 +2565,7 @@ Great 👍 Here’s a concise **Pros & Cons of API Gateway** for your notes:
 
 ---
 
-### **Connection Setup (Typical Flow)**
+#### **Connection Setup (Typical Flow)**
 
 ```
 Client 
@@ -2580,7 +2581,7 @@ Client
 
 ---
 
-### **Key Notes for Interviews**
+#### **Key Notes for Interviews**
 
 - **External LB** → balances traffic across API Gateway nodes.
 - **API Gateway** → central entry point, routes to services.
@@ -2599,9 +2600,9 @@ Perfect 👍 Let’s use **AWS** as a concrete real-world example (since it’s 
 
 ---
 
-## **Example: AWS Setup with API Gateway + Load Balancer**
+### **Example: AWS Setup with API Gateway + Load Balancer**
 
-### **Scenario**
+#### **Scenario**
 
 You’re building an **e-commerce platform** with multiple microservices:
 
@@ -2613,7 +2614,7 @@ Each service runs in **ECS/EKS (containers)** or EC2 instances.
 
 ---
 
-### **Architecture Flow**
+#### **Architecture Flow**
 
 ```
 Client (mobile/web app)
@@ -2633,7 +2634,7 @@ Databases / Caches / Object Storage
 
 ---
 
-### **Why Both?**
+#### **Why Both?**
 
 1. **Elastic Load Balancer (ALB)**
 
@@ -2656,7 +2657,7 @@ Databases / Caches / Object Storage
 
 ---
 
-### **In an Interview, You Can Say:**
+#### **In an Interview, You Can Say:**
 
 > “In a production-grade system, I’d typically place an external load balancer in front of API Gateways to handle traffic distribution and failover. The API Gateway then manages routing, authentication, and request transformation. For scaling microservices, the gateway either integrates with service discovery (like Kubernetes) or uses internal load balancers to distribute traffic among service replicas. For example, in AWS, I might use an Application Load Balancer in front of multiple API Gateway instances, and inside, the gateway routes requests to ECS services with auto-scaling enabled.”
 
@@ -2670,7 +2671,7 @@ The short answer is: **API Gateway can sometimes replace a web server, but not a
 
 ---
 
-### **1. Web Server / Reverse Proxy (Nginx, Envoy, HAProxy)**
+#### **1. Web Server / Reverse Proxy (Nginx, Envoy, HAProxy)**
 
 - Handles **static content** (HTML, CSS, JS, images).
 - Acts as a **reverse proxy** to backend services.
@@ -2681,7 +2682,7 @@ The short answer is: **API Gateway can sometimes replace a web server, but not a
 
 ---
 
-### **2. WebSockets for Real-Time**
+#### **2. WebSockets for Real-Time**
 
 - Used for **bi-directional communication** (chat, gaming, live dashboards).
 - Web servers like **Nginx** or specialized infra (e.g., AWS AppSync, Socket.IO servers) usually handle this.
@@ -2689,7 +2690,7 @@ The short answer is: **API Gateway can sometimes replace a web server, but not a
 
 ---
 
-### **3. API Gateway (if multiple services)**
+#### **3. API Gateway (if multiple services)**
 
 - Designed as the **entry point for microservices**.
 - Provides **routing**, **authentication**, **rate limiting**, and **observability**.
@@ -2698,7 +2699,7 @@ The short answer is: **API Gateway can sometimes replace a web server, but not a
 
 ---
 
-### ✅ So, can API Gateway replace Web Server + WebSocket?
+#### ✅ So, can API Gateway replace Web Server + WebSocket?
 
 - **If you only need API routing (REST/GraphQL/gRPC)** → Yes, API Gateway can replace a reverse proxy.
 - **If you need static file serving** → Keep a web server (or use CDN like CloudFront).
@@ -2706,7 +2707,7 @@ The short answer is: **API Gateway can sometimes replace a web server, but not a
 
 ---
 
-### 🔑 In your note, I’d refine it like this:
+#### 🔑 In your note, I’d refine it like this:
 
 **Web Tier**
 
@@ -2718,12 +2719,12 @@ The short answer is: **API Gateway can sometimes replace a web server, but not a
 
 👉 This way, it’s clear API Gateway **complements** web servers, not always replaces them.
 
-## Single Point of Failure (SPOF) vs Bottleneck
+### Single Point of Failure (SPOF) vs Bottleneck
 Great question 👍 Bottlenecks and Single Points of Failure (SPOF) are **related but different concepts** in system design.
 
 ---
 
-### 🔹 **Single Point of Failure (SPOF)**
+#### 🔹 **Single Point of Failure (SPOF)**
 
 * **Definition:** A component that, if it fails, the entire system (or a critical function) goes down.
 * **Key idea:** It threatens **availability and reliability**.
@@ -2735,7 +2736,7 @@ Great question 👍 Bottlenecks and Single Points of Failure (SPOF) are **relate
 
 ---
 
-### 🔹 **Bottleneck**
+#### 🔹 **Bottleneck**
 
 * **Definition:** A component that **limits the performance** (throughput or latency) of the entire system.
 * **Key idea:** It threatens **scalability and performance**.
@@ -2747,7 +2748,7 @@ Great question 👍 Bottlenecks and Single Points of Failure (SPOF) are **relate
 
 ---
 
-### 🔹 **Key Differences**
+#### 🔹 **Key Differences**
 
 | Aspect           | Single Point of Failure (SPOF)         | Bottleneck                                          |
 | ---------------- | -------------------------------------- | --------------------------------------------------- |
@@ -2768,7 +2769,7 @@ Great question 👌 — and it actually depends a little on the **interviewer’
 
 ---
 
-### 🎯 System Design Interview Priority
+#### 🎯 System Design Interview Priority
 
 1. **First: SPOFs (availability & reliability)**
 
@@ -2788,7 +2789,7 @@ Great question 👌 — and it actually depends a little on the **interviewer’
 
 ---
 
-### 🔑 Rule of Thumb for Interviews
+#### 🔑 Rule of Thumb for Interviews
 
 * **Reliability first, performance second.**
 * A good way to phrase it in interviews:

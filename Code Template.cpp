@@ -361,7 +361,7 @@ A monotonic Queue is a data structure the elements from the front to the end is 
 1944. Number of Visible People in a Queue https://leetcode.com/problems/number-of-visible-people-in-a-queue/
 1762. Buildings With an Ocean View https://leetcode.com/problems/buildings-with-an-ocean-view/ 
 316. Remove Duplicate Letters; https://leetcode.com/problems/remove-duplicate-letters/
-similar: 896. Monotonic Array; https://leetcode.com/problems/monotonic-array/
+896. Monotonic Array; https://leetcode.com/problems/monotonic-array/
 --------------
 456. 132 Pattern; https://leetcode.com/problems/132-pattern/
 739. Daily Temperatures; https://leetcode.com/problems/daily-temperatures/
@@ -376,7 +376,7 @@ int fnMonotonicIncreasingStack(vector<int>& arr) {
 		// Here could be a condition to determine if n should be in the monotonic stack
 		// this is monotonic increasing stack;
 		// for monotonic decreasing stack, change > to < ;
-		while (!stack.empty() && stack.top() > n) { // it is while-loop here; 
+		while (!stack.empty() && stack.top() > n) { // it is while-loop here, in which stack.top() should be used consistently avoid any defect
 			// do logic here
 			stack.pop(); 
 		}

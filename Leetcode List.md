@@ -107,7 +107,7 @@
 - [1762. Buildings With an Ocean View](https://leetcode.com/problems/buildings-with-an-ocean-view/)
 - [316. Remove Duplicate Letters](https://leetcode.com/problems/remove-duplicate-letters/)
 - [896. Monotonic Array](https://leetcode.com/problems/monotonic-array/)
-- [132 Pattern](https://leetcode.com/problems/132-pattern/)
+- [456. 132 Pattern](https://leetcode.com/problems/132-pattern/)
 - [739. Daily Temperatures](https://leetcode.com/problems/daily-temperatures/)
 - [402. Remove K Digits](https://leetcode.com/problems/remove-k-digits)
 - [1081. Smallest Subsequence of Distinct Characters](https://leetcode.com/problems/smallest-subsequence-of-distinct-characters)
