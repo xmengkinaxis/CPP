@@ -81,8 +81,9 @@
   - [10 System Design Best Practices](#10-system-design-best-practices)
   - [11 Scale](#11-scale)
     - [11.1 Load Balancers \& its algorithms - How to scale web servers (reverse proxy)](#111-load-balancers--its-algorithms---how-to-scale-web-servers-reverse-proxy)
-      - [metrics:](#metrics)
-      - [algorithms:](#algorithms)
+      - [Metrics](#metrics)
+      - [Algorithm Categories](#algorithm-categories)
+      - [algorithms](#algorithms)
     - [11.2 Caching - How to scale database?  Caching or vertically and horizontally](#112-caching---how-to-scale-database--caching-or-vertically-and-horizontally)
       - [Cache eviction policies:](#cache-eviction-policies)
       - [Cache expiration](#cache-expiration)
@@ -300,7 +301,7 @@ The functional requirements are the **features and functionalities** that the us
 ### 1.2 Non-Functional Requirements (Product Properties + User Expectations in term of performance) (PACELC + Reliable + Scalability + Extensibility)
 
 CAP theory. CP or AP? **PACELC (When Partition, Availability or Consistency, Else Latency or Consistency)**; High reliable and high scalable;  
-Reliability, Redundant, Stable, Security, Availability 100 up-time?, Simplicity vs Complexity, Maintainability, Consistency, or eventual consistency <br>
+Reliability, Redundant, Stable, Security, Availability 100 up-time?, Simplicity vs Complexity, Maintainability, Consistency, or eventual consistency 
 
 Need enough resources to handle the increasing load; the system must be simple so that it is easy to scale at any point in time; **performance should always be increased with scalability**.
 
@@ -1846,8 +1847,8 @@ After finishing the design, compare it against the requirements and evaluate tra
   - Still: mention authentication, authorization, encryption, and compliance.
 
 - **7. Cost Efficiency**
-- Comes after functional goals are met.
-- Optimize infra cost, storage, replication, and cloud spend.
+  - Comes after functional goals are met.
+  - Optimize infra cost, storage, replication, and cloud spend.
 
 - **8. Simplicity & Maintainability**
   - Simpler systems are easier to operate and evolve.
@@ -1938,7 +1939,7 @@ System design best practices are guidelines and strategies that help software ar
 
 1. **Understand Requirements**:
    - Thoroughly understand the requirements of the system before beginning the design process.
-   - Engage with stakeholders to gather and clarify requirements.
+   - **Engage with stakeholders** to **gather and clarify** requirements.
 
 2. **Prioritize Non-Functional Requirements**:
    - Consider factors like performance, scalability, security, and availability from the outset.
@@ -1988,7 +1989,7 @@ System design best practices are guidelines and strategies that help software ar
     - Follow coding standards and guidelines for consistent and readable code.
     - Refactor code regularly to improve maintainability.
 
-14. **Performance Profiling and Optimization**:
+14. **Performance Profiling and Optimization**: (Important)
     - Profile the system to identify performance bottlenecks and optimize critical parts.
     - Focus optimization efforts on areas that have the most impact.
 
@@ -2009,110 +2010,116 @@ By following these best practices, you can create software systems that are more
 ## 11 Scale
 
 ### 11.1 Load Balancers & its algorithms - How to scale web servers (reverse proxy)
-LB helps to 
-* Scaling
+
+LB helps to
+
+- Scaling
   1. spread the traffic across a cluster of servers; facilitate scaling either up or down
-* Availability
+- Availability
   1. prevent a single point of failures,  
-  2. improve overall responsiveness and availability of application, websites or databases, 
-* Performance
-  1. achieve maximum throughput; 
+  2. improve overall responsiveness and availability of application, websites or databases,
+- Performance
+  1. achieve maximum throughput;
   2. minimize response time (latency)
-  3. improve overall responsiveness and availability of application, websites or databases, 
-* Others
+  3. improve overall responsiveness and availability of application, websites or databases,
+- Others
   1. optimize resource usage (avoid overload and under-load of any machine);  
-  2. keeps tracks of the status of all the resources; 
-   
-To utilize full scalability and redundancy, try to balance the load at each layer of the system;<br>
-faster, higher throughput, easier for administrators, predictive analytics to determine traffic bottlenecks, give actionable insights to automation and help drive business decisions.
-LB helps scale horizontally across an ever-increasing number of servers.<br>
+  2. keeps tracks of the status of all the resources;
 
-#### metrics: 
-* active Connections (session affinity or sticky session) <br> 
-* Latency <br>
-* Bandwidth(throughput) <br>
-* random (Round Robin or Hash) <br>
+- Note
+  - To utilize full scalability and redundancy, try to balance the load at each layer of the system;
+  - faster, higher throughput, easier for administrators, predictive analytics to determine traffic bottlenecks, give actionable insights to automation and help drive business decisions.
+  - LB helps scale horizontally across an ever-increasing number of servers.
 
-algorithm categories: 
-* static vs dynamic
-	* static (simple, based on the server's configuration) [RR, weighted, IP hash] <br>
-	* dynamic (complex, but better; consider the current state and healthy of the servers) [LCM, LRM, LBM]<br>
-* stateful vs stateless
-	* stateful: complex; maintain the state of the sessions established between clients and hosting servers; share the state information among load balancers <br>
-	* stateless: faster and lightweight; use consistent hashing <br>
-* implementation 
-	* hardware (expensive): can handle concurrent users; poor availability; high cost and less flexible <br> 
-	* software.e.g HAProxy (layer 4 or 7), NGINX; flexibility, programmability, and cost-effectiveness; predictive analysis <br>
-* layers:
-	* Layer 4 - transport layer (TCP/UDP); faster; source and destination IP, port; maintain connection/session<br>
-	* Layer 7 - application layer; make application-aware forwarding decisions based on HTTP headers, URLs, message, cookies and other application-specific data like user ID; can take responsibilities like limiting user, HTTP routing, and header rewriting<br>
-* multiple tiers
-	* tier - 0 or 1: based on IP, use RR and Weighted RR
-	* tier - 2: layer 4 LB; maintain connections/sessions; consistent hashing; 
-	* tier - 3: layer 7 LB; enable scalability and provide high availability; offload TLS/SSL
+#### Metrics
 
-#### algorithms: 
-* The choice of algorithm depends on the specific needs and characteristics of the system and the workload being handled<br>
-* Least connection Method, LCM (servers with fewest active connections)<br>
-* Least Response Time Method, LRM (servers with lowest average response time)<br>
-* Least Bandwidth Method, LBM (lowest MB/s traffic)<br>
-* Round Robin: does not take server load into consideration, RR; can overloaded<br>
-* Weighted Round Robin Method, WRR<br>
-* IP Hash (IP Address affinity)<br>
-* Random : Simple to implement and no overhead<br>
-* By HTTP Header or URL <br>
-* By request parameters of the query string<br>
+- Active Connections (session affinity or sticky session)
+- Latency
+- Bandwidth (throughput)
+- Random (Round Robin or Hash)
 
+#### Algorithm Categories
 
-Con: <br>
-a. performance bottleneck, if it does not have enough resources or it is not configured properly<br>
-b. increase the complexity (be stateless, session can be stored in a centralized data store)<br>
-c, single point of failure<br>
+- Static vs Dynamic
+  - Static (simple, based on the server's configuration) [RR, weighted, IP hash]
+  - Dynamic (complex, but better; consider the current state and healthy of the servers) [LCM, LRM, LBM]
+- Stateful vs Stateless
+  - Stateful: complex; maintain the state of the sessions established between clients and hosting servers; share the state information among load balancers
+  - Stateless: faster and lightweight; use consistent hashing
+- Implementation
+  - Hardware (expensive): can handle concurrent users; poor availability; high cost and less flexible
+  - Software. e.g HAProxy (layer 4 or 7), NGINX; flexibility, programmability, and cost-effectiveness; predictive analysis
+- Layers:
+  - Layer 4 - transport layer (TCP/UDP); faster; source and destination IP, port; maintain connection/session
+  - Layer 7 - application layer; make application-aware forwarding decisions based on HTTP headers, URLs, message, cookies and other application-specific data like user ID; can take responsibilities like limiting user, HTTP routing, and header rewriting
+- Multiple tiers
+  - tier - 0 or 1: based on IP, use RR and Weighted RR
+  - tier - 2: layer 4 LB; maintain connections/sessions; consistent hashing;
+  - tier - 3: layer 7 LB; enable scalability and provide high availability; offload TLS/SSL
+
+#### algorithms
+
+- The choice of algorithm depends on the specific needs and characteristics of the system and the workload being handled
+- Least connection Method, LCM (servers with fewest active connections)
+- Least Response Time Method, LRM (servers with lowest average response time)
+- Least Bandwidth Method, LBM (lowest MB/s traffic)
+- Round Robin: does not take server load into consideration, RR; can overloaded
+- Weighted Round Robin Method, WRR
+- IP Hash (IP Address affinity)
+- Random : Simple to implement and no overhead
+- By HTTP Header or URL
+- By request parameters of the query string
+
+Con:
+  a. performance bottleneck, if it does not have enough resources or it is not configured properly
+  b. increase the complexity (be stateless, session can be stored in a centralized data store)
+  c, single point of failure
 
 ### 11.2 Caching - How to scale database?  Caching or vertically and horizontally
-Cache the DB results adding an extra caching layer between the servers and the database <br>
-A cache is a key-value store that reside between applications and data storage; <br>
+
+Cache the DB results adding an extra caching layer between the servers and the database
+A cache is a key-value store that reside between applications and data storage;
 Redis is persistent while memcache scales well.
 
 **Benefit**
-* Cache will enable you to make vastly better use of the resources you already have as well as making otherwise unattainable product requirements feasible. <br>
-* Can exist at all levels in architecture, but are often found at the level nearest to the front end, where they are implemented to return data quickly without taxing downstream levels. <br>
-What should be cached? long-running queries on databases; high-latency network requests (for external APIs), computation-intensive processing; <br>
+* Cache will enable you to make vastly better use of the resources you already have as well as making otherwise unattainable product requirements feasible. 
+* Can exist at all levels in architecture, but are often found at the level nearest to the front end, where they are implemented to return data quickly without taxing downstream levels. 
+What should be cached? long-running queries on databases; high-latency network requests (for external APIs), computation-intensive processing; 
 
 **Disadvantages**: 
-* main consistency between caches and the source of truth (database) through cache invalidation which is difficult; need to make application changes<br>
-* Caching works well with static data by saving time and increasing speed, but not well with mutable or dynamic, for need to make sure that the cached data is in sync<br>
+* main consistency between caches and the source of truth (database) through cache invalidation which is difficult; need to make application changes
+* Caching works well with static data by saving time and increasing speed, but not well with mutable or dynamic, for need to make sure that the cached data is in sync
 
-**CDN (Content Delivery Network)** are a kind of cache that comes into play for sites serving large amounts of static media. Can replicate content in multiple places, based on user's geographic location and the original of the webpage; security improvement, increase in content availability and redundancy, better load times, low bandwidth cost.  <br>
-* type: Push and Pull, referring the data streaming upload and download???<br>
+**CDN (Content Delivery Network)** are a kind of cache that comes into play for sites serving large amounts of static media. Can replicate content in multiple places, based on user's geographic location and the original of the webpage; security improvement, increase in content availability and redundancy, better load times, low bandwidth cost.  
+* type: Push and Pull, referring the data streaming upload and download???
 
 #### Cache eviction policies:
 Eviction policy determines how the cache handles the replacement of old data with new data when the cache is full
-Policies: Order (first vs last), Recently (time: least vs most), Frequency (least), Random;<br>
+Policies: Order (first vs last), Recently (time: least vs most), Frequency (least), Random;
 * Order
-	* First In First Out (FIFO), time-serious ???<br>
-	* Last In First Out (LIFO)<br>
+	* First In First Out (FIFO), time-serious ???
+	* Last In First Out (LIFO)
 * Recent
-	* Least Recently Used (LRU), suitable for long-tailed<br>
-	* Most Recently Used (MRU)<br>
+	* Least Recently Used (LRU), suitable for long-tailed
+	* Most Recently Used (MRU)
 * Frequency
-	* Least Frequently Used (LFU)<br>
-* Random Replacement (RR)<br>
+	* Least Frequently Used (LFU)
+* Random Replacement (RR)
 
 #### Cache expiration
-Determine how long data is kept in the cache before it is considered stale and is removed.<br>
+Determine how long data is kept in the cache before it is considered stale and is removed.
 A shorter expiration time can improve the freshness of the data, but increase the number of accesses to the underlying data source
 
 #### Cache strategy (Invalidation): 
-Cache Invalidation: keep the cache coherent with the source of data (e.g. database);  <br>
-strategy: cache and permanent story like disk or database, write only one or both; depend on the data and data access patterns (how data is written and read)  <br>
-metrics: read-intensive vs write-intensive (write-write, write-reread); latency and throughput; consistency and data loss;<br>   
+Cache Invalidation: keep the cache coherent with the source of data (e.g. database);  
+strategy: cache and permanent story like disk or database, write only one or both; depend on the data and data access patterns (how data is written and read)  
+metrics: read-intensive vs write-intensive (write-write, write-reread); latency and throughput; consistency and data loss;   
 
-* Cache aside: general purpose, work best for read-heavy workloads; usually write-around, use write-through or Time To Live(TTL) to invalidate cache in order to avoid the stale data; The application is responsible for reading and writing from the storage. The cache does not interact with storage directly. Application load the entry from database, add it to cache and then return it to user. Lazy loading. Only requested data is cached.<br>   
-* Read-through  <br>
-* Write-through (both): data is written into both cache and database simultaneously. The application uses the cache as the main data store, reading and writing data to it, while the cache is responsible for reading and writing to the database synchronously. pros: fast retrieval, consistency between cache and storage, minimizes the risk of data loss; cons: higher latency for write operation; data written might never be read.   <br>
-* Write-around (storage only): data is written into the permanent storage only (bypassing the cache). pros: cache is not flooded with written operation which is not subsequently be re-read. con: higher latency for the recently written data, for cache-miss, so higher latency; <br>   
-* Write-back (write-behind)(cache only): the data is written to cache alone; asynchronously write entry to the data store. pros: low-latency and high-throughput for write-intensive applications. con: risk of data loss; more complex to implement, for its asynchronously writing.  <br> 
+* Cache aside: general purpose, work best for read-heavy workloads; usually write-around, use write-through or Time To Live(TTL) to invalidate cache in order to avoid the stale data; The application is responsible for reading and writing from the storage. The cache does not interact with storage directly. Application load the entry from database, add it to cache and then return it to user. Lazy loading. Only requested data is cached.   
+* Read-through  
+* Write-through (both): data is written into both cache and database simultaneously. The application uses the cache as the main data store, reading and writing data to it, while the cache is responsible for reading and writing to the database synchronously. pros: fast retrieval, consistency between cache and storage, minimizes the risk of data loss; cons: higher latency for write operation; data written might never be read.   
+* Write-around (storage only): data is written into the permanent storage only (bypassing the cache). pros: cache is not flooded with written operation which is not subsequently be re-read. con: higher latency for the recently written data, for cache-miss, so higher latency;    
+* Write-back (write-behind)(cache only): the data is written to cache alone; asynchronously write entry to the data store. pros: low-latency and high-throughput for write-intensive applications. con: risk of data loss; more complex to implement, for its asynchronously writing.   
 
 ### 11.3 CDN -> How to prepare our assets to deliver faster across the world?
 Real-time and low-latency require
@@ -2128,8 +2135,8 @@ In-memory caches:
 precalculated results, pre-generating expensive indexes, storing copies of frequently accessed data in a faster backend
 
 #### Scalability result ==> low-latency and fault-tolerant by replicate (deal with lower performance)
-Scalability methods—With the architecture, there are many techniques and methods which can be used in order to customize and improve the design of a system.<br> 
-Some of the most widely used are: redundancy, partitioning, caching, indexing, load balancing, and queues.<br>
+Scalability methods—With the architecture, there are many techniques and methods which can be used in order to customize and improve the design of a system. 
+Some of the most widely used are: redundancy, partitioning, caching, indexing, load balancing, and queues.
 
 #### Shard result==> high performance by destructing the load and high available, and latency-free
 
@@ -2137,35 +2144,35 @@ Some of the most widely used are: redundancy, partitioning, caching, indexing, l
 every building block in system design has functional and nonfunctional requirements that must be met.
 
 ### Load Balancers
-Evenly distributing the computational load allows for faster response times and the capacity for more web traffic.<br>
+Evenly distributing the computational load allows for faster response times and the capacity for more web traffic.
 * Scaling: Load balancers facilitate scaling, either up or down, by disguising changes made to the number of servers.
 * Availability: By dividing requests, load balancers maintain availability of the system even in the event of a server outage.
 * Performance: Directing requests to servers with low traffic decreases response time for the end user.
 
 ### Key Value Stores
-Similar to Hash table or dictionaries. Store information as a pair in the Key and Value format, for easy retrieval. Distributed hash tables (DHT). <br>
-e.g. AWS DynamoDB, AWS ElastiCache (a managed in-memory data store serivce which supports caching, like Redis or Memcached) (Redis, in particular, supports advanced data structures and features that make it effective for caching.<br>
-When it comes to caching user information effectively, Amazon ElastiCache with Redis is often a preferred choice due to its advanced caching capabilities, data structures, and support for use cases like user sessions and frequently accessed data.  However, the choice of service will depend on factors such as the complexity of the data, required data structures, access patterns, and performance requirements. <br>
+Similar to Hash table or dictionaries. Store information as a pair in the Key and Value format, for easy retrieval. Distributed hash tables (DHT). 
+e.g. AWS DynamoDB, AWS ElastiCache (a managed in-memory data store serivce which supports caching, like Redis or Memcached) (Redis, in particular, supports advanced data structures and features that make it effective for caching.
+When it comes to caching user information effectively, Amazon ElastiCache with Redis is often a preferred choice due to its advanced caching capabilities, data structures, and support for use cases like user sessions and frequently accessed data.  However, the choice of service will depend on factors such as the complexity of the data, required data structures, access patterns, and performance requirements. 
 
 ### Blob Storage
-Blob: Binary Large Object; a storage solution for unstructured data, such as photos, audios, multimedia, executable code; uses flat data organization pattern without hierarchy<br> 
-The main rule: write once, read many or WORM. Ensure the important dat is protected since once the data is written, it can be read, but not changed. <br>
+Blob: Binary Large Object; a storage solution for unstructured data, such as photos, audios, multimedia, executable code; uses flat data organization pattern without hierarchy 
+The main rule: write once, read many or WORM. Ensure the important dat is protected since once the data is written, it can be read, but not changed. 
 e.g. AWS S3
 ### Database
-A database is an organized collection of data that can be easily accessed and modified; make the process of storing, retrieving, modifying, and deleting data simpler. SQL vs NoSQL <br>
+A database is an organized collection of data that can be easily accessed and modified; make the process of storing, retrieving, modifying, and deleting data simpler. SQL vs NoSQL 
 
 ### Rate Limiters
-It sets a limit for the numbers of requests a service will fulfill. It will throttle requests that cross this threshold.<br>
-It is an important line of defense for services and system; prevent services being flooded with requests; mitigate resource consumption.<br>
-e.g. AWS API Gateway(built-in rate limiting on request/API/method per second/minute/others), AWS WAF(Web Application Firewall, restrict requests from the specific IP address or IP address ranges); <br>
+It sets a limit for the numbers of requests a service will fulfill. It will throttle requests that cross this threshold.
+It is an important line of defense for services and system; prevent services being flooded with requests; mitigate resource consumption.
+e.g. AWS API Gateway(built-in rate limiting on request/API/method per second/minute/others), AWS WAF(Web Application Firewall, restrict requests from the specific IP address or IP address ranges); 
 AWS Lambda, AWS CloudFront (CDN, request rate limiting to prevent abuse and ensure a smooth experience for users), AWS ELB(Elastic Load Balancing, configure specific rules as rate limiting)
 
 ### Monitoring Systems
-It is a software that allow system administrators to monitor infrastructure. It creates one centralized location for observing the overall performance of a potentially large system of computers in real time. <br>
+It is a software that allow system administrators to monitor infrastructure. It creates one centralized location for observing the overall performance of a potentially large system of computers in real time. 
 It can monitor: CPU, memory, bandwidth, routers, switches, applications, etc. e.g. AWS CloudWatch; AWS CloudTrail, X-Ray, Inspector, Trusted Advisor, and Config
 
 ### Distributed messaging queues
-A producer creates messages and consumers receive and process them. <br>
+A producer creates messages and consumers receive and process them. 
 * Improve performance through asynchronous communication since producers and consumers act independently of each other
 * Decouple or reduce dependency in the system
 * Improve reliability and allow simpler and less cluttered system design 
@@ -2173,31 +2180,31 @@ A producer creates messages and consumers receive and process them. <br>
   
 Usage: 
  * Sending emails
- * Data post-processing: It can reduce end-user latency, by enabling offline time-consuming and resource-intensive process, such as processing image, video, multimedia to different formrat or platforms<br>
+ * Data post-processing: It can reduce end-user latency, by enabling offline time-consuming and resource-intensive process, such as processing image, video, multimedia to different formrat or platforms
  * Recommender systems: use cookies to personalize a user’s content; retrieves the user data and processes it. A messaging queue can be incorporated to make this process more efficient as background data processing can be time consuming.
 
 ### Distributed unique ID generators
-It is important to tag entities in a system with a unique identifier. Millions of events may occur every second in a large distributed system, so we need a method of distinguishing them. A unique ID generator performs this task and enables the logging and tracking of event flows for debugging or maintenance purposes.<br>
-In most cases this is a universal unique ID (UUID). These are 128 bit numbers<br>
-Range handlers feature multiple servers that each cover a range of ID values.<br>
+It is important to tag entities in a system with a unique identifier. Millions of events may occur every second in a large distributed system, so we need a method of distinguishing them. A unique ID generator performs this task and enables the logging and tracking of event flows for debugging or maintenance purposes.
+In most cases this is a universal unique ID (UUID). These are 128 bit numbers
+Range handlers feature multiple servers that each cover a range of ID values.
 
 ### Distributed search
-Search systems are composed of three main entities: <br>
+Search systems are composed of three main entities: 
 * Crawler: finds/fetches content and creates documents
 * Indexer: builds a searchable index
 * Searcher: runs the search query against the index
-Distributed search systems are reliable and ideal for horizontal scalability<br>
-E.g. Elasticsearch <br>
+Distributed search systems are reliable and ideal for horizontal scalability
+E.g. Elasticsearch 
 
 ### Distributed logging services
-Logging is the process of recording data, in particular the events that occur in a software system. A log file may document service actions, transactions, microservices, or any other data that may be helpful when debugging. <br>
-Logging in a microservice architecture is convenient because the logs can be traced along a flow of events from end-to-end. Since microservices can create interdependencies in a system, and a failure of one service can cascade to others, logging helps to determine the root cause of the failure.<br>
-e.g. AWS CloudWatch logs: Centralized Log Storage, Scalable and Distributed, Real-Time Monitoring, Search and Query, Retention and Archiving, Integration with Other AWS Services, Access Control and Security, CloudWatch Metrics Integration, Automated Actions <br>
+Logging is the process of recording data, in particular the events that occur in a software system. A log file may document service actions, transactions, microservices, or any other data that may be helpful when debugging. 
+Logging in a microservice architecture is convenient because the logs can be traced along a flow of events from end-to-end. Since microservices can create interdependencies in a system, and a failure of one service can cascade to others, logging helps to determine the root cause of the failure.
+e.g. AWS CloudWatch logs: Centralized Log Storage, Scalable and Distributed, Real-Time Monitoring, Search and Query, Retention and Archiving, Integration with Other AWS Services, Access Control and Security, CloudWatch Metrics Integration, Automated Actions 
 
 ### Distributed task schedulers
-A **task** is a unit of work that requires computational resources, like CPU time, memory, storage, and network bandwidth, for some specified amount of time.<br>
-It is important for tasks like image uploading or social media posting to be asynchronous as to not hold the user waiting for background tasks to end.<br>
-Task schedulers mediate the supply-demand balance between tasks and resources to control the workflow of the system. By allocating resources task schedulers can ensure that task-level and system-level goals are met in an efficient manner. It is widely used in systems like Cloud Computing Services, Large Distributed Systems, and Single-OS-base nodes<br>
+A **task** is a unit of work that requires computational resources, like CPU time, memory, storage, and network bandwidth, for some specified amount of time.
+It is important for tasks like image uploading or social media posting to be asynchronous as to not hold the user waiting for background tasks to end.
+Task schedulers mediate the supply-demand balance between tasks and resources to control the workflow of the system. By allocating resources task schedulers can ensure that task-level and system-level goals are met in an efficient manner. It is widely used in systems like Cloud Computing Services, Large Distributed Systems, and Single-OS-base nodes
 
 ### Others
 * Domain Name System (DNS)
@@ -2209,23 +2216,23 @@ Task schedulers mediate the supply-demand balance between tasks and resources to
 ## 13 Common Design patterns
 
 ### 13.1 Microservices
-An application is broken down into a collection of small, independent services that communicate with each other over a network. Each service is responsible for a specific functionality and is developed, deployed, and scaled independently. <br>
-Pro: increased scalability, improved fault tolerance, and faster deployment cycles. <br>
-Con: additional complexity, such as service discovery and inter-service communication; <br>
+An application is broken down into a collection of small, independent services that communicate with each other over a network. Each service is responsible for a specific functionality and is developed, deployed, and scaled independently. 
+Pro: increased scalability, improved fault tolerance, and faster deployment cycles. 
+Con: additional complexity, such as service discovery and inter-service communication; 
 
 ### 13.2 Event Sourcing 
-the state of an application is represented as a stream of events, rather than a snapshot of its current state. This pattern is often used in systems that need to handle a large number of concurrent updates, such as financial systems and gaming platforms. <br>
-Pro: easy replay of events, which can be useful for debugging and auditing<br>
-Con: requires additional storage and computational resources to maintain the event stream<br>
+the state of an application is represented as a stream of events, rather than a snapshot of its current state. This pattern is often used in systems that need to handle a large number of concurrent updates, such as financial systems and gaming platforms. 
+Pro: easy replay of events, which can be useful for debugging and auditing
+Con: requires additional storage and computational resources to maintain the event stream
 
 ### 13.3 CQRS (Command Query Responsibility Segregation)
-separates the read and write operations of a system into separate models, allowing for optimized performance and scalability. This pattern can be useful in systems that handle a high volume of read and write operations, such as e-commerce websites<br>
-Pro: allows for different data stores and caching strategies to be used for read and write operations, improving the performance of both <br>
-Con: requires more complex design and more effort to maintain two separate models of the data. <br>
+separates the read and write operations of a system into separate models, allowing for optimized performance and scalability. This pattern can be useful in systems that handle a high volume of read and write operations, such as e-commerce websites
+Pro: allows for different data stores and caching strategies to be used for read and write operations, improving the performance of both 
+Con: requires more complex design and more effort to maintain two separate models of the data. 
 
 ### 13.4 Circuit Breaker: 
-can be used to prevent cascading failures in a distributed system. It works by monitoring the health of a service and, when it detects an issue, it “trips” and prevents further requests from being sent to that service. <br> 
-Pro: This helps to prevent a single point of failure from bringing down the entire system. <br>
+can be used to prevent cascading failures in a distributed system. It works by monitoring the health of a service and, when it detects an issue, it “trips” and prevents further requests from being sent to that service.  
+Pro: This helps to prevent a single point of failure from bringing down the entire system. 
 
 ### 13.5 Backpressure
 used to control the rate at which data is processed in a system, preventing it from being overwhelmed. This can be done by buffering incoming data and only processing it at a specific rate, or by rejecting incoming data if the system is unable to handle it.
@@ -2238,38 +2245,38 @@ is used to improve the performance of a system by reusing objects, rather than c
 ### Single point of failure require--> Redundancy and Replication
 HA Architecture - Micro services 
 
-**Redundancy**: the duplication of critical components or functions of a system with the intention of increasing the reliability of the system and to improve actual system performance. <br>
-Widely used in DBMS, usually with a primary-replica relationship between the original and the copies. The primary server gets all the updates, which then ripple through to the replica servers.<br>
+**Redundancy**: the duplication of critical components or functions of a system with the intention of increasing the reliability of the system and to improve actual system performance. 
+Widely used in DBMS, usually with a primary-replica relationship between the original and the copies. The primary server gets all the updates, which then ripple through to the replica servers.
 
-**Replication**: sharing information to ensure consistency between redundant resources (e.g. SW or HW), to improve reliability, fault-tolerance, or accessibility.<br>
+**Replication**: sharing information to ensure consistency between redundant resources (e.g. SW or HW), to improve reliability, fault-tolerance, or accessibility.
 
-**Highly Availability Mode**: improve reliability, fault-tolerance, or accessibility<br>
-* Redundancy  - Active-passive	HA mode (remove the single point of failure and provides backup in case a crisis by failover)<br>
-* Replication - Active-active		HA mode <br>
+**Highly Availability Mode**: improve reliability, fault-tolerance, or accessibility
+* Redundancy  - Active-passive	HA mode (remove the single point of failure and provides backup in case a crisis by failover)
+* Replication - Active-active		HA mode 
 
 **Failover** 
-(con: more hardware and additional complexity, the potential for loss of data)<br>
-* Active-passive (master-slave failover, the passive is hot/cold standby)<br>
-* Active-active (master-master failover)<br>
+(con: more hardware and additional complexity, the potential for loss of data)
+* Active-passive (master-slave failover, the passive is hot/cold standby)
+* Active-active (master-master failover)
 
-Need to ensure consistency <br>
-Also provide a backup or spare functionality if needed in a crisis <br>
+Need to ensure consistency 
+Also provide a backup or spare functionality if needed in a crisis 
 
-message queue to queue all requests, so that the system is highly available and open to updates while remaining the consistent at the same time<br>
+message queue to queue all requests, so that the system is highly available and open to updates while remaining the consistent at the same time
 
-**Redundancy** - describes the fact that you have more than one node/component/process in a system and it's pretty useful for handling failovers. In the case that one of your nodes fail, another node in the system can take over and carry on.<br> 
+**Redundancy** - describes the fact that you have more than one node/component/process in a system and it's pretty useful for handling failovers. In the case that one of your nodes fail, another node in the system can take over and carry on. 
 Redundancy can be:
-* active - where all the traffic goes to all nodes at the same time<br>
-* passive - where one node receive traffic and in the case of failure, a switch will be made to another node.<br>
-"Redundancy is the duplication of nodes, in case of some of them are failing"<br>
+* active - where all the traffic goes to all nodes at the same time
+* passive - where one node receive traffic and in the case of failure, a switch will be made to another node.
+"Redundancy is the duplication of nodes, in case of some of them are failing"
 
-**Replication** - includes redundancy, but involves the copying of data from one node to another or the synchronization of state between nodes. An example of where replication is done is at the databases or MQs level that forms a cluster.<br> 
+**Replication** - includes redundancy, but involves the copying of data from one node to another or the synchronization of state between nodes. An example of where replication is done is at the databases or MQs level that forms a cluster. 
 Replication can be:
-* active: each node receives each message in order to keep in sync with the rest of the nodes<br>
-* passive: this is the leader-follower model, where the leader receives all the requests and then forwards them to the followers.<br>
-"Replication is the synchronization of state between redundant nodes."<br>
+* active: each node receives each message in order to keep in sync with the rest of the nodes
+* passive: this is the leader-follower model, where the leader receives all the requests and then forwards them to the followers.
+"Replication is the synchronization of state between redundant nodes."
 
-**Redundancy** : Duplication of critical components (node, process) with the aim to achieve reliability. Redundancy helps avoid single-point failure. For instance, if we have two instances running and one of them fails then, then the system can switch over to another one.<br>
+**Redundancy** : Duplication of critical components (node, process) with the aim to achieve reliability. Redundancy helps avoid single-point failure. For instance, if we have two instances running and one of them fails then, then the system can switch over to another one.
 
 **Replication** : Sharing information to ensure consistency between redundant resources.
 
@@ -2280,9 +2287,9 @@ Each server performs checkpointing periodically and dump a snapshot to all its d
 
 ### Asynchronism
 pre-render massive framework dynamic content into static HTML files and store to Amazon S3 or content delivery network. This would make website super fast(handle millions of request per sec) 
-A script would do this job and would be called by cronjob every hour. This was one way of doing asynchronism.<br>
-If a user requests for a computation-intensive task, the front end of the website sends the job to the job queue and signals back to the user and lets the user browse the website meanwhile.<br> 
-As soon as the frontend is signaled about “job is done”, the frontend notifies the user about it.<br>
+A script would do this job and would be called by cronjob every hour. This was one way of doing asynchronism.
+If a user requests for a computation-intensive task, the front end of the website sends the job to the job queue and signals back to the user and lets the user browse the website meanwhile. 
+As soon as the frontend is signaled about “job is done”, the frontend notifies the user about it.
 
 Synchronous Communication
 * Immediate response is crucial
@@ -2301,7 +2308,7 @@ Synchronous and asynchronous communication patterns play vital roles in microser
 * On the other hand, asynchronous communication provides decoupling, better fault tolerance, and scalability, albeit at the cost of increased complexity.
 
 ### Extensibility 
-Our service should be designed to in a modular way with the expectation that new functionality will be added to it.<br> 
+Our service should be designed to in a modular way with the expectation that new functionality will be added to it. 
 
 Facebook System Design
 https://www.youtube.com/watch?v=hykjbT5Z0oE&t=1041s
@@ -2319,11 +2326,11 @@ https://www.youtube.com/watch?v=hykjbT5Z0oE&t=1041s
 * Use machine learning in choosing/generating/filtering the candidates and ranking them according to user's interests and history. 
 
 ### Popular services: 
-Distributed cache: Redis<br>
-Search Index : Elastic<br>
-Message queue : Kafka<br>
-Databases NoSql : HBase<br>
-Databases Relational: MySql<br>
+Distributed cache: Redis
+Search Index : Elastic
+Message queue : Kafka
+Databases NoSql : HBase
+Databases Relational: MySql
 
 ### Interview tool
 Facebook offered me three choices - Google Drawings,
