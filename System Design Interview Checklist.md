@@ -10,7 +10,7 @@
     - [0.6 Should do](#06-should-do)
   - [1 Ask clarifying and high-level design questions to **scope** the problem well](#1-ask-clarifying-and-high-level-design-questions-to-scope-the-problem-well)
     - [1.1 Functional Requirements (Product Features/Functionalities + User Requirements)](#11-functional-requirements-product-featuresfunctionalities--user-requirements)
-      - [1.1.1 Product Features/Functionalties](#111-product-featuresfunctionalties)
+      - [1.1.1 Product Features/Functionalities](#111-product-featuresfunctionalities)
       - [1.1.2 User requirements](#112-user-requirements)
     - [1.2 Non-Functional Requirements (Product Properties + User Expectations in term of performance) (PACELC + Reliable + Scalability + Extensibility)](#12-non-functional-requirements-product-properties--user-expectations-in-term-of-performance-pacelc--reliable--scalability--extensibility)
       - [Availability](#availability)
@@ -126,13 +126,13 @@
     - [Questions:](#questions)
   - [15 Future + ML](#15-future--ml)
   - [16 Review, Evaluate, and Evolve](#16-review-evaluate-and-evolve)
-  - [17 Intervew Framework](#17-intervew-framework)
-    - [17.1 Framework:](#171-framework)
+  - [17 Interview Framework](#17-interview-framework)
+    - [17.1 Framework](#171-framework)
     - [17.2 Strategy for NFR](#172-strategy-for-nfr)
     - [17.3 API Gateway](#173-api-gateway)
-    - [17.4 Common Single Points of Failure (SPOFs):](#174-common-single-points-of-failure-spofs)
-    - [17.5 Common Bottlenecks:](#175-common-bottlenecks)
-    - [17.6 Mitgation SPOFs and addressing bottlenecks involves](#176-mitgation-spofs-and-addressing-bottlenecks-involves)
+    - [17.4 Common Single Points of Failure (SPOFs)](#174-common-single-points-of-failure-spofs)
+    - [17.5 Common Bottlenecks](#175-common-bottlenecks)
+    - [17.6 Mitigation SPOFs and addressing bottlenecks involves](#176-mitigation-spofs-and-addressing-bottlenecks-involves)
   - [18 Terms](#18-terms)
     - [**API Gateway**](#api-gateway)
       - [Why it’s useful:](#why-its-useful)
@@ -203,7 +203,7 @@ Demonstrate your ability to anticipate and address potential issues in your desi
 Interviewer:
 
 - assesses a candidate's ability to combine knowledge, theory, experience, and judgment toward solving a real-world engineering problem with significant ambiguity.
-- Interviewrs are more interested in your thought process throughout the interview than in your final design.
+- Interviewers are more interested in your thought process throughout the interview than in your final design.
 
 Interviewee:
 
@@ -259,7 +259,7 @@ Start with process → methodology → scale → reliability → meta-mindset.
   - Time-awareness → Keep an eye on progress throughout.
   - Iterative refinement → Don’t aim for perfection in one go.
 
-- Analogy between Class Desgin and System Design:
+- Analogy between Class Design and System Design:
   - In Object/Class Design, you clarify:
     - Why does this class exist? (responsibility)
     - Which methods/functions should it expose? (interface)
@@ -281,7 +281,7 @@ The functional requirements are the **features and functionalities** that the us
 
 ### 1.1 Functional Requirements (Product Features/Functionalities + User Requirements)
 
-#### 1.1.1 Product Features/Functionalties
+#### 1.1.1 Product Features/Functionalities
 
 - **Goal**: What is the goal?
 - **Functions**: What does the system do?
@@ -296,7 +296,7 @@ The functional requirements are the **features and functionalities** that the us
   - What are the use cases?
   - How are they going to use it?  
   - What kind of **operations** does the system support?
-  - Read-Heavery vs Write-Heavy
+  - Read-Heavy vs Write-Heavy
 
 ### 1.2 Non-Functional Requirements (Product Properties + User Expectations in term of performance) (PACELC + Reliable + Scalability + Extensibility)
 
@@ -2144,10 +2144,14 @@ Some of the most widely used are: redundancy, partitioning, caching, indexing, l
 every building block in system design has functional and nonfunctional requirements that must be met.
 
 ### Load Balancers
+
 Evenly distributing the computational load allows for faster response times and the capacity for more web traffic.
-* Scaling: Load balancers facilitate scaling, either up or down, by disguising changes made to the number of servers.
-* Availability: By dividing requests, load balancers maintain availability of the system even in the event of a server outage.
-* Performance: Directing requests to servers with low traffic decreases response time for the end user.
+
+- Scaling: Load balancers facilitate scaling, either up or down, by disguising changes made to the number of servers.
+- Availability: By dividing requests, load balancers maintain availability of the system even in the event of a server outage.
+- Performance: Directing requests to servers with low traffic decreases response time for the end user.
+
+Load balancers are the unsung heroes of scalable systems — distributing incoming traffic, boosting reliability, and ensuring performance stays smooth, even when demand spikes.
 
 ### Key Value Stores
 Similar to Hash table or dictionaries. Store information as a pair in the Key and Value format, for easy retrieval. Distributed hash tables (DHT). 
@@ -2480,64 +2484,71 @@ Reviewing, evaluating, and evolving a system design is a crucial ongoing process
 
 By following these steps, you can create a systematic process for reviewing, evaluating, and evolving your system design, leading to a more robust, effective, and adaptable solution over time.
 
-## 17 Intervew Framework 
-### 17.1 Framework:
+## 17 Interview Framework
+
+### 17.1 Framework
+
 1. Functional req (10m)
-	System
-	User
+   - System
+   - User
+
 2. Non-functional req
-	1. Availability
-	2. Scalability
-	3. Consistency
-	4. Latency
-	5. Reliability
-	6. Security
-	
+   1. Availability
+   2. Scalability
+   3. Consistency
+   4. Latency
+   5. Reliability
+   6. Security
+
 3. Quantitative analysis
-	1. Users & DAU
-	2. Read vs Write
-	2. QPS / TPS
-	3. Storage
-	4. Bandwidth
-	
+   1. Users & DAU
+   2. Read vs Write
+   3. QPS / TPS
+   4. Storage
+   5. Bandwidth
+
 4. High level design + Data Flow (5-10m)
 
 5. APIs Design
+
 6. Data Schema + Data Store
-	1. SQL vs NoSQL
-	2. Object storage
-	3. DB Partitioning / sharding
+   1. SQL vs NoSQL
+   2. Object storage
+   3. DB Partitioning / sharding
 
 7. Deep Dive (10m)
 
 8. Evolve and Optimize (5m)
-	1. Single point of failure
-	2. Monitoring and logging (daignosing and debugging)
-	3. Bottleneck 
-	4. Performance
-	5. Testability, Usability, Extensibility, Security
-	5. long-term 
-	6. Authentication
-	7. Containerization
-	8. Portability (Infrastruture as Code)
+   1. Single point of failure
+   2. Monitoring and logging (diagnosing and debugging)
+   3. Bottleneck
+   4. Performance
+   5. Testability, Usability, Extensibility, Security
+   6. Long-term
+   7. Authentication
+   8. Containerization
+   9. Portability (Infrastructure as Code)
 
 ### 17.2 Strategy for NFR
-2. Non-functional req
-	1. Availability (LB, ASG, Micro)
-	2. Scalability (ASG, Cache, CDN, Async, Micro)
-	3. Consistency (ACID, Eventual Consistency)
-	4. Latency (Cache, CDN, Edge)
-	5. Reliability (Redundancy, Backup, Replication, Failover)
-	6. Security (Authentication, Authorization, Encryption, Firewallm, VPC, Security Group)
+
+1. Non-functional req
+   1. Availability (LB, ASG, Micro)
+   2. Scalability (ASG, Cache, CDN, Async, Micro)
+   3. Consistency (ACID, Eventual Consistency)
+   4. Latency (Cache, CDN, Edge)
+   5. Reliability (Redundancy, Backup, Replication, Failover)
+   6. Security (Authentication, Authorization, Encryption, Firewall, VPC, Security Group)
 
 ### 17.3 API Gateway
-API Gateway: 
-* Authentication and Authorization
-* Request and Response Transformation
-* Rate Limiting and Throttling
-* Caching
-* Monitoring and Logging
-* Scalability and Load Balancing
+
+API Gateway:
+
+- Authentication and Authorization
+- Request and Response Transformation
+- Rate Limiting and Throttling
+- Caching
+- Monitoring and Logging
+- Scalability and Load Balancing
 
 Why the API Gateway in front of ELB is often the preferred architecture:
 
@@ -2549,42 +2560,43 @@ Why the API Gateway in front of ELB is often the preferred architecture:
 6. Security and Access Control: API Gateway offers extensive security features for API endpoints, including IAM roles, custom authorizers, and OAuth integration, enhancing the overall security posture.
 7. Multiple Backend Resources: API Gateway allows integration with various backend resources beyond just ELB, such as Lambda, HTTP endpoints, and AWS services.
 
-### 17.4 Common Single Points of Failure (SPOFs):
-* Load Balancer: If a load balancer is the only entry point to a service and it fails, users can't access the service.
-* Authentication Services: A central authentication service that fails can prevent users from accessing multiple systems.
-* Database Server: A single database server can become a bottleneck or single point of failure if it experiences downtime or data corruption.
-* External Services or APIs: Depending on a single external service or API can cause failures if that service experiences issues.
+### 17.4 Common Single Points of Failure (SPOFs)
 
-* Hardware Failure: If a critical hardware component, such as a server or storage device, fails, it can disrupt the entire system.
-* Network Dependency: Relying on a single network connection or router can result in connectivity issues if it fails.
+- Load Balancer: If a load balancer is the only entry point to a service and it fails, users can't access the service.
+- Authentication Services: A central authentication service that fails can prevent users from accessing multiple systems.
+- Database Server: A single database server can become a bottleneck or single point of failure if it experiences downtime or data corruption.
+- External Services or APIs: Depending on a single external service or API can cause failures if that service experiences issues.
 
-### 17.5 Common Bottlenecks:
+- Hardware Failure: If a critical hardware component, such as a server or storage device, fails, it can disrupt the entire system.
+- Network Dependency: Relying on a single network connection or router can result in connectivity issues if it fails.
 
-* Database Performance: Inefficient database queries, lack of indexing, or high database contention can lead to slow responses.
-* Sequential Processing: When tasks must be executed sequentially, it can create a bottleneck and slow down the overall process.
-* Synchronization and Locking: Excessive locking or synchronization can lead to contention and reduce performance in multithreaded applications.
+### 17.5 Common Bottlenecks
 
-* Contention for Resources: Multiple components competing for the same resources (e.g., CPU, memory) can cause contention and slowdowns.
-* Inefficient Algorithms: Poorly optimized algorithms can lead to excessive processing times and inefficient resource usage.
+- Database Performance: Inefficient database queries, lack of indexing, or high database contention can lead to slow responses.
+- Sequential Processing: When tasks must be executed sequentially, it can create a bottleneck and slow down the overall process.
+- Synchronization and Locking: Excessive locking or synchronization can lead to contention and reduce performance in multithreaded applications.
 
-* CPU Utilization: High CPU usage can slow down processing and response times for applications.
-* Memory Constraints: Insufficient memory can lead to performance degradation and crashes due to excessive swapping.
-* Disk I/O: Slow disk I/O can cause delays in reading and writing data, affecting application performance.
-* Network Congestion: Heavy network traffic or limited bandwidth can result in delays and data transfer issues.
+- Contention for Resources: Multiple components competing for the same resources (e.g., CPU, memory) can cause contention and slowdowns.
+- Inefficient Algorithms: Poorly optimized algorithms can lead to excessive processing times and inefficient resource usage.
 
-### 17.6 Mitgation SPOFs and addressing bottlenecks involves 
-* redundancy,
+- CPU Utilization: High CPU usage can slow down processing and response times for applications.
+- Memory Constraints: Insufficient memory can lead to performance degradation and crashes due to excessive swapping.
+- Disk I/O: Slow disk I/O can cause delays in reading and writing data, affecting application performance.
+- Network Congestion: Heavy network traffic or limited bandwidth can result in delays and data transfer issues.
 
-* capacity planning. 
-* load balancing, 
-* efficient resource allocation, 
-* performance optimization
+### 17.6 Mitigation SPOFs and addressing bottlenecks involves
+
+- redundancy
+- capacity planning
+- load balancing
+- efficient resource allocation
+- performance optimization
 
 A well-designed system considers these factors to ensure reliability, availability, and optimal performance.
 
 ## 18 Terms
 
-### **API Gateway** 
+### **API Gateway**
 
 is a **single entry point** for all client requests in a system with **multiple backend services (microservices)**.
 
