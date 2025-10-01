@@ -105,14 +105,14 @@
     - [Distributed search](#distributed-search)
     - [Distributed logging services](#distributed-logging-services)
     - [Distributed task schedulers](#distributed-task-schedulers)
+    - [Automation: The Self-Healing System](#automation-the-self-healing-system)
     - [Others](#others)
   - [13 Common Design patterns](#13-common-design-patterns)
     - [13.1 Microservices](#131-microservices)
     - [13.2 Event Sourcing](#132-event-sourcing)
     - [13.3 CQRS (Command Query Responsibility Segregation)](#133-cqrs-command-query-responsibility-segregation)
-    - [13.4 Circuit Breaker:](#134-circuit-breaker)
+    - [13.4 Circuit Breaker](#134-circuit-breaker)
     - [13.5 Backpressure](#135-backpressure)
-    - [13.6 Object Pool](#136-object-pool)
   - [14 Q\&A](#14-qa)
     - [Single point of failure require--\> Redundancy and Replication](#single-point-of-failure-require---redundancy-and-replication)
     - [Checkpointing \<-- Fault Tolerance](#checkpointing----fault-tolerance)
@@ -868,7 +868,7 @@ Most real-world systems combine multiple storage types:
   3. **Admin / Manager Node**
      - Access privileges, dashboards, console.
   4. **Monitoring & Logging Services**
-     - Metrics (Prometheus, Grafana).
+     - Metrics (Prometheus, Grafana) (The System’s Health Report). Metrics are time-series data points that allow you to quantify the performance and health of every component. They are crucial for setting up Alerts.
      - Alerts, logs (ELK stack, Datadog).
   5. **Backup & Disaster Recovery**
      - Snapshots, multi-region replication.
@@ -2210,6 +2210,15 @@ A **task** is a unit of work that requires computational resources, like CPU tim
 It is important for tasks like image uploading or social media posting to be asynchronous as to not hold the user waiting for background tasks to end.
 Task schedulers mediate the supply-demand balance between tasks and resources to control the workflow of the system. By allocating resources task schedulers can ensure that task-level and system-level goals are met in an efficient manner. It is widely used in systems like Cloud Computing Services, Large Distributed Systems, and Single-OS-base nodes
 
+### Automation: The Self-Healing System
+Automation is the engine that keeps a large system stable and cost-efficient.
+
+- Auto-Scaling: This is the most critical function. It uses Aggregated Metrics (like CPU usage across the web tier) to automatically:
+- Add new web servers when traffic spikes (scaling out).
+- Remove idle web servers when traffic drops (saving cost).
+- Automated Failovers: Tools that automatically promote a Slave DB to Master DB during a failure, or switch traffic from DC1 to DC2 during an outage.
+- Deployment & Testing: Automated tools that deploy new code and run health checks across hundreds of servers simultaneously, minimizing human error.
+
 ### Others
 * Domain Name System (DNS)
 * Content Delivery Network (CDN)
@@ -2220,29 +2229,31 @@ Task schedulers mediate the supply-demand balance between tasks and resources to
 ## 13 Common Design patterns
 
 ### 13.1 Microservices
-An application is broken down into a collection of small, independent services that communicate with each other over a network. Each service is responsible for a specific functionality and is developed, deployed, and scaled independently. 
-Pro: increased scalability, improved fault tolerance, and faster deployment cycles. 
-Con: additional complexity, such as service discovery and inter-service communication; 
 
-### 13.2 Event Sourcing 
-the state of an application is represented as a stream of events, rather than a snapshot of its current state. This pattern is often used in systems that need to handle a large number of concurrent updates, such as financial systems and gaming platforms. 
+An application is broken down into a collection of small, independent services that communicate with each other over a network. Each service is responsible for a specific functionality and is developed, deployed, and scaled independently.
+Pro: increased scalability, improved fault tolerance, and faster deployment cycles.
+Con: additional complexity, such as service discovery and inter-service communication;
+
+### 13.2 Event Sourcing
+
+the state of an application is represented as a stream of events, rather than a snapshot of its current state. This pattern is often used in systems that need to handle a large number of concurrent updates, such as financial systems and gaming platforms.
 Pro: easy replay of events, which can be useful for debugging and auditing
 Con: requires additional storage and computational resources to maintain the event stream
 
 ### 13.3 CQRS (Command Query Responsibility Segregation)
-separates the read and write operations of a system into separate models, allowing for optimized performance and scalability. This pattern can be useful in systems that handle a high volume of read and write operations, such as e-commerce websites
-Pro: allows for different data stores and caching strategies to be used for read and write operations, improving the performance of both 
-Con: requires more complex design and more effort to maintain two separate models of the data. 
 
-### 13.4 Circuit Breaker: 
+separates the read and write operations of a system into separate models, allowing for optimized performance and scalability. This pattern can be useful in systems that handle a high volume of read and write operations, such as e-commerce websites
+Pro: allows for different data stores and caching strategies to be used for read and write operations, improving the performance of both
+Con: requires more complex design and more effort to maintain two separate models of the data.
+
+### 13.4 Circuit Breaker
+
 can be used to prevent cascading failures in a distributed system. It works by monitoring the health of a service and, when it detects an issue, it “trips” and prevents further requests from being sent to that service.  
-Pro: This helps to prevent a single point of failure from bringing down the entire system. 
+Pro: This helps to prevent a single point of failure from bringing down the entire system.
 
 ### 13.5 Backpressure
-used to control the rate at which data is processed in a system, preventing it from being overwhelmed. This can be done by buffering incoming data and only processing it at a specific rate, or by rejecting incoming data if the system is unable to handle it.
 
-### 13.6 Object Pool
-is used to improve the performance of a system by reusing objects, rather than creating new ones. Object pools are often used to manage the lifecycle of expensive resources, such as database connections or threads.
+used to control the rate at which data is processed in a system, preventing it from being overwhelmed. This can be done by buffering incoming data and only processing it at a specific rate, or by rejecting incoming data if the system is unable to handle it.
 
 ## 14 Q&A
 
@@ -2493,11 +2504,11 @@ By following these steps, you can create a systematic process for reviewing, eva
    - User
 
 2. Non-functional req
-   1. Availability
-   2. Scalability
-   3. Consistency
-   4. Latency
-   5. Reliability
+   1. Scalability
+   2. Reliability
+   3. Availability
+   4. Performance (Latency and Throughput target)
+   5. Consistency
    6. Security
 
 3. Quantitative analysis
@@ -2541,7 +2552,7 @@ By following these steps, you can create a systematic process for reviewing, eva
 
 ### 17.3 API Gateway
 
-API Gateway:
+API Gateway: a vital API management tool that acts as the intermediary between clients and a collection of backend services. It provides a single entry point into a system, abstracting and encapsulating the internal architecture. offers functionalities like authentication, monitoring, load balancing, caching, throttling, and logging.
 
 - Authentication and Authorization
 - Request and Response Transformation

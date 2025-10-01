@@ -8,14 +8,14 @@ Framework:
 
 2. Non-functional req
 	1. Scalability
-	2. Availability
-	3. Latency target
-	4. Consistency vs Availability
-	5. Reliability
+	2. Reliability
+	3. Availability
+	4. Performance (Latency and Throughput target)
+	5. Consistency vs Availability
 	6. Security
 	7. Observability
 	
-3. Quantitative analysis (Back-of-the-Envelope Estimation)
+3. Quantitative analysis (Back-of-the-Envelope Estimation on Scale)
 	1. Users & DAU
 	2. Read vs Write
 	2. QPS / TPS
