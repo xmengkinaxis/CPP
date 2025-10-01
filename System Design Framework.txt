@@ -65,12 +65,12 @@ Framework:
 ################################
 	
 API Gateway: 
-* Authentication and Authorization
-* Request and Response Transformation
-* Rate Limiting and Throttling
-* Caching
-* Monitoring and Logging
-* Scalability and Load Balancing
+- Authentication and Authorization
+- Request and Response Transformation
+- Rate Limiting and Throttling
+- Caching
+- Monitoring and Logging
+- Scalability and Load Balancing
 
 Why the API Gateway in front of ELB is often the preferred architecture:
 
@@ -85,37 +85,37 @@ Why the API Gateway in front of ELB is often the preferred architecture:
 #############################
 Common Single Points of Failure (SPOFs):
 
-* Load Balancer: If a load balancer is the only entry point to a service and it fails, users can't access the service.
-* Authentication Services: A central authentication service that fails can prevent users from accessing multiple systems.
-* Database Server: A single database server can become a bottleneck or single point of failure if it experiences downtime or data corruption.
-* External Services or APIs: Depending on a single external service or API can cause failures if that service experiences issues.
+- Load Balancer: If a load balancer is the only entry point to a service and it fails, users can't access the service.
+- Authentication Services: A central authentication service that fails can prevent users from accessing multiple systems.
+- Database Server: A single database server can become a bottleneck or single point of failure if it experiences downtime or data corruption.
+- External Services or APIs: Depending on a single external service or API can cause failures if that service experiences issues.
 
-* Hardware Failure: If a critical hardware component, such as a server or storage device, fails, it can disrupt the entire system.
-* Network Dependency: Relying on a single network connection or router can result in connectivity issues if it fails.
+- Hardware Failure: If a critical hardware component, such as a server or storage device, fails, it can disrupt the entire system.
+- Network Dependency: Relying on a single network connection or router can result in connectivity issues if it fails.
 
 ################################
 Common Bottlenecks:
 
-* Database Performance: Inefficient database queries, lack of indexing, or high database contention can lead to slow responses.
-* Sequential Processing: When tasks must be executed sequentially, it can create a bottleneck and slow down the overall process.
-* Synchronization and Locking: Excessive locking or synchronization can lead to contention and reduce performance in multithreaded applications.
+- Database Performance: Inefficient database queries, lack of indexing, or high database contention can lead to slow responses.
+- Sequential Processing: When tasks must be executed sequentially, it can create a bottleneck and slow down the overall process.
+- Synchronization and Locking: Excessive locking or synchronization can lead to contention and reduce performance in multithreaded applications.
 
-* Contention for Resources: Multiple components competing for the same resources (e.g., CPU, memory) can cause contention and slowdowns.
-* Inefficient Algorithms: Poorly optimized algorithms can lead to excessive processing times and inefficient resource usage.
+- Contention for Resources: Multiple components competing for the same resources (e.g., CPU, memory) can cause contention and slowdowns.
+- Inefficient Algorithms: Poorly optimized algorithms can lead to excessive processing times and inefficient resource usage.
 
-* CPU Utilization: High CPU usage can slow down processing and response times for applications.
-* Memory Constraints: Insufficient memory can lead to performance degradation and crashes due to excessive swapping.
-* Disk I/O: Slow disk I/O can cause delays in reading and writing data, affecting application performance.
-* Network Congestion: Heavy network traffic or limited bandwidth can result in delays and data transfer issues.
+- CPU Utilization: High CPU usage can slow down processing and response times for applications.
+- Memory Constraints: Insufficient memory can lead to performance degradation and crashes due to excessive swapping.
+- Disk I/O: Slow disk I/O can cause delays in reading and writing data, affecting application performance.
+- Network Congestion: Heavy network traffic or limited bandwidth can result in delays and data transfer issues.
 
 
 ################################
 Mitigating SPOFs and addressing bottlenecks involves 
-* redundancy,
+- redundancy,
 
-* capacity planning. 
-* load balancing, 
-* efficient resource allocation, 
-* performance optimization
+- capacity planning. 
+- load balancing, 
+- efficient resource allocation, 
+- performance optimization
 
 A well-designed system considers these factors to ensure reliability, availability, and optimal performance.
