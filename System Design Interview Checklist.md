@@ -2280,6 +2280,59 @@ Replication can be:
 
 **Replication** : Sharing information to ensure consistency between redundant resources.
 
+Great question 👌 These two often come together but mean very different things:
+
+---
+
+**Authentication**
+
+- **What it is:** The process of **proving your identity** to the system.
+- **Goal:** Answer the question **“Who are you?”**
+- **How:** Credentials or factors such as:
+  - Username + password
+  - OTP (One-Time Password, SMS/Email code)
+  - Biometrics (fingerprint, face scan)
+  - OAuth tokens (Google login, Facebook login)
+
+✅ If successful, the system knows *you are indeed who you claim to be.*
+
+---
+
+**Authorization**
+
+- **What it is:** The process of **determining what you are allowed to do** after you are authenticated.
+- **Goal:** Answer the question **“What can you do?”**
+- **How:** Rules, policies, or access control:
+  - Role-based access control (RBAC) → e.g., Admin vs User
+  - Attribute-based access control (ABAC) → permissions based on attributes like department, location
+  - Access control lists (ACLs)
+
+✅ If successful, the system grants access only to resources or actions you are permitted to use.
+
+---
+
+**Key Difference**
+
+| Aspect             | Authentication                     | Authorization                               |
+| ------------------ | ---------------------------------- | ------------------------------------------- |
+| **Definition**     | Verifies identity                  | Grants/denies access rights                 |
+| **Question**       | "Who are you?"                     | "What are you allowed to do?"               |
+| **Happens**        | First                              | After authentication                        |
+| **Implementation** | Passwords, OTPs, biometrics, OAuth | RBAC, ACLs, policy checks                   |
+| **Example**        | Logging in with email + password   | Admin can delete a user, normal user cannot |
+
+---
+
+**Analogy**
+
+- **Authentication** = Showing your **passport** at airport security (prove who you are).
+- **Authorization** = Checking your **boarding pass** (decides which plane/seat you’re allowed on).
+
+---
+
+Would you like me to also show **how authentication & authorization fit into a system design** (e.g., API Gateway, Auth service, DB)?
+
+
 ### Checkpointing <-- Fault Tolerance
 Each server performs checkpointing periodically and dump a snapshot to all its data onto a remote server. This will ensure that if a sever dies down, another server can replace it by taking its data from the last snapshot. 
 
