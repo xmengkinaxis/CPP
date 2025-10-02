@@ -1,57 +1,61 @@
 Framework:
 0. Restate the problem
 
-1. Functional req (10m)
-	System
-	Data
-	User
+1. Functional Requirements (10m)
+   1.1. System
+   1.2. User
+   1.3. Core APIs (CRUD & Actions) (User's perspective)
+   1.4. Data (Evens/Logs; No direct user involved)
+   NOTE: User and System (Service) interaction (request and response)
 
-2. Non-functional req
-	1. Scalability
-	2. Reliability
-	3. Availability
-	4. Performance (Latency and Throughput target)
-	5. Consistency vs Availability
-	6. Security
-	7. Observability
+2. Non-functional Requirements
+   2.1. Scalability
+   2.2. Availability
+   2.3. Reliability
+   2.4. Performance (Latency and Throughput target)
+   2.5. Consistency
+   2.6. Security
+   2.7. Observability
+   NOTE: 
+   
 	
-3. Quantitative analysis (Back-of-the-Envelope Estimation on Scale)
-	1. Users & DAU
-	2. Read vs Write
-	2. QPS / TPS
-	3. Storage
-	4. Bandwidth
-	5. Servers
-	6. CPU & Memory
+3. Quantitative Analysis (Back-of-the-Envelope Estimation on Scale)
+   3.1. Users & DAU
+   3.2. Read vs Write
+   3.3. QPS / TPS
+   3.4. Storage
+   3.5. Bandwidth
+   3.6. Servers
+   3.7. CPU & Memory
 	
-4. High level design + Data Flow (5-10m)
-	1. Building Blocks (Components) : LB, API GW, servers, DB, blobs
-	2. Workflow
+4. High-level Design + Data Flow (5–10m)
+   4.1. Building Blocks (Components: LB, API GW, servers, DB, blobs)
+   4.2. Workflow
 
 5. APIs Design
 
 6. Data Schema + Data Store
-	1. SQL vs NoSQL
-	2. Object storage
-	3. DB Partitioning / sharding
+   6.1. SQL vs NoSQL
+   6.2. Object Storage
+   6.3. DB Partitioning / Sharding
 
 7. Deep Dive on Core Components (10m)
-	7.1 Scale
-	7.2 Partition and Replication
-	7.3 VPC
-	7.4 Authentication, throttling, Load balancing
-	7.5 Push vs Pull
+   7.1. Scale
+   7.2. Partition and Replication
+   7.3. VPC
+   7.4. Authentication, Throttling, Load Balancing
+   7.5. Push vs Pull
 
 8. Evolve and Optimize (5m)
-	1. Single point of failure
-	2. Monitoring and logging (diagnosing and debugging)
-	3. Bottleneck 
-	4. Performance
-	5. Testability, Usability, Extensibility, Security
-	5. long-term 
-	6. Authentication
-	7. Containerization
-	8. Portability (Infrastructure as Code)
+   8.1. Single Point of Failure
+   8.2. Monitoring and Logging (diagnosing and debugging)
+   8.3. Bottleneck
+   8.4. Performance
+   8.5. Testability, Usability, Extensibility, Security
+   8.6. Long-term
+   8.7. Authentication
+   8.8. Containerization
+   8.9. Portability (Infrastructure as Code)
 	
 ################################
 2. Non-functional req

@@ -133,6 +133,7 @@
     - [17.4 Common Single Points of Failure (SPOFs)](#174-common-single-points-of-failure-spofs)
     - [17.5 Common Bottlenecks](#175-common-bottlenecks)
     - [17.6 Mitigation SPOFs and addressing bottlenecks involves](#176-mitigation-spofs-and-addressing-bottlenecks-involves)
+    - [17.7 Suggested Prioritization (for a 45-min interview)](#177-suggested-prioritization-for-a-45-min-interview)
   - [18 Terms](#18-terms)
     - [**API Gateway**](#api-gateway)
       - [Why it’s useful:](#why-its-useful)
@@ -2242,9 +2243,9 @@ Con: requires additional storage and computational resources to maintain the eve
 
 ### 13.3 CQRS (Command Query Responsibility Segregation)
 
-separates the read and write operations of a system into separate models, allowing for optimized performance and scalability. This pattern can be useful in systems that handle a high volume of read and write operations, such as e-commerce websites
-Pro: allows for different data stores and caching strategies to be used for read and write operations, improving the performance of both
-Con: requires more complex design and more effort to maintain two separate models of the data.
+- Definition: separates the read and write operations of a system into separate models, allowing for optimized performance and scalability. This pattern can be useful in systems that handle a high volume of read and write operations, such as e-commerce websites
+- Pro: allows for different data stores and caching strategies to be used for read and write operations, improving the performance of both
+- Con: requires more complex design and more effort to maintain two separate models of the data.
 
 ### 13.4 Circuit Breaker
 
@@ -2499,46 +2500,68 @@ By following these steps, you can create a systematic process for reviewing, eva
 
 ### 17.1 Framework
 
-1. Functional req (10m)
-   - System
-   - User
+1. **Functional Requirements (10m)**
+   1.1. System
+   1.2. User
+   1.3. Core APIs (CRUD & Actions)
+   1.4. Data (Evens/Logs; No direct user involved)
+   - NOTE:
+     - User and System (Service) interaction (request and response)
+     - User as external and System (Service) as internal
+     - Interaction (request and response) between external and internal
+     - Similar to User -> Public API -> Class
 
-2. Non-functional req
-   1. Scalability
-   2. Reliability
-   3. Availability
-   4. Performance (Latency and Throughput target)
-   5. Consistency
-   6. Security
+2. **Non-functional Requirements**
+   2.1. Scalability
+   2.2. Availability
+   2.3. Reliability
+   2.4. Performance (Latency and Throughput target)
+   2.5. Consistency
+   2.6. Security
+   2.7. Observability
+   - General-purpose consumer internet systems priority:
+     - Availability > Reliability > Scalability > Performance > Security > Consistency > Observability
+     - This ordering emphasizes availability first, then correctness (reliability), followed by growth (scalability) and user experience (performance), while still showing awareness of security, consistency, and observability.
+   - Finance/healthcare priority (correctness first):
+     - Reliability > Consistency > Security > Availability > Performance > Scalability > Observability
 
-3. Quantitative analysis
-   1. Users & DAU
-   2. Read vs Write
-   3. QPS / TPS
-   4. Storage
-   5. Bandwidth
+3. **Quantitative Analysis (Back-of-the-Envelope Estimation on Scale)**
+   3.1. Users & DAU
+   3.2. Read vs Write
+   3.3. QPS / TPS
+   3.4. Storage
+   3.5. Bandwidth
+   3.6. Servers
+   3.7. CPU & Memory
 
-4. High level design + Data Flow (5-10m)
+4. **High-level Design + Data Flow (5–10m)**
+   4.1. Building Blocks (Components: LB, API GW, servers, DB, blobs)
+   4.2. Workflow
 
-5. APIs Design
+5. **APIs Design**
 
-6. Data Schema + Data Store
-   1. SQL vs NoSQL
-   2. Object storage
-   3. DB Partitioning / sharding
+6. **Data Schema + Data Store**
+   6.1. SQL vs NoSQL
+   6.2. Object Storage
+   6.3. DB Partitioning / Sharding
 
-7. Deep Dive (10m)
+7. **Deep Dive (10m)**
+   7.1. Scale
+   7.2. Partition and Replication
+   7.3. VPC
+   7.4. Authentication, Throttling, Load Balancing
+   7.5. Push vs Pull
 
-8. Evolve and Optimize (5m)
-   1. Single point of failure
-   2. Monitoring and logging (diagnosing and debugging)
-   3. Bottleneck
-   4. Performance
-   5. Testability, Usability, Extensibility, Security
-   6. Long-term
-   7. Authentication
-   8. Containerization
-   9. Portability (Infrastructure as Code)
+8. **Evolve and Optimize (5m)**
+   8.1. Single Point of Failure
+   8.2. Monitoring and Logging (diagnosing and debugging)
+   8.3. Bottleneck
+   8.4. Performance
+   8.5. Testability, Usability, Extensibility, Security
+   8.6. Long-term
+   8.7. Authentication
+   8.8. Containerization
+   8.9. Portability (Infrastructure as Code)
 
 ### 17.2 Strategy for NFR
 
@@ -2604,6 +2627,18 @@ Why the API Gateway in front of ELB is often the preferred architecture:
 - performance optimization
 
 A well-designed system considers these factors to ensure reliability, availability, and optimal performance.
+
+### 17.7 Suggested Prioritization (for a 45-min interview)
+
+- Intro + Functional Requirements → 5m
+- Non-functional Requirements → 3m
+- Estimation / Scale Analysis → 5m
+- High-level Design + Data Flow → 8–10m
+- Deep Dive on 1–2 Key Areas → 12–15m
+- Trade-offs + Bottlenecks + Failures → 5–7m
+- Wrap-up (Evolution/Optimization) → 2–3m
+
+- APIs, schema, and “extra” optimizations: only if time permits.
 
 ## 18 Terms
 
