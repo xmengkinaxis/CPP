@@ -14,10 +14,10 @@ import io
 import collections
 
 # For working with vectors (Python lists)
-import array
+import array # list or stack: append, pop, len, [-1]
 
 # For working with sets
-import set
+import set # in, add, remove, discard
 
 # For working with queues (Python queue module provides Queue and PriorityQueue)
 import queue
@@ -25,7 +25,7 @@ import queue
 # For sorting, finding min and max, numeric operations like sum and max
 import functools
 
-from collections import deque 
+from collections import deque # popleft, append
 from collections import defaultdict # defaultdict is a subclass of the built-in dict class that provides a convenient way to create dictionaries with default values for keys that don't exist yet
 from collections import Counter # count the occurrences of elements in a collection, typically in a list, tuple, or string. It returns a dictionary-like object where keys are the unique elements in the input collection, and values are the counts of each element.
 from collections import most_common # returns a list of the n most common elements and their counts from the most common to the least; use as priority queue

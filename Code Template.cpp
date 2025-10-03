@@ -366,7 +366,7 @@ A monotonic Queue is a data structure the elements from the front to the end is 
 456. 132 Pattern; https://leetcode.com/problems/132-pattern/
 739. Daily Temperatures; https://leetcode.com/problems/daily-temperatures/
 402. Remove K Digits; https://leetcode.com/problems/remove-k-digits
-1081. Smallest Subsequence of Distinct Characters; https://leetcode.com/problems/smallest-subsequence-of-distinct-characters
+1081. Smallest Subsequence of Distinct Characters; https://leetcode.com/problems/smallest-subsequence-of-distinct-characters (similar to 316)
 */
 int fnMonotonicIncreasingStack(vector<int>& arr) {
 	stack<int> stack; 

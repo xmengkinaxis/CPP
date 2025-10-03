@@ -85,7 +85,7 @@
       - [Algorithm Categories](#algorithm-categories)
       - [algorithms](#algorithms)
     - [11.2 Caching - How to scale database?  Caching or vertically and horizontally](#112-caching---how-to-scale-database--caching-or-vertically-and-horizontally)
-      - [Cache eviction policies:](#cache-eviction-policies)
+      - [Cache eviction policies](#cache-eviction-policies)
       - [Cache expiration](#cache-expiration)
       - [Cache strategy (Invalidation):](#cache-strategy-invalidation)
     - [11.3 CDN -\> How to prepare our assets to deliver faster across the world?](#113-cdn---how-to-prepare-our-assets-to-deliver-faster-across-the-world)
@@ -552,7 +552,7 @@ How much will it grow each year?
 
 ### 2.2 Storage in TB or GB/year
 
-- **Write**: Write count * write size; e.g. 400M * 300B = 120GB/day
+- **Write**: Write count x write size; e.g. 400M x 300B = 120GB/day
 
 - Total files/write ???
 - average file/write sizes ???; Limit on user input for each paste or a certain time (text amount, image size, user URL size) (not abuse)
@@ -560,7 +560,7 @@ How much will it grow each year?
 
 - **Total:** Total Storage Capacity including everything
   - **Others:** metadata, thumbnail, different resolutions, etc
-  - **Growth:** Estimate in 5 or 10 years; Growth rate? e.g. 120GB * 365 days * 5 years = 200TB
+  - **Growth:** Estimate in 5 or 10 years; Growth rate? e.g. 120GB x 365 days x 5 years = 200TB
   - **Margin:** to keep some margin, If never more than 70% or 80% of capacity; Assuming a 70% capacity model (we don't want to go above 70% of the total capacity of our storage system); 200TB / 80% = 250TB
   - **Replication:** replication for fault tolerance; e.g. 250TB * 2 = 500TB
   (500TB / 4T/server = 125 servers) (NOTE: too big for a single machine, so must be partitioned) (so is the cache)
@@ -569,7 +569,7 @@ How much will it grow each year?
 
 Bandwidth will decide how to manage traffic and balance load between servers. ???
 
-- **Ingress (upload):** write count per second/minute * write average size
+- **Ingress (upload, incoming):** write count per second/minute * write average size
 - **Egress (download, outgoing):** read count per second/minute * read average size
 - **Ratio:** read or write intensive (need partition, or cache, or cache strategies)
 
@@ -577,7 +577,7 @@ Bandwidth will decide how to manage traffic and balance load between servers. ??
 
 - 80-20 rule: 20% of hot pastes generate 80% of traffic, so only cache these 20% of pastes
 - 20% of daily traffic and based on client's usage patterns, can adjust how many cache servers we need
-- 20% * read count / per day * read average size
+- 20% x read count / **per day** x read average size
 
 Benefit: Low latency (real time)
 
@@ -821,8 +821,8 @@ Most real-world systems combine multiple storage types:
 
 - **Goal**
   - The candidate should identify various **system entities**, how they will **interact** with each other, and how data would be **flowing** in the system
-  - **Static Structure**: components, their relationship and connections
-  - **Dynamic Behavior**: workflow, how these components interact with each other, event/time sequences
+  - **Static Structure**: components, their relationship (e.g. 1:1 or 1:n) and connections
+  - **Dynamic Behavior**: workflow, how these components interact with each other, **event/time sequences**
   
 - **Steps**
   - **Outline core components and connections (Static)**
@@ -830,7 +830,7 @@ Most real-world systems combine multiple storage types:
     - Map **features → modules**
     - Define micro-services based on features/APIs (e.g. which micro-service should handle request and reply with a response)
     - Sketch the **main components + connections**
-    - Justify each design choice
+    - **Justify each design choice**
   - **Describe Request Workflow (Dynamic)**
     - Walk through what happens **from client request → backend processing → response**.
     - Explain **how data flows across components**.
@@ -2094,18 +2094,20 @@ What should be cached? long-running queries on databases; high-latency network r
 **CDN (Content Delivery Network)** are a kind of cache that comes into play for sites serving large amounts of static media. Can replicate content in multiple places, based on user's geographic location and the original of the webpage; security improvement, increase in content availability and redundancy, better load times, low bandwidth cost.  
 * type: Push and Pull, referring the data streaming upload and download???
 
-#### Cache eviction policies:
-Eviction policy determines how the cache handles the replacement of old data with new data when the cache is full
-Policies: Order (first vs last), Recently (time: least vs most), Frequency (least), Random;
-* Order
-	* First In First Out (FIFO), time-serious ???
-	* Last In First Out (LIFO)
-* Recent
-	* Least Recently Used (LRU), suitable for long-tailed
-	* Most Recently Used (MRU)
-* Frequency
-	* Least Frequently Used (LFU)
-* Random Replacement (RR)
+#### Cache eviction policies
+
+- Definition: Eviction policy determines how the cache handles the replacement of old data with new data when the cache is full
+- **Policies**: Order (first vs last), Recently (time: least vs most), Frequency (least), Random;
+
+- Order
+  - First In First Out (FIFO), time-serious ???
+  - Last In First Out (LIFO)
+- Recent
+  - Least Recently Used (LRU), suitable for long-tailed
+  - Most Recently Used (MRU)
+- Frequency
+  - Least Frequently Used (LFU)
+- Random Replacement (RR)
 
 #### Cache expiration
 Determine how long data is kept in the cache before it is considered stale and is removed.
@@ -2116,11 +2118,11 @@ Cache Invalidation: keep the cache coherent with the source of data (e.g. databa
 strategy: cache and permanent story like disk or database, write only one or both; depend on the data and data access patterns (how data is written and read)  
 metrics: read-intensive vs write-intensive (write-write, write-reread); latency and throughput; consistency and data loss;   
 
-* Cache aside: general purpose, work best for read-heavy workloads; usually write-around, use write-through or Time To Live(TTL) to invalidate cache in order to avoid the stale data; The application is responsible for reading and writing from the storage. The cache does not interact with storage directly. Application load the entry from database, add it to cache and then return it to user. Lazy loading. Only requested data is cached.   
-* Read-through  
-* Write-through (both): data is written into both cache and database simultaneously. The application uses the cache as the main data store, reading and writing data to it, while the cache is responsible for reading and writing to the database synchronously. pros: fast retrieval, consistency between cache and storage, minimizes the risk of data loss; cons: higher latency for write operation; data written might never be read.   
-* Write-around (storage only): data is written into the permanent storage only (bypassing the cache). pros: cache is not flooded with written operation which is not subsequently be re-read. con: higher latency for the recently written data, for cache-miss, so higher latency;    
-* Write-back (write-behind)(cache only): the data is written to cache alone; asynchronously write entry to the data store. pros: low-latency and high-throughput for write-intensive applications. con: risk of data loss; more complex to implement, for its asynchronously writing.   
+- Cache aside: general purpose, work best for read-heavy workloads; usually write-around, use write-through or Time To Live(TTL) to invalidate cache in order to avoid the stale data; The application is responsible for reading and writing from the storage. The cache does not interact with storage directly. Application load the entry from database, add it to cache and then return it to user. Lazy loading. Only requested data is cached.   
+- Read-through  
+- Write-through (both): data is written into both cache and database simultaneously. The application uses the cache as the main data store, reading and writing data to it, while the cache is responsible for reading and writing to the database synchronously. pros: fast retrieval, consistency between cache and storage, minimizes the risk of data loss; cons: higher latency for write operation; data written might never be read.   
+- Write-around (storage only): data is written into the permanent storage only (bypassing the cache). pros: cache is not flooded with written operation which is not subsequently be re-read. con: higher latency for the recently written data, for cache-miss, so higher latency;    
+- Write-back (write-behind)(cache only): the data is written to cache alone; asynchronously write entry to the data store. pros: low-latency and high-throughput for write-intensive applications. con: risk of data loss; more complex to implement, for its asynchronously writing.   
 
 ### 11.3 CDN -> How to prepare our assets to deliver faster across the world?
 Real-time and low-latency require
@@ -2509,7 +2511,7 @@ By following these steps, you can create a systematic process for reviewing, eva
      - User and System (Service) interaction (request and response)
      - User as external and System (Service) as internal
      - Interaction (request and response) between external and internal
-     - Similar to User -> Public API -> Class
+     - Similar to User -> Public API (Core APIs) -> Class (System/Service)
 
 2. **Non-functional Requirements**
    2.1. Scalability

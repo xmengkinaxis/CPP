@@ -16,17 +16,15 @@ Framework:
    2.5. Consistency
    2.6. Security
    2.7. Observability
-   NOTE: 
-   
-	
+
 3. Quantitative Analysis (Back-of-the-Envelope Estimation on Scale)
    3.1. Users & DAU
-   3.2. Read vs Write
-   3.3. QPS / TPS
-   3.4. Storage
-   3.5. Bandwidth
-   3.6. Servers
-   3.7. CPU & Memory
+   3.2. Read vs Write; ratio
+   3.3. QPS / TPS (average); (Peak QPS (* 3))
+   3.4. Storage (write) (total storage = # of object * size)
+   3.5. Bandwidth (write & read) (income & outcome)
+   3.6. Servers (read)
+   3.7. CPU & Memory (???) (Cache Memory for read)
 	
 4. High-level Design + Data Flow (5–10m)
    4.1. Building Blocks (Components: LB, API GW, servers, DB, blobs)
