@@ -530,6 +530,8 @@ Break it down, to the most important, minimal features for your system.
 
 - second per day? 86400 - > 10^5;
 
+- A modern-day server capacity
+
 ### 2.1 Traffic in write/second, or read/second
 
 #### **Users**

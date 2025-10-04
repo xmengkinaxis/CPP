@@ -386,12 +386,15 @@ int fnMonotonicIncreasingStack(vector<int>& arr) {
 }
 
 /* dfs on a Tree: preOrder, inOrder, postorder;
+	preOrder is similar to bfs implemented by a queue in the code template;
+	inOrder will interleave nodes at the different level, for inOrder visits nodes by structure, not by level, meaning nodes from different levels can interleave.
+	Whenever a problem says something like “left-to-right, level-by-level, or vertical/horizontal order”, it’s a hint to store coordinates (x, y) or use BFS with levels.
 preOrder
 623. Add One Row to Tree; https://leetcode.com/problems/add-one-row-to-tree/; do logic for the node at the certain level
 inOrder
 426. Convert Binary Search Tree to Sorted Doubly Linked List; https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/
 987. Vertical Order Traversal of a Binary Tree; https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/
-1161. Maximum Level Sum of a Binary Tree; https://leetcode.com/problems/maximum-level-sum-of-a-binary-tree/; must be preOrder; crash if inOrder, for it is similar to bfs by layer
+1161. Maximum Level Sum of a Binary Tree; https://leetcode.com/problems/maximum-level-sum-of-a-binary-tree/; must be preOrder (or postOrder), for it is similar to bfs by layer; crash if inOrder and compare during traversal
 285. Inorder Successor in BST; https://leetcode.com/problems/inorder-successor-in-bst/; it needs a short cut when the answer is found; no need to browse all
 postOrder
 543. Diameter of Binary Tree; https://leetcode.com/problems/diameter-of-binary-tree/
@@ -411,6 +414,12 @@ inOrder + postOrder
 --------------
 postOrder: 
 1325. Delete Leaves With a Given Value; https://leetcode.com/problems/delete-leaves-with-a-given-value
+---
+coordinate-based tree traversal pattern appears in:
+987. Vertical Order Traversal
+314. Binary Tree Vertical Order Traversal
+662. Maximum Width of Binary Tree
+863. All Nodes Distance K in Binary Tree
 */
 int dfsTree(TreeNode *root) { // could return a tuple of a node and the depth
 	// 1. deal with the special base cases;  could be more base cases

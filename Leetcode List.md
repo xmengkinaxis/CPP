@@ -124,7 +124,7 @@
 
 - [426. Convert Binary Search Tree to Sorted Doubly Linked List](https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/)
 - [987. Vertical Order Traversal of a Binary Tree](https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/)
-- [1161. Maximum Level Sum of a Binary Tree](https://leetcode.com/problems/maximum-level-sum-of-a-binary-tree/) // must be preOrder; crash if inOrder, for it is similar to bfs by layer
+- [1161. Maximum Level Sum of a Binary Tree](https://leetcode.com/problems/maximum-level-sum-of-a-binary-tree/) //must be preOrder (or postOrder), for it is similar to bfs by layer; crash if inOrder and compare during traversal
 - [285. Inorder Successor in BST](https://leetcode.com/problems/inorder-successor-in-bst/) // it needs a short cut when the answer is found; no need to browse all
 
 #### PostOrder
