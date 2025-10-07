@@ -33,7 +33,9 @@
     - [2.2 Storage in TB or GB/year](#22-storage-in-tb-or-gbyear)
     - [2.3 Bandwidth in KB/s or MB/s](#23-bandwidth-in-kbs-or-mbs)
     - [2.4 Memory (cache) in GB or TB /day](#24-memory-cache-in-gb-or-tb-day)
-    - [2.5 Servers' capability](#25-servers-capability)
+    - [2.5 Modern Server Capability](#25-modern-server-capability)
+      - [⚙️ Modern-Day Server (Ballpark Capacity for Estimation)](#️-modern-day-server-ballpark-capacity-for-estimation)
+      - [⚡ Practical Constants for Quick Estimation](#-practical-constants-for-quick-estimation)
   - [3 System API design](#3-system-api-design)
   - [4 Database Design (Define Data Model and Choose Database)](#4-database-design-define-data-model-and-choose-database)
     - [4.0 Data Model](#40-data-model)
@@ -584,9 +586,38 @@ Bandwidth will decide how to manage traffic and balance load between servers. ??
 
 Benefit: Low latency (real time)
 
-### 2.5 Servers' capability
+### 2.5 Modern Server Capability
 
-Requests per second that a server can handle; used in estimating how many servers are required
+- Goal
+  - expect to use reasonable ballpark figures to do sanity-check scale
+  - Requests per second that a server can handle; used in estimating how many servers are required
+
+#### ⚙️ Modern-Day Server (Ballpark Capacity for Estimation)
+
+- **CPU**
+  - ~32–64 vCPUs (often ~2.5 GHz each)
+  - Each core can handle ~1k–10k lightweight requests/sec (depending on workload, language/runtime).
+  - Rule of thumb: **1 core = 1k RPS for a typical web workload**.
+- **Memory (RAM)**
+  - ~128 GB is common in production servers (range: 64 GB – 512 GB).
+  - Rule of thumb: **assume 100 bytes to 1 KB per object in memory** → can hold 100M–1B objects in memory if optimized.
+- **Disk (Storage)**
+  - SSD: ~1–4 TB per server (NVMe can be much faster).
+  - Throughput: ~500 MB/s – 2 GB/s.
+  - Latency: ~100 µs – 1 ms.
+  - Rule of thumb: **assume 500 MB/s sequential I/O, 10k–100k IOPS**.
+- **Network Bandwidth**
+  - ~10–25 Gbps (cloud VMs often limited to ~10 Gbps).
+  - 10 Gbps ≈ 1.25 GB/s max.
+  - Rule of thumb: **a single server can push ~1 GB/s over the network**.
+
+#### ⚡ Practical Constants for Quick Estimation
+
+- **1 day ≈ 100k seconds** (instead of 86,400).
+- **1 server ≈ 100k RPS capacity (front-end, stateless, well-optimized)**.
+- **1 server ≈ 1 Gbps sustained throughput**.
+- **1 server ≈ 100M–1B cached objects in memory (depending on size)**.
+- **1 SSD ≈ 1–2 TB usable space, 500 MB/s read/write**.
 
 ## 3 System API design
 
