@@ -404,16 +404,16 @@ postOrder
 1644. Lowest Common Ancestor of a Binary Tree II; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-ii/
 1676. Lowest Common Ancestor of a Binary Tree IV; https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iv/
 95. Unique Binary Search Trees II; https://leetcode.com/problems/unique-binary-search-trees-ii/
-129. Sum Root to Leaf Numbers; https://leetcode.com/problems/sum-root-to-leaf-numbers/; // leave is one of the base cases 
-1123. Lowest Common Ancestor of Deepest Leaves; https://leetcode.com/problems/lowest-common-ancestor-of-deepest-leaves/
-865. Smallest Subtree with all the Deepest Nodes; https://leetcode.com/problems/smallest-subtree-with-all-the-deepest-nodes/
+129. Sum Root to Leaf Numbers; https://leetcode.com/problems/sum-root-to-leaf-numbers/; // leaf is one of the base cases 
+1123. Lowest Common Ancestor of Deepest Leaves; https://leetcode.com/problems/lowest-common-ancestor-of-deepest-leaves/; can return tuples, similar to 236. Lowest Common Ancestor of a Binary Tree;
+865. Smallest Subtree with all the Deepest Nodes; https://leetcode.com/problems/smallest-subtree-with-all-the-deepest-nodes/; exactly same as Lowest Common Ancestor of Deepest Leaves;
 1110. Delete Nodes And Return Forest; https://leetcode.com/problems/delete-nodes-and-return-forest/; must update root and add it if still valid
 inOrder + postOrder
 1382. Balance a Binary Search Tree; https://leetcode.com/problems/balance-a-binary-search-tree/
 545. Boundary of Binary Tree; https://leetcode.com/problems/boundary-of-binary-tree/
 --------------
 postOrder: 
-1325. Delete Leaves With a Given Value; https://leetcode.com/problems/delete-leaves-with-a-given-value
+1325. Delete Leaves With a Given Value; https://leetcode.com/problems/delete-leaves-with-a-given-value; must use postOrder to use recursive
 ---
 coordinate-based tree traversal pattern appears in:
 987. Vertical Order Traversal
@@ -423,12 +423,12 @@ coordinate-based tree traversal pattern appears in:
 */
 int dfsTree(TreeNode *root) { // could return a tuple of a node and the depth
 	// 1. deal with the special base cases;  could be more base cases
-	// when calculating the depth, it is 0 for nullptr and 1 for a leave; so the base case is still nullptr; 
+	// when calculating the depth, it is 0 for nullptr and 1 for a leaf; so the base case is still nullptr; 
 	if (!root) { return 0; }
 
 	int ans = 0; 
 	// 2. do logic for this node if it is preOrder
-	// sometime check if the root is the special target, such as a leave, do the logic for leaf and then return; 
+	// sometime check if the root is the special target, such as a leaf, do the logic for leaf and then return; 
 	// sometime check if the root at the certain layer, or if the root is some special input node
 
 	// 3. iterate all branches/candidates/choices/;

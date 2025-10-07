@@ -414,6 +414,7 @@ All nodes see the same data at the same time, no matter users read/write from/to
   - A **failure** is the visible manifestation of a system not performing as expected due to one or more faults.
   - An **error** is a human action or decision that can introduce faults or lead to failures in the system.
   - fault (invisible) with/without error (human action) => failure (visible)
+  - any uploaded data like photo or video should never be lost
 - **achieve** such resilience with a cost in order to eliminate every single point of failure (vulnerable), data lost, authentication(???)
   - client:
     - use local storage, and resend after reconnect
@@ -2506,8 +2507,8 @@ By following these steps, you can create a systematic process for reviewing, eva
 
 1. **Functional Requirements (10m)**
    1.1. System
-   1.2. User
-   1.3. Core APIs (CRUD & Actions)
+   1.2. User Actions
+   1.3. Core APIs (CRUD & Actions) (User's perspective/Actions)
    1.4. Data (Evens/Logs; No direct user involved)
    - NOTE:
      - User and System (Service) interaction (request and response)
@@ -2516,10 +2517,10 @@ By following these steps, you can create a systematic process for reviewing, eva
      - Similar to User -> Public API (Core APIs) -> Class (System/Service)
 
 2. **Non-functional Requirements**
-   2.1. Scalability
-   2.2. Availability
-   2.3. Reliability
-   2.4. Performance (Latency and Throughput target)
+   2.1. Availability
+   2.2. Reliability (durable, no data lost)
+   2.3. Performance (Latency and Throughput target)
+   2.4. Scalability
    2.5. Consistency
    2.6. Security
    2.7. Observability
@@ -2528,21 +2529,24 @@ By following these steps, you can create a systematic process for reviewing, eva
      - This ordering emphasizes availability first, then correctness (reliability), followed by growth (scalability) and user experience (performance), while still showing awareness of security, consistency, and observability.
    - Finance/healthcare priority (correctness first):
      - Reliability > Consistency > Security > Availability > Performance > Scalability > Observability
+   - mainly Security (preventing abuse) — secondarily Reliability and Performance: Might need to limit the amount of text/image user can upload to stop the abuse of the service
 
 3. **Quantitative Analysis (Back-of-the-Envelope Estimation on Scale)**
    3.1. Users & DAU
-   3.2. Read vs Write
-   3.3. QPS / TPS
-   3.4. Storage
-   3.5. Bandwidth
-   3.6. Servers
-   3.7. CPU & Memory
+   3.2. Read vs Write (ratio)
+   3.3. QPS / TPS (R/W) (average, peak: QPS (x 3))
+   3.4. Storage (write) (= # of object x size) (growth, margin, replica/backup)
+   3.5. Bandwidth (write & read) (income/ingress & outcome/egress) (= QPS * object size)
+   3.6. Servers (read replica)
+   3.7. CPU & Memory (Cache Memory for read)
 
 4. **High-level Design + Data Flow (5–10m)**
    4.1. Building Blocks (Components: LB, API GW, servers, DB, blobs)
    4.2. Workflow
 
 5. **APIs Design**
+   5.1. API types
+   5.2. Actions, parameter returns;
 
 6. **Data Schema + Data Store**
    6.1. SQL vs NoSQL
