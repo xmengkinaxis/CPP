@@ -46,7 +46,7 @@
       - [Hybrid Approach (Polyglot Persistence)](#hybrid-approach-polyglot-persistence)
   - [5 High-Level Design — This is pretty much a template, you can put in front of interviewers](#5-high-level-design--this-is-pretty-much-a-template-you-can-put-in-front-of-interviewers)
   - [6 Low-Level Design (LLD) - Deep Dive into Core Components (Detailed Component Design)](#6-low-level-design-lld---deep-dive-into-core-components-detailed-component-design)
-    - [6.0 **LLD Deep Dive Lenses**: **short checklists** for common components to deep dive](#60-lld-deep-dive-lenses-short-checklists-for-common-components-to-deep-dive)
+    - [6.0 LLD Deep Dive Lenses: short checklists for common components to deep dive](#60-lld-deep-dive-lenses-short-checklists-for-common-components-to-deep-dive)
     - [6.1 Scale the design](#61-scale-the-design)
       - [6.1.1 Purpose](#611-purpose)
       - [6.1.2 Approaches / Methods](#612-approaches--methods)
@@ -916,33 +916,50 @@ Most real-world systems combine multiple storage types:
 ## 6 Low-Level Design (LLD) - Deep Dive into Core Components (Detailed Component Design)
 
 - **Purpose**
-  - Go deeper into the **design of 2–3 critical components** (**performance-sensitive** or **core to functionality**).
+  - Go deeper into the **design of 2–3 critical components** (**performance-sensitive** or **core to functionality**) with the guidance of the proper [LLD Deep Dive Lenses](#60-lld-deep-dive-lenses-short-checklists-for-common-components-to-deep-dive).
   - Show understanding of **how data flows and how requests are handled at a detailed level**.
   - Demonstrate ability to **evaluate trade-offs, handle failures, and optimize performance**.
 
 - **Approach**
   
-  1. **Component Selection**
+  1. **Component Selection**: (guided by lens)
      - Either pick components yourself or ask interviewers for guidance. The interviewers' feedback should always guide us to what specific parts need focus, elaborate on, and further discussion.
      - **Prioritize** components that are **core to performance, reliability, or correctness**.
 
   2. **Detail the Component Design**
-     - Describe how the component works internally (data structures, algorithms, APIs) (Static as class defintion: internal state, functionality, and external APIs).
-     - Explain how it **interacts** with other components (Dynamic behavior).
-     - Walk through **read and write flows** with examples.
+     - **Goal**: Explain what each component does, how it works internally, and how it interacts with others.
+     - External View → Internal Structure → Dynamic Flow → Justifications; a natural top-down flow — from how others see the component to how it behaves internally.
+     - **External View – Responsibilities and Interfaces (Context First)**
+       - Start from what the component promises to do and how others interact with it
+       - What is the responsibility or role of this component?
+       - What are its inputs and outputs?
+       - What APIs or interfaces does it expose?
+       - **Purpose**: Give interviewer the big picture context before diving into internals.
+     - **Interaction View – Communication and Workflow (Dynamic Behavior)**
+       - Describe how it interacts with other components during typical operations.
+       - Read Flow + Write Flow
+       - This is the “dynamic view” — runtime behavior across components.
+     - **Design Justifications and Trade-offs**
+       - Finally, highlight reasoning to show maturity of thought.
+       - Why this data structure or algorithm?
+       - What trade-offs exist?
+     - **Static Structure (what it is)**: Describe how the component works internally (data structures, algorithms, APIs) (Static as class definition: internal state, functionality, and external APIs).
+     - **Dynamic behavior (how it works)**:
+       - Explain how it **interacts** with other components (Dynamic behavior).
+       - Walk through **read and write flows** with examples.
 
-  3. **Failure Handling**
-     - What happens if a request fails? (e.g., duplicate key, timeout, partial write).
-     - How are retries, error handling, and fault tolerance designed?
-
-  4. **Design Alternatives**
+  3. **Design Alternatives**
      - Present **2–3 possible approaches**, list **pros and cons**, and justify your choice.
      - Always tie back to **system constraints (scale, latency, cost, complexity)** which are principles to choose and justify the approaches. Consider and Discuss potential solutions and trade-offs between different options while keeping system constrains in mind
 
-  5. **Performance Optimizations**: Reduce **latency** using:
-       - **Caching** (client, app, DB, CDN).
-       - **Prefetching / Pre-calculation** (e.g., pre-computing heavy queries). Customer behavior can be predicted, and heavy customer requests can be pre-calculated and saved using customer proxy pre-cache.
-       - **Parallelization / Asynchronous processing** (async queues, background jobs)
+  4. **Failure Handling**
+     - What happens if a request fails? (e.g., duplicate key, timeout, partial write).
+     - How are retries, error handling, and fault tolerance designed?
+
+  5. **Performance Optimizations**: Reduce **latency** using (Read, Write, Data Processing Lens):
+       - **Caching**: Read (client, app, DB, CDN).
+       - **Prefetching / Pre-calculation**: Data Processing (e.g., pre-computing heavy queries). Customer behavior can be predicted, and heavy customer requests can be pre-calculated and saved using customer proxy pre-cache.
+       - **Parallelization / Asynchronous processing**: Write (async queues, background jobs)
        - Example: Predict customer behavior and pre-cache heavy queries via a proxy.
 
 - **Low-Level Design (Component Deep Dive Template) - Diagram + Deep Dive Lenses** to have both a **visual map** and a **checklist** for interviews.
@@ -989,7 +1006,7 @@ Most real-world systems combine multiple storage types:
 - **How to Use This in Interview**
   1. **Start with the flow**: “Here’s how a request flows through validation, cache, main component logic, DB, and back.”
   2. **Deep dive into one block**: For example, the **Core Component** (indexing engine, messaging queue, feed ranking, etc.).
-  3. **Show trade-offs**: Talk about caching vs. DB lookup, sync vs. async, partitioning vs. replication.
+  3. **Show trade-offs**: Talk about caching vs. DB lookup for Read, sync vs. async for Write, partitioning vs. replication for Database.
   4. **Discuss failure handling**: e.g., cache miss, DB write failure, duplicate keys.
 
 - **How to Use in Interview**
@@ -1018,7 +1035,7 @@ Most real-world systems combine multiple storage types:
                   +-- [MISS] → go to DB → update cache → return
     ```
 
-  - **Writes** (update/create/delete): (Struture: Cache + DB)
+  - **Writes** (update/create/delete): (Structure: Cache + DB)
     - **Write-through**: write to DB *and* cache (synchronous, consistent). (through both Cache and DB)
     - **Write-back**: write only to cache → flush to DB later (faster, but risky if cache crashes). (Write to Cache and back, later to flush to DB)
     - **Write-around**: write directly to DB, cache updated on next read. (Write around Cache and directly to DB; later read to update Cache)
@@ -1068,7 +1085,15 @@ Most real-world systems combine multiple storage types:
   - Draw **Cache** branch on **read-heavy path** (with arrows for read/write strategies).
   - Draw **Queue** branch on **write/async path** (**non-blocking**, background).
 
-### 6.0 **LLD Deep Dive Lenses**: **short checklists** for common components to deep dive
+### 6.0 LLD Deep Dive Lenses: short checklists for common components to deep dive
+
+- **API / Service Lens**
+  - **API style**: REST, gRPC, GraphQL
+  - **Granularity**: Single responsibility (SRP) vs. coarse-grained APIs
+  - **Rate limiting**: How to protect downstream services?
+  - **Idempotency**: Safe retries for write requests
+  - **Versioning**: Backward compatibility
+  - **Trade-offs**: Simple APIs vs. chatty APIs; REST vs. RPC overhead
 
 - **Cache Lens**
   - **Where to cache?** (different component/layer: client, CDN, app server, DB, object storage)
@@ -1089,6 +1114,14 @@ Most real-world systems combine multiple storage types:
     - Retry strategy (exponential backoff, DLQ – Dead Letter Queue)
   - **Scaling**: Consumers can scale horizontally
   - **Trade-offs**: Reliability vs. latency
+
+- **Data Processing Lens** (e.g., Search, Feed Ranking, Analytics)
+  - **Pre-compute vs. On-demand**: Which parts are cached, which computed live?
+  - **Batch vs. Stream**: Hadoop/Spark vs. Kafka/Flink
+  - **Indexing**: Inverted index, B+ tree, bitmap index
+  - **Ranking / Aggregation**: Sorting, scoring functions, ML models
+  - **Failure handling**: Partial results, retries, degradation
+  - **Trade-offs**: Freshness vs. latency vs. cost
   
 - **Database Lens**
   - **Model choice?** Relational, key-value, document, graph, time-series
@@ -1098,22 +1131,6 @@ Most real-world systems combine multiple storage types:
   - **Transactions**: ACID vs. BASE, consistency model (strong vs. eventual)
   - **Failure handling**: Conflict resolution, failover strategy
   - **Trade-offs**: Consistency vs. availability (CAP theorem)
-
-- **API / Service Lens**
-  - **API style**: REST, gRPC, GraphQL
-  - **Granularity**: Single responsibility (SRP) vs. coarse-grained APIs
-  - **Rate limiting**: How to protect downstream services?
-  - **Idempotency**: Safe retries for write requests
-  - **Versioning**: Backward compatibility
-  - **Trade-offs**: Simple APIs vs. chatty APIs; REST vs. RPC overhead
-
-- **Data Processing Lens** (e.g., Search, Feed Ranking, Analytics)
-  - **Pre-compute vs. On-demand**: Which parts are cached, which computed live?
-  - **Batch vs. Stream**: Hadoop/Spark vs. Kafka/Flink
-  - **Indexing**: Inverted index, B+ tree, bitmap index
-  - **Ranking / Aggregation**: Sorting, scoring functions, ML models
-  - **Failure handling**: Partial results, retries, degradation
-  - **Trade-offs**: Freshness vs. latency vs. cost
 
 - **Security & Reliability Lens**
   - **Authentication & Authorization**: OAuth, JWT, API keys
