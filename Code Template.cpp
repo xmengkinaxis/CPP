@@ -562,7 +562,7 @@ int dfsGraph1(int node, vector<vector<int>>& graph) {
 // Good, for all actions are in a method
 // pre-assumption: the node is a valid and unseen node in the graph; this pre-assumption must be preserved during the recursive calls later
 int dfsGraph2(int node, vector<vector<int>>& graph) {
-	seen.insert(START_NODE); // must do insert before visiting its neighbors in order to avoid the dead loop
+	seen.insert(node); // must do insert before visiting its neighbors in order to avoid the dead loop
 	int ans = 0; 
 	// do logic for node here
 	for (int neighbor : graph[node]) { // might to validate if a neighbor is valid first		
@@ -591,7 +591,7 @@ bool dfsGraph3(int node, vector<vector<int>>& graph) {
 	} else if (CONDITION) { // ending condition: node is the destination
 		return true; // found
 	}
-	seen.insert(START_NODE); // must do insert before visiting its neighbor in order to avoid the dead loop
+	seen.insert(node); // must do insert before visiting its neighbor in order to avoid the dead loop
 	// do logic for node here
 	for (int neighbor : graph[node]) { 
 		if (dfsGraph3(neighbor, graph)) {
@@ -602,6 +602,7 @@ bool dfsGraph3(int node, vector<vector<int>>& graph) {
 }
 
 // to keep the definition and usage consistent, seen is defined before stack
+// dfsIterative is much similar to dfsTreeStack, except these operations on seen;
 int dfsIterative(vector<vector<int>> & graph) {
 	unordered_set<int> seen; 
 	stack<int> stack; // only contain these unseen nodes
@@ -641,6 +642,7 @@ Meta
 // bfsGraph uses a queue, but dfsIterative uses a stack; others are the exactly same for iterative implementations
 // In other words, BFS and DFS are essentially same, and their difference of browsing nodes 
 // in different orders can be achieved by using queue(FIFO) and stack(LIFO/FILO) 
+// bfsGraph is much similar to bfsTree, except these operations on seen; 
 /* 
 Both BFS (Breadth-First Search) and DFS (Depth-First Search) are graph/tree traversal algorithms.
 The core mechanism is indeed similar:
