@@ -14,10 +14,10 @@
       - [1.1.2 User requirements](#112-user-requirements)
     - [1.2 Non-Functional Requirements (Product Properties + User Expectations in term of performance) (PACELC + Reliable + Scalability + Extensibility)](#12-non-functional-requirements-product-properties--user-expectations-in-term-of-performance-pacelc--reliable--scalability--extensibility)
       - [Availability](#availability)
-      - [Consistency](#consistency)
-      - [Efficiency (Performance, Latency and Throughput)](#efficiency-performance-latency-and-throughput)
-      - [Scalability](#scalability)
       - [Reliability](#reliability)
+      - [Efficiency/Performance (Latency and Throughput)](#efficiencyperformance-latency-and-throughput)
+      - [Scalability](#scalability)
+      - [Consistency](#consistency)
       - [Concurrency](#concurrency)
       - [Serviceability or Manageability (simplicity)](#serviceability-or-manageability-simplicity)
       - [Durability](#durability)
@@ -312,7 +312,7 @@ Need enough resources to handle the increasing load; the system must be simple s
 
 - System must be highly available to keep the users **engaged** with the platform
 - **Every request received by a non-failing node in the system must result in a response**. Refers to the system's ability to remain accessible even if one or more nodes in the system to go down.
-- Definition: **the percentage of the time that a system remains operational to perform its required function in a specific period under normal conditions**; 
+- Definition: **the percentage of the time that a system remains operational to perform its required function in a specific period under normal conditions**;
   - Measured in a number of 9s, three 9s - 99.9%, four 9s - 99.99%
   - **Availability = Uptime ÷ (Uptime + Downtime)**
   - **Mean Time Between Failures (MTBF)**: total uptime / # of failures. This is the **average time between failures**.
@@ -320,16 +320,23 @@ Need enough resources to handle the increasing load; the system must be simple s
 - Availability can be **achieved** through CDN (Cache), redundancy (replica of servers and data) , load balancing (distribute the requests only to the active healthy nodes by local LB and to different locations by global LB), choosing high availability databases
 - V.S. Reliable: if a system is reliable, it is available. However, if it is available, it is not necessarily reliable.
 
-#### Consistency
+#### Reliability
 
-All nodes see the same data at the same time, no matter users read/write from/to any node. Equivalent to having a single up-to-date copy of the data. Consistency is the agreement between multiple nodes in a distributed system to achieve a certain value.
+- **Goal**: keep delivering its service even when one or several of its software or hardware components fail; handle faults, failures, and errors;  
+  - A **fault** is a defect or flaw in the system's components. A fault is a defect or flaw in the system's hardware or software that can potentially cause the system to deviate from its expected behavior.
+  - A **failure** is the visible manifestation of a system not performing as expected due to one or more faults.
+  - An **error** is a human action or decision that can introduce faults or lead to failures in the system.
+  - fault (invisible) with/without error (human action) => failure (visible)
+  - any uploaded data like photo or video should never be lost
+- **achieve** such resilience with a cost in order to eliminate every single point of failure (vulnerable), data lost, authentication(???)
+  - client:
+    - use local storage, and resend after reconnect
+  - System:
+    - redundancy of the hardware & software components and data
+    - load balancer: achieve with health check (heartbeat protocol, gossip protocol), and monitoring services with alerts
+    - services are decoupled and isolated
 
-- **Strong consistency**: the data in all nodes is the same at any time; offers up-to-date data, but at the cost of high latency.
-- **Weak consistency:** no guarantee that all nodes have the same data at any time.
-- **Eventual consistency:** ensure data of each node of the database get consistent eventually; offers low latency at the risk of returning stale data.
-- high consistency on messages can be achieved with the help of a FIFO messaging queue with strict ordering
-
-#### Efficiency (Performance, Latency and Throughput)
+#### Efficiency/Performance (Latency and Throughput)
 
 - Efficiency is measured mainly by:
   - Latency / Response Time
@@ -409,21 +416,14 @@ All nodes see the same data at the same time, no matter users read/write from/to
 - increase resources and performance with increasing load and traffic over the existing system without affecting the complexity and performance; need enough resources to handle the increasing load, for it would be increased at any point in time; should be simple and easy to scale; performance should always be increased with scalability
 - The system should be able to scale up and down, depending on the number of requests; Auto-scaling policies are crucial for maintaining the desired level of performance, availability, and cost efficiency
 
-#### Reliability
+#### Consistency
 
-- **Goal**: keep delivering its service even when one or several of its software or hardware components fail; handle faults, failures, and errors;  
-  - A **fault** is a defect or flaw in the system's components. A fault is a defect or flaw in the system's hardware or software that can potentially cause the system to deviate from its expected behavior.
-  - A **failure** is the visible manifestation of a system not performing as expected due to one or more faults.
-  - An **error** is a human action or decision that can introduce faults or lead to failures in the system.
-  - fault (invisible) with/without error (human action) => failure (visible)
-  - any uploaded data like photo or video should never be lost
-- **achieve** such resilience with a cost in order to eliminate every single point of failure (vulnerable), data lost, authentication(???)
-  - client:
-    - use local storage, and resend after reconnect
-  - System:
-    - redundancy of the hardware & software components and data
-    - load balancer: achieve with health check (heartbeat protocol, gossip protocol), and monitoring services with alerts
-    - services are decoupled and isolated
+All nodes see the same data at the same time, no matter users read/write from/to any node. Equivalent to having a single up-to-date copy of the data. Consistency is the agreement between multiple nodes in a distributed system to achieve a certain value.
+
+- **Strong consistency**: the data in all nodes is the same at any time; offers up-to-date data, but at the cost of high latency.
+- **Weak consistency:** no guarantee that all nodes have the same data at any time.
+- **Eventual consistency:** ensure data of each node of the database get consistent eventually; offers low latency at the risk of returning stale data.
+- high consistency on messages can be achieved with the help of a FIFO messaging queue with strict ordering
 
 #### Concurrency
 
@@ -2554,9 +2554,10 @@ By following these steps, you can create a systematic process for reviewing, eva
 ### 17.1 Framework
 
 1. **Functional Requirements (10m)**
-   1.1. System
-   1.2. User Actions
-   1.3. Core APIs (CRUD & Actions) (User's perspective/Actions)
+   1.0. NOTE: from external to internal; Users -> Actions/APIs -> System
+   1.1. Users
+   1.2. Core APIs (CRUD & Actions) (User's perspective/Actions)
+   1.3. System
    1.4. Data (Evens/Logs; No direct user involved)
    - NOTE:
      - User and System (Service) interaction (request and response)
@@ -2580,12 +2581,12 @@ By following these steps, you can create a systematic process for reviewing, eva
    - mainly Security (preventing abuse) — secondarily Reliability and Performance: Might need to limit the amount of text/image user can upload to stop the abuse of the service
 
 3. **Quantitative Analysis (Back-of-the-Envelope Estimation on Scale)**
-   3.1. Users & DAU
-   3.2. Read vs Write (ratio)
-   3.3. QPS / TPS (R/W) (average, peak: QPS (x 3))
-   3.4. Storage (write) (= # of object x size) (growth, margin, replica/backup)
-   3.5. Bandwidth (write & read) (income/ingress & outcome/egress) (= QPS * object size)
-   3.6. Servers (read replica)
+   3.1. Users: Users & DAU
+   3.2. Actions: Read vs Write (ratio)
+   3.3. Traffics: QPS / TPS (R/W) (average, peak: QPS (x 3))
+   3.4. Data: Storage (write) (= # of object x size) (growth, margin, replica/backup)
+   3.5. Transports: Bandwidth (write & read) (income/ingress & outcome/egress) (= QPS * object size)
+   3.6. Costs: Servers (read replica)
    3.7. CPU & Memory (Cache Memory for read)
 
 4. **High-level Design + Data Flow (5–10m)**
