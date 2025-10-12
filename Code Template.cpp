@@ -486,7 +486,7 @@ int dfsTreeStack(TreeNode* root) {
 199. Binary Tree Right Side View; https://leetcode.com/problems/binary-tree-right-side-view/
 1161. Maximum Level Sum of a Binary Tree; https://leetcode.com/problems/maximum-level-sum-of-a-binary-tree/; do some logic for each layer
 -----------------
-958. Check Completeness of a Binary Tree; https://leetcode.com/problems/check-completeness-of-a-binary-tree/
+958. Check Completeness of a Binary Tree; https://leetcode.com/problems/check-completeness-of-a-binary-tree/; can push nullptr into the queue
 513. Find Bottom Left Tree Value; https://leetcode.com/problems/find-bottom-left-tree-value
 */
 // BFS: level-order traversal with separate layers, vs flat (no level distinction)
@@ -503,6 +503,7 @@ int bfsTree(TreeNode* root) {
 			auto node = queue.front(); queue.pop(); 
 			// 1. do logic for this node; might do some logic as post-Check
 			// 2. visit its branches; might need to do pre-Check
+			// NOTE: could visit its right and then its left, according to the question requirement; e.g. 513
 			if (node->left) { queue.push(node->left); }
 			if (node->right) { queue.push(node->right); }
 		}
@@ -513,6 +514,7 @@ int bfsTree(TreeNode* root) {
 }
 
 /* In DFS, for a node, the core actions are: 
+NOTE: 1 [valid] and 2 [eligible] are the question constraints, but 3 [unvisited] is the dfs implementation constraint
 1. [valid] check if the node is a valid node, e.g. it must be within the grid when the problem is a grid,
 2. [eligible] check if the node is a valid candidate and should be visited, e.g. the original value/attribute of this node makes it as a valid candidate. 
 3. [unvisited] check if the node is already visited, e.g. seen/visited already contains it 

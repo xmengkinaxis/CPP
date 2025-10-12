@@ -449,36 +449,40 @@ Be secure via end-to-end encryption
 
 The table summarizing how to achieve various important attributes in system design:
 
+- The table content is organized in this ways:
+  - Same order as the prioritized NFRs
+  - In Strategies; start from theory/principle; from big scopes to small scopes; from Frontend to Backend as the request goes through
+
 | Attribute           | Strategies to Achieve                                                                                 |
 |---------------------|------------------------------------------------------------------------------------------------------|
-| High Availability   | - Redundancy and failover<br>- Load balancing<br>- Automated scaling<br>- Isolation<br>- Geographic distribution<br>- Disaster recovery planning<br>- Zero-downtime deployments<br>- Multi-region active-active architecture |
-| Scalability        | - Horizontal scaling<br>- Microservices architecture<br>- Auto-scaling<br>- Distributed databases<br>- Caching<br>- Asynchronous processing<br>- Content delivery networks (CDNs) |
+| High Availability   | - Redundancy and failover<br>- Disaster recovery planning<br>- Geographic distribution<br>- Multi-region active-active architecture<br>- Load balancing<br>- Automated scaling<br>- *Isolation*<br>- Zero-downtime deployments<br> |
 | Reliability         | - Redundancy<br>- Failover<br>- Monitoring and alerting<br>- Automated testing<br>- Backups and data replication<br>- Disaster recovery planning |
-| Low Latency         | - Use of Content Delivery Networks (CDNs)<br>- Edge computing<br>- Distributed caching<br>- Efficient algorithms<br>- Optimized network architecture |
-| High Throughput     | - Load balancing<br>- Horizontal scaling<br>- Distributed databases<br>- Use of asynchronous messaging<br>- Optimized data processing pipelines |
+| Low Latency         | - Use of Content Delivery Networks (CDNs)<br>- Distributed caching<br>- Edge computing<br>- Efficient algorithms<br>- Optimized network architecture |
+| High Throughput     | - Horizontal scaling<br>- Load balancing<br>- Use of asynchronous messaging<br>- Distributed databases<br>- Optimized data processing pipelines |
+| Scalability        | - Horizontal scaling<br>- Content delivery networks (CDNs)<br>- Auto-scaling<br>- Microservices architecture<br>- Caching<br>- Asynchronous processing<br>- Distributed databases<br> |
 | Consistency         | - Strong consistency models<br>- Distributed transactions<br>- ACID compliance<br>- Event sourcing<br>- Eventual consistency for specific use cases |
-| Concurrency         | - Proper locking mechanisms<br>- Isolation of critical sections<br>- Use of distributed locks<br>- Optimistic concurrency control |
+| Concurrency         | - Optimistic concurrency control<br> - Proper locking mechanisms<br>- Use of distributed locks<br>- Isolation of critical sections|
 | Security            | - Authentication and authorization mechanisms<br>- Encryption<br>- Firewalls<br>- Intrusion detection systems<br>- Regular security audits<br>- Least privilege principle |
 
 | Strategy                                         | Attributes Achieved                                     |
 |--------------------------------------------------|---------------------------------------------------------|
 | Redundancy and failover                         | High Availability, Reliability                         |
+| Disaster recovery planning                     | High Availability, Reliability                         |
 | Load balancing                                 | High Availability, High Throughput                     |
 | Automated scaling                              | High Availability, Scalability                         |
 | Isolation                                       | High Availability, Scalability                         |
 | Geographic distribution                        | High Availability                                    |
-| Disaster recovery planning                     | High Availability, Reliability                         |
-| Zero-downtime deployments                      | High Availability                                   |
 | Multi-region active-active architecture        | High Availability                                   |
+| Zero-downtime deployments                      | High Availability                                   |
+| Automated testing                              | Reliability                                           |
+| Backups and data replication                  | Reliability                                          |
 | Horizontal scaling                             | Scalability, High Throughput                           |
 | Microservices architecture                     | Scalability, High Throughput                           |
 | Auto-scaling                                   | Scalability, High Throughput                           |
+| Asynchronous processing                        | Scalability, High Throughput                         |
 | Distributed databases                          | Scalability, High Throughput, Consistency             |
 | Caching                                        | Scalability, Low Latency                             |
-| Asynchronous processing                        | Scalability, High Throughput                         |
 | Content delivery networks (CDNs)               | Scalability, Low Latency                             |
-| Automated testing                              | Reliability                                           |
-| Backups and data replication                  | Reliability                                          |
 | Strong consistency models                      | Consistency                                          |
 | Distributed transactions                       | Consistency                                          |
 | ACID compliance                                | Consistency                                          |
