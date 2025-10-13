@@ -516,7 +516,7 @@ int bfsTree(TreeNode* root) {
 /* In DFS, for a node, the core actions are: 
 NOTE: 1 [valid] and 2 [eligible] are the question constraints, but 3 [unvisited] is the dfs implementation constraint
 1. [valid] check if the node is a valid node, e.g. it must be within the grid when the problem is a grid,
-2. [eligible] check if the node is a valid candidate and should be visited, e.g. the original value/attribute of this node makes it as a valid candidate. 
+2. [eligible] check if the node is a valid candidate and should be visited, e.g. the original value/attribute of this node within a range makes it as a valid candidate. 
 3. [unvisited] check if the node is already visited, e.g. seen/visited already contains it 
 4. do something for this node; this is a real visit on this node; it might check if the condition of ending this DFS is met
 	4.1 add this node into seen/visit; this step must be done before visiting its neighbors, otherwise, it would be a dead loop
@@ -530,6 +530,21 @@ NOTE: 1 [valid] and 2 [eligible] are the question constraints, but 3 [unvisited]
 * for BFS, the order might be 4, 5, 1, 2, 3
 * if changing the original value instead of using seen/visited, the 2 and 3 are merged into one of checking value
 * for DFS, the seen/visit must be set/inserted before visiting its neighbors; and it could be the first step checking if the current is seen or visited already
+
+'visited'/'seen' means “Already scheduled for processing — don’t enqueue again.”
+| Stage                   | Meaning                                                     |
+| ----------------------- | ----------------------------------------------------------- |
+| **Visited (enqueue)**   | “This cell is on the frontier. We’ll visit it soon.”        |
+| **Processed (dequeue)** | “We’re now visiting this cell and exploring its neighbors.” |
+Rule is: 
+* Mark visited immediately when enqueuing to prevent re-enqueueing, not after dequeuing.
+* Should mark a node as visited before enqueueing it; visited/seen = scheduled to process 
+
+NOTE: BFS guarantees the shortest path in an unweighted graph only if you never enqueue the same node twice.
+If you delay marking until after enqueue, multiple parents can enqueue the same node before any of them get dequeued — leading to:
+* Duplicated visits
+* Extra work (wasted time & memory)
+* in some problems, incorrect step counts
 
 339. Nested List Weight Sum; https://leetcode.com/problems/nested-list-weight-sum/
 529. Minesweeper; https://leetcode.com/problems/minesweeper/; acton 2 and 3 are separated
@@ -549,7 +564,8 @@ int dfsGraph1(vector<vector<int>>& graph) {
 int dfsGraph1(int node, vector<vector<int>>& graph) {
 	int ans = 0; 
 	// do logic for node here
-	for (int neighbor : graph[node]) { // might to validate if a neighbor is valid first		
+	for (int neighbor : graph[node]) { // might to validate if a neighbor is valid first
+		// Equally, if (!seen.count(neighbor))	
 		if (seen.find(neighbor) == seen.end()) { // prerequisite of the atomic action: ensure the node is not visited before; otherwise, cause a dead loop
 			// they are a pair of actions, inserting the node into seen and call dfs on this node.
 			// an atomic action: add into seen, and then dfs ths node
@@ -567,6 +583,7 @@ int dfsGraph2(int node, vector<vector<int>>& graph) {
 	seen.insert(node); // must do insert before visiting its neighbors in order to avoid the dead loop
 	int ans = 0; 
 	// do logic for node here
+	// the loop on neighbors can be eliminated if the amount of neighbors are few and can be enumerated
 	for (int neighbor : graph[node]) { // might to validate if a neighbor is valid first		
 		if (seen.find(neighbor) == seen.end()) { // prerequisite of the atomic action: ensure the node is not visited before; otherwise, cause a dead loop
 			// they are a pair of actions, inserting the node into seen and call dfs on this node.
@@ -595,6 +612,7 @@ bool dfsGraph3(int node, vector<vector<int>>& graph) {
 	}
 	seen.insert(node); // must do insert before visiting its neighbor in order to avoid the dead loop
 	// do logic for node here
+	// NOTE: the result might be a bool or a path which should be a reference parameter to update
 	for (int neighbor : graph[node]) { 
 		if (dfsGraph3(neighbor, graph)) {
 			return true; 
@@ -671,12 +689,12 @@ int bfsGraph(vector<vector<int>>& graph) {
 	int ans = 0; 
 	while (!queue.empty()) { // for (int step = 1; !queue.empty(); ++step)
 		int node = queue.front(); queue.pop(); 
-		// do logic for the node; e.g. set the distance or time for this node, or check if reach the destination and then exit
+		// do logic for the node; e.g. set the distance or time for this node, or check if reach the destination and then exit, or add this node into a path/set
 		for (auto neighbor : graph[node]) {
 			// iterate candidates or validate if it is a valid candidate
 			if (seen.find(neighbor) == seen.end()) { // ensure if it is NOT seen yet
 				// atomic action: add it into both seen and queue
-				seen.insert(neighbor); 
+				seen.insert(neighbor); // NOTE: this can prevent the same neighbor from being enqueued multiple times by several nodes in the current queue
 				queue.push(neighbor); 
 			}
 		}
@@ -684,6 +702,7 @@ int bfsGraph(vector<vector<int>>& graph) {
 	return ans; 
 }
 
+// 1091. Shortest Path in Binary Matrix
 int bfsGraphSteps(vector<vector<int>>& grid) {
 	const auto N = grid.size(); 
 	// deal with the special case, e.g. grid[0][0] or/and grid[N - 1][N - 1]
