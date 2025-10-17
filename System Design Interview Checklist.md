@@ -89,7 +89,7 @@
     - [11.2 Caching - How to scale database?  Caching or vertically and horizontally](#112-caching---how-to-scale-database--caching-or-vertically-and-horizontally)
       - [Cache eviction policies](#cache-eviction-policies)
       - [Cache expiration](#cache-expiration)
-      - [Cache strategy (Invalidation):](#cache-strategy-invalidation)
+      - [Cache strategy (Invalidation)](#cache-strategy-invalidation)
     - [11.3 CDN -\> How to prepare our assets to deliver faster across the world?](#113-cdn---how-to-prepare-our-assets-to-deliver-faster-across-the-world)
     - [11.4 Cache, Scale, and Shard result](#114-cache-scale-and-shard-result)
       - [cache result==\> low latency, high throughput and high available (if db server is down for a while)](#cache-result-low-latency-high-throughput-and-high-available-if-db-server-is-down-for-a-while)
@@ -226,7 +226,7 @@ Interviewee:
   - have the insight to address **long-term issues** that may affect a system over its lifetime
   - speak toward **bottlenecks and long-term scalability** of the system
   - feel confident enough to lead and mentor other designers in regard to **system design principles and best practices**
-  - Can **review, evaluate, and evolve** a system desgin
+  - Can **review, evaluate, and evolve** a system design
 - Principle/Lead System Designer
   - extensive knowledge of System Design, **its history, and industry trends**; (past, current, and future)
   - be **recognized** for designing and implementing complex and large-scale systems; (have a good reputation)
@@ -327,7 +327,7 @@ Need enough resources to handle the increasing load; the system must be simple s
   - A **failure** is the visible manifestation of a system not performing as expected due to one or more faults.
   - An **error** is a human action or decision that can introduce faults or lead to failures in the system.
   - fault (invisible) with/without error (human action) => failure (visible)
-  - any uploaded data like photo or video should never be lost
+  - **Durability**: any uploaded data like photo or video should never be lost
 - **achieve** such resilience with a cost in order to eliminate every single point of failure (vulnerable), data lost, authentication(???)
   - client:
     - use local storage, and resend after reconnect
@@ -456,7 +456,7 @@ The table summarizing how to achieve various important attributes in system desi
 | Attribute           | Strategies to Achieve                                                                                 |
 |---------------------|------------------------------------------------------------------------------------------------------|
 | High Availability   | - Redundancy and failover<br>- Disaster recovery planning<br>- Geographic distribution<br>- Multi-region active-active architecture<br>- Load balancing<br>- Automated scaling<br>- *Isolation*<br>- Zero-downtime deployments<br> |
-| Reliability         | - Redundancy<br>- Failover<br>- Monitoring and alerting<br>- Automated testing<br>- Backups and data replication<br>- Disaster recovery planning |
+| Reliability         | - Redundancy and failover<br>- Monitoring and alerting<br>- Automated testing<br>- Backups and data replication<br>- Disaster recovery planning |
 | Low Latency         | - Use of Content Delivery Networks (CDNs)<br>- Distributed caching<br>- Edge computing<br>- Efficient algorithms<br>- Optimized network architecture |
 | High Throughput     | - Horizontal scaling<br>- Load balancing<br>- Use of asynchronous messaging<br>- Distributed databases<br>- Optimized data processing pipelines |
 | Scalability        | - Horizontal scaling<br>- Content delivery networks (CDNs)<br>- Auto-scaling<br>- Microservices architecture<br>- Caching<br>- Asynchronous processing<br>- Distributed databases<br> |
@@ -1726,9 +1726,9 @@ After finishing the design, compare it against the requirements and evaluate tra
   - Design constraints
 
 - How to Think About Trade-offs (Interview Framework): Whenever you discuss a design choice, ask:
+  - **Reliability** – Does it risk downtime or data loss?
   - **Performance** – Does it make things faster? Does it increase latency?
   - **Scalability** – Can it handle more users/data easily?
-  - **Reliability** – Does it risk downtime or data loss?
   - **Complexity** – Is it harder to build/maintain?
   - **Cost** – Does it need more servers, more storage, higher $$$?
   - **Security / Privacy** – Does it leak data or make guessing easier?
@@ -2133,21 +2133,27 @@ Con:
 
 ### 11.2 Caching - How to scale database?  Caching or vertically and horizontally
 
-Cache the DB results adding an extra caching layer between the servers and the database
-A cache is a key-value store that reside between applications and data storage;
-Redis is persistent while memcache scales well.
+- Cache the DB results adding an extra caching layer between the servers and the database
+- A cache is a key-value store that reside between applications and data storage;
+- Redis is persistent while memcache scales well.
 
 **Benefit**
-* Cache will enable you to make vastly better use of the resources you already have as well as making otherwise unattainable product requirements feasible. 
-* Can exist at all levels in architecture, but are often found at the level nearest to the front end, where they are implemented to return data quickly without taxing downstream levels. 
-What should be cached? long-running queries on databases; high-latency network requests (for external APIs), computation-intensive processing; 
 
-**Disadvantages**: 
-* main consistency between caches and the source of truth (database) through cache invalidation which is difficult; need to make application changes
-* Caching works well with static data by saving time and increasing speed, but not well with mutable or dynamic, for need to make sure that the cached data is in sync
+- Cache will enable you to make vastly better use of the resources you already have as well as making otherwise unattainable product requirements feasible.
+- Can exist at all levels in architecture, but are often found at the level nearest to the front end, where they are implemented to return data quickly without taxing downstream levels.
+- What should be cached?
+  - long-running queries on databases;
+  - high-latency network requests (for external APIs),
+  - computation-intensive processing;
+
+**Disadvantages**:
+
+- main consistency between caches and the source of truth (database) through cache invalidation which is difficult; need to make application changes
+- Caching works well with static data by saving time and increasing speed, but not well with mutable or dynamic, for need to make sure that the cached data is in sync
 
 **CDN (Content Delivery Network)** are a kind of cache that comes into play for sites serving large amounts of static media. Can replicate content in multiple places, based on user's geographic location and the original of the webpage; security improvement, increase in content availability and redundancy, better load times, low bandwidth cost.  
-* type: Push and Pull, referring the data streaming upload and download???
+
+- type: Push and Pull, referring the data streaming upload and download???
 
 #### Cache eviction policies
 
@@ -2165,10 +2171,12 @@ What should be cached? long-running queries on databases; high-latency network r
 - Random Replacement (RR)
 
 #### Cache expiration
+
 Determine how long data is kept in the cache before it is considered stale and is removed.
 A shorter expiration time can improve the freshness of the data, but increase the number of accesses to the underlying data source
 
-#### Cache strategy (Invalidation): 
+#### Cache strategy (Invalidation)
+
 Cache Invalidation: keep the cache coherent with the source of data (e.g. database);  
 strategy: cache and permanent story like disk or database, write only one or both; depend on the data and data access patterns (how data is written and read)  
 metrics: read-intensive vs write-intensive (write-write, write-reread); latency and throughput; consistency and data loss;   
@@ -2180,12 +2188,16 @@ metrics: read-intensive vs write-intensive (write-write, write-reread); latency 
 - Write-back (write-behind)(cache only): the data is written to cache alone; asynchronously write entry to the data store. pros: low-latency and high-throughput for write-intensive applications. con: risk of data loss; more complex to implement, for its asynchronously writing.   
 
 ### 11.3 CDN -> How to prepare our assets to deliver faster across the world?
+
 Real-time and low-latency require
-* Replication of servers and server's location close to users (CDN) 
-* PULL vs PUSH: real-time (VOIP, video, notification system and real-time feeds) : push (message queue), not pull(expensive in bandwidth and unnecessary load on Servers and DB, not scalable)
+
+- Replication of servers and server's location close to users (CDN) 
+- PULL vs PUSH: real-time (VOIP, video, notification system and real-time feeds) : push (message queue), not pull(expensive in bandwidth and unnecessary load on Servers and DB, not scalable)
 
 ### 11.4 Cache, Scale, and Shard result
+
 #### cache result==> low latency, high throughput and high available (if db server is down for a while)
+
 caching will enable you to make vastly better use of the resources you already have; 
 application caching, database caching (need tweaking the configuration), in-memory caches
 
@@ -2193,12 +2205,14 @@ In-memory caches:
 precalculated results, pre-generating expensive indexes, storing copies of frequently accessed data in a faster backend
 
 #### Scalability result ==> low-latency and fault-tolerant by replicate (deal with lower performance)
+
 Scalability methods—With the architecture, there are many techniques and methods which can be used in order to customize and improve the design of a system. 
 Some of the most widely used are: redundancy, partitioning, caching, indexing, load balancing, and queues.
 
 #### Shard result==> high performance by destructing the load and high available, and latency-free
 
 ## 12 Components
+
 every building block in system design has functional and nonfunctional requirements that must be met.
 
 ### Load Balancers
@@ -2212,28 +2226,35 @@ Evenly distributing the computational load allows for faster response times and 
 Load balancers are the unsung heroes of scalable systems — distributing incoming traffic, boosting reliability, and ensuring performance stays smooth, even when demand spikes.
 
 ### Key Value Stores
+
 Similar to Hash table or dictionaries. Store information as a pair in the Key and Value format, for easy retrieval. Distributed hash tables (DHT). 
 e.g. AWS DynamoDB, AWS ElastiCache (a managed in-memory data store serivce which supports caching, like Redis or Memcached) (Redis, in particular, supports advanced data structures and features that make it effective for caching.
 When it comes to caching user information effectively, Amazon ElastiCache with Redis is often a preferred choice due to its advanced caching capabilities, data structures, and support for use cases like user sessions and frequently accessed data.  However, the choice of service will depend on factors such as the complexity of the data, required data structures, access patterns, and performance requirements. 
 
 ### Blob Storage
+
 Blob: Binary Large Object; a storage solution for unstructured data, such as photos, audios, multimedia, executable code; uses flat data organization pattern without hierarchy 
 The main rule: write once, read many or WORM. Ensure the important dat is protected since once the data is written, it can be read, but not changed. 
 e.g. AWS S3
+
 ### Database
+
 A database is an organized collection of data that can be easily accessed and modified; make the process of storing, retrieving, modifying, and deleting data simpler. SQL vs NoSQL 
 
 ### Rate Limiters
+
 It sets a limit for the numbers of requests a service will fulfill. It will throttle requests that cross this threshold.
 It is an important line of defense for services and system; prevent services being flooded with requests; mitigate resource consumption.
 e.g. AWS API Gateway(built-in rate limiting on request/API/method per second/minute/others), AWS WAF(Web Application Firewall, restrict requests from the specific IP address or IP address ranges); 
 AWS Lambda, AWS CloudFront (CDN, request rate limiting to prevent abuse and ensure a smooth experience for users), AWS ELB(Elastic Load Balancing, configure specific rules as rate limiting)
 
 ### Monitoring Systems
+
 It is a software that allow system administrators to monitor infrastructure. It creates one centralized location for observing the overall performance of a potentially large system of computers in real time. 
 It can monitor: CPU, memory, bandwidth, routers, switches, applications, etc. e.g. AWS CloudWatch; AWS CloudTrail, X-Ray, Inspector, Trusted Advisor, and Config
 
 ### Distributed messaging queues
+
 A producer creates messages and consumers receive and process them. 
 * Improve performance through asynchronous communication since producers and consumers act independently of each other
 * Decouple or reduce dependency in the system
@@ -2242,10 +2263,11 @@ A producer creates messages and consumers receive and process them.
   
 Usage: 
  * Sending emails
- * Data post-processing: It can reduce end-user latency, by enabling offline time-consuming and resource-intensive process, such as processing image, video, multimedia to different formrat or platforms
+ * Data post-processing: It can reduce end-user latency, by enabling offline time-consuming and resource-intensive process, such as processing image, video, multimedia to different format or platforms
  * Recommender systems: use cookies to personalize a user’s content; retrieves the user data and processes it. A messaging queue can be incorporated to make this process more efficient as background data processing can be time consuming.
 
 ### Distributed unique ID generators
+
 It is important to tag entities in a system with a unique identifier. Millions of events may occur every second in a large distributed system, so we need a method of distinguishing them. A unique ID generator performs this task and enables the logging and tracking of event flows for debugging or maintenance purposes.
 In most cases this is a universal unique ID (UUID). These are 128 bit numbers
 Range handlers feature multiple servers that each cover a range of ID values.

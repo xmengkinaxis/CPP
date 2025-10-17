@@ -536,15 +536,23 @@ NOTE: 1 [valid] and 2 [eligible] are the question constraints, but 3 [unvisited]
 | ----------------------- | ----------------------------------------------------------- |
 | **Visited (enqueue)**   | “This cell is on the frontier. We’ll visit it soon.”        |
 | **Processed (dequeue)** | “We’re now visiting this cell and exploring its neighbors.” |
-Rule is: 
+for BFS, Rule is: 
 * Mark visited immediately when enqueuing to prevent re-enqueueing, not after dequeuing.
 * Should mark a node as visited before enqueueing it; visited/seen = scheduled to process 
+for DFS, since the node is immediately processed after poping out as the top of the stack; 
+there is almost NO gap between marking as visited (push into stack) and processed (pop out from stack)
 
 NOTE: BFS guarantees the shortest path in an unweighted graph only if you never enqueue the same node twice.
 If you delay marking until after enqueue, multiple parents can enqueue the same node before any of them get dequeued — leading to:
 * Duplicated visits
 * Extra work (wasted time & memory)
 * in some problems, incorrect step counts
+
+Constraints on Graph
+* There are no self-edges (graph[u] does not contain u).
+* There are no parallel edges (graph[u] does not contain duplicate values).
+* If v is in graph[u], then u is in graph[v] (the graph is undirected).
+NOTE: The graph may not be connected, meaning there may be two nodes u and v such that there is no path between them.
 
 339. Nested List Weight Sum; https://leetcode.com/problems/nested-list-weight-sum/
 529. Minesweeper; https://leetcode.com/problems/minesweeper/; acton 2 and 3 are separated
@@ -650,7 +658,7 @@ Meta
 1091. Shortest Path in Binary Matrix; https://leetcode.com/problems/shortest-path-in-binary-matrix/
 286. Walls and Gates; https://leetcode.com/problems/walls-and-gates/; min() for shortest
 863. All Nodes Distance K in Binary Tree; https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/; reach a certain level
-1293. Shortest Path in a Grid with Obstacles Elimination; https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination/; visit[r][c] is an integer 
+1293. Shortest Path in a Grid with Obstacles Elimination; https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination/; visit[r][c] is an integer to allow revisit; similar to backtrack to keep the status 
 785. Is Graph Bipartite? https://leetcode.com/problems/is-graph-bipartite/; bfs return a bool; can have a short cut
 127. Word Ladder; https://leetcode.com/problems/word-ladder/
 --------------
@@ -687,7 +695,7 @@ int bfsGraph(vector<vector<int>>& graph) {
 	seen.insert(START_NODE); 
 	queue.push(START_NODE); 
 	int ans = 0; 
-	while (!queue.empty()) { // for (int step = 1; !queue.empty(); ++step)
+	while (!queue.empty()) { // for (int step = 1; !queue.empty() && step <= k; ++step)
 		int node = queue.front(); queue.pop(); 
 		// do logic for the node; e.g. set the distance or time for this node, or check if reach the destination and then exit, or add this node into a path/set
 		for (auto neighbor : graph[node]) {
@@ -1245,8 +1253,11 @@ two rounds; first from left to right, second from right to left; in order to fin
 */
 
 /* Intervals 
-sort by start or end; when merging, newEnd = max(newEnd, end); when overlapping, newEnd = min(minEnd, end); 
+	sort by start or end; 
+	when merging, newEnd = max(newEnd, end); newStart = min(newStart, start);
+	when overlapping, newEnd = min(minEnd, end); newStart = max(newStart, start);
 56. Merge Intervals; https://leetcode.com/problems/merge-intervals/
+57. Insert Interval; https://leetcode.com/problems/insert-interval/
 253. Meeting Rooms II; https://leetcode.com/problems/meeting-rooms-ii/
 163. Missing Ranges; https://leetcode.com/problems/missing-ranges/
 986. Interval List Intersections; https://leetcode.com/problems/interval-list-intersections/
