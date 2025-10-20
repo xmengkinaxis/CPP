@@ -2580,11 +2580,11 @@ By following these steps, you can create a systematic process for reviewing, eva
 ### 17.1 Framework
 
 1. **Functional Requirements (10m)**
-   1.0. NOTE: from external to internal; Users -> Actions/APIs -> System
-   1.1. Users
-   1.2. Core APIs (CRUD & Actions) (User's perspective/Actions)
-   1.3. System
-   1.4. Data (Evens/Logs; No direct user involved)
+   - 1.0. NOTE: from external to internal; Users -> Actions/APIs -> System
+   - 1.1. Users
+   - 1.2. Core APIs (CRUD & Actions) (User's perspective/Actions)
+   - 1.3. System
+   - 1.4. Data (Evens/Logs; No direct user involved)
    - NOTE:
      - User and System (Service) interaction (request and response)
      - User as external and System (Service) as internal
@@ -2592,13 +2592,13 @@ By following these steps, you can create a systematic process for reviewing, eva
      - Similar to User -> Public API (Core APIs) -> Class (System/Service)
 
 2. **Non-functional Requirements**
-   2.1. Availability
-   2.2. Reliability (durable, no data lost)
-   2.3. Performance (Latency and Throughput target)
-   2.4. Scalability
-   2.5. Consistency
-   2.6. Security
-   2.7. Observability
+   - 2.1. Availability
+   - 2.2. Reliability (durable, no data lost)
+   - 2.3. Performance (Latency and Throughput target)
+   - 2.4. Scalability
+   - 2.5. Consistency
+   - 2.6. Security
+   - 2.7. Observability
    - General-purpose consumer internet systems priority:
      - Availability > Reliability > Scalability > Performance > Security > Consistency > Observability
      - This ordering emphasizes availability first, then correctness (reliability), followed by growth (scalability) and user experience (performance), while still showing awareness of security, consistency, and observability.
@@ -2607,44 +2607,44 @@ By following these steps, you can create a systematic process for reviewing, eva
    - mainly Security (preventing abuse) — secondarily Reliability and Performance: Might need to limit the amount of text/image user can upload to stop the abuse of the service
 
 3. **Quantitative Analysis (Back-of-the-Envelope Estimation on Scale)**
-   3.1. Users: Users & DAU
-   3.2. Actions: Read vs Write (ratio)
-   3.3. Traffics: QPS / TPS (R/W) (average, peak: QPS (x 3))
-   3.4. Data: Storage (write) (= # of object x size) (growth, margin, replica/backup)
-   3.5. Transports: Bandwidth (write & read) (income/ingress & outcome/egress) (= QPS * object size)
-   3.6. Costs: Servers (read replica)
-   3.7. CPU & Memory (Cache Memory for read)
+   - 3.1. Users: Users & DAU
+   - 3.2. Actions: Read vs Write (ratio)
+   - 3.3. Traffics: QPS / TPS (R/W) (average, peak: QPS (x 3))
+   - 3.4. Data: Storage (write) (= # of object x size) (growth, margin, replica/backup)
+   - 3.5. Transports: Bandwidth (write & read) (income/ingress & outcome/egress) (= QPS * object size)
+   - 3.6. Costs: Servers (read replica)
+   - 3.7. CPU & Memory (Cache Memory for read)
 
 4. **High-level Design + Data Flow (5–10m)**
-   4.1. Building Blocks (Components: LB, API GW, servers, DB, blobs)
-   4.2. Workflow
+   - 4.1. Building Blocks (Components: LB, API GW, servers, DB, blobs)
+   - 4.2. Workflow
 
 5. **APIs Design**
-   5.1. API types
-   5.2. Actions, parameter returns;
+   - 5.1. API types
+   - 5.2. Actions, parameter returns;
 
 6. **Data Schema + Data Store**
-   6.1. SQL vs NoSQL
-   6.2. Object Storage
-   6.3. DB Partitioning / Sharding
+   - 6.1. SQL vs NoSQL
+   - 6.2. Object Storage
+   - 6.3. DB Partitioning / Sharding
 
 7. **Deep Dive (10m)**
-   7.1. Scale
-   7.2. Partition and Replication
-   7.3. VPC
-   7.4. Authentication, Throttling, Load Balancing
-   7.5. Push vs Pull
+   - 7.1. Scale
+   - 7.2. Partition and Replication
+   - 7.3. VPC
+   - 7.4. Authentication, Throttling, Load Balancing
+   - 7.5. Push vs Pull
 
 8. **Evolve and Optimize (5m)**
-   8.1. Single Point of Failure
-   8.2. Monitoring and Logging (diagnosing and debugging)
-   8.3. Bottleneck
-   8.4. Performance
-   8.5. Testability, Usability, Extensibility, Security
-   8.6. Long-term
-   8.7. Authentication
-   8.8. Containerization
-   8.9. Portability (Infrastructure as Code)
+   - 8.1. Single Point of Failure
+   - 8.2. Monitoring and Logging (diagnosing and debugging)
+   - 8.3. Bottleneck
+   - 8.4. Performance
+   - 8.5. Testability, Usability, Extensibility, Security
+   - 8.6. Long-term
+   - 8.7. Authentication
+   - 8.8. Containerization
+   - 8.9. Portability (Infrastructure as Code)
 
 ### 17.2 Strategy for NFR
 
