@@ -1715,9 +1715,9 @@ After finishing the design, compare it against the requirements and evaluate tra
 - Steps
   1. Explore alternative solutions.
   2. Identify and explain their major trade-offs.
-  3. Make informed decisions to balance those trade-offs against requirements.
+  3. Make **informed** decisions to balance those trade-offs against **requirements**.
 
-- **Considerations**: Trade-offs should **be evaluated in the context of**:
+- **Considerations**: Trade-offs should **be evaluated in the context of** (considering the requirements of the system):
   - User needs
   - Business goals
   - Prioritized use cases
@@ -1729,9 +1729,9 @@ After finishing the design, compare it against the requirements and evaluate tra
   - **Reliability** – Does it risk downtime or data loss?
   - **Performance** – Does it make things faster? Does it increase latency?
   - **Scalability** – Can it handle more users/data easily?
+  - **Security / Privacy** – Does it leak data or make guessing easier?
   - **Complexity** – Is it harder to build/maintain?
   - **Cost** – Does it need more servers, more storage, higher $$$?
-  - **Security / Privacy** – Does it leak data or make guessing easier?
   - **Every trade-off is some balance among these dimensions.**
 
 - when the step says: **“Identify and explain their major trade-offs”**, what the interviewer expects is:
@@ -1740,6 +1740,11 @@ After finishing the design, compare it against the requirements and evaluate tra
   - Show you can **decide based on requirements, not just list pros/cons**.
 
 - **Trade-off Checklist for System Design Interviews**: Whenever you compare two (or more) design choices, walk through these dimensions:
+  - **Reliability & Availability**
+    - ✅ Does this design avoid single points of failure?
+    - ✅ Can it survive machine crashes or network failures?
+    - ⚠️ How much replication is needed?
+  
   - **Performance**
     - ✅ Does this reduce latency? (speed of one request)
     - ✅ Does this improve throughput? (number of requests per second)
@@ -1750,15 +1755,15 @@ After finishing the design, compare it against the requirements and evaluate tra
     - ✅ Is horizontal scaling (adding machines) easy or hard?
     - ⚠️ Will it require complex sharding or partitioning?
 
-  - **Reliability & Availability**
-    - ✅ Does this design avoid single points of failure?
-    - ✅ Can it survive machine crashes or network failures?
-    - ⚠️ How much replication is needed?
-
   - **Consistency**
     - ✅ Do we get strong consistency (always correct data)?
     - ✅ Or eventual consistency (faster, but may be stale)?
     - ⚠️ Which matters more for this system’s requirements?
+
+  - **Security / Privacy**
+    - ✅ Does it prevent abuse (guessable IDs, spam, fraud)?
+    - ✅ Does it align with compliance/regulations (GDPR, HIPAA)?
+    - ⚠️ Any risks of exposing sensitive data?
 
   - **Complexity**
     - ✅ Is it easy to implement and maintain?
@@ -1770,20 +1775,15 @@ After finishing the design, compare it against the requirements and evaluate tra
     - ⚠️ Does it require expensive infra (SSD, GPU, lots of servers)?
     - ⚠️ Does it increase developer/Ops cost?
 
-  - **Security / Privacy**
-    - ✅ Does it prevent abuse (guessable IDs, spam, fraud)?
-    - ✅ Does it align with compliance/regulations (GDPR, HIPAA)?
-    - ⚠️ Any risks of exposing sensitive data?
-
-- Example Use (Quick 30-second answer in interview): **Q:** Should we use SQL or NoSQL for storing user profiles? 
+- Example Use (Quick 30-second answer in interview): **Q:** Should we use SQL or NoSQL for storing user profiles?
   - **Answer (using checklist):**
+    - **Reliability:** Both can be made highly available, but SQL has mature replication.
     - **Performance:** SQL gives strong query flexibility; NoSQL gives faster writes at scale.
     - **Scalability:** NoSQL scales horizontally more easily. SQL requires sharding earlier.
-    - **Reliability:** Both can be made highly available, but SQL has mature replication.
     - **Consistency:** SQL = strong consistency; NoSQL = eventual consistency by default.
+    - **Security:** Both support security, but SQL tends to have more built-in features.
     - **Complexity:** SQL is simpler for structured data and joins; NoSQL is better for unstructured/large scale.
     - **Cost:** At small scale SQL is cheaper; at huge scale NoSQL may reduce infra cost.
-    - **Security:** Both support security, but SQL tends to have more built-in features.
   - **Decision:** If we expect **billions of users and simple profile schema**, lean toward **NoSQL**. If we need **complex queries + strong consistency**, lean toward **SQL**.
   - This way, you don’t just say “SQL is consistent, NoSQL is scalable.” You show you can **evaluate trade-offs systematically** and **tie them back to requirements**.
 

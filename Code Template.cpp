@@ -662,7 +662,7 @@ Meta
 785. Is Graph Bipartite? https://leetcode.com/problems/is-graph-bipartite/; bfs return a bool; can have a short cut
 127. Word Ladder; https://leetcode.com/problems/word-ladder/
 --------------
-994. Rotting Oranges; https://leetcode.com/problems/rotting-oranges/; there is an additional condition in the outer loop
+994. Rotting Oranges; https://leetcode.com/problems/rotting-oranges/; there is an additional condition in the outer loop; multi-source Breadth-First Search (BFS)
 365. Water and Jug Problem; https://leetcode.com/problems/water-and-jug-problem/
 787. Cheapest Flights Within K Stops; https://leetcode.com/problems/cheapest-flights-within-k-stops/; can revisit, but only update when less
 */
@@ -686,12 +686,12 @@ The choice of BFS vs DFS affects algorithmic properties:
 int bfsGraph(vector<vector<int>>& graph) {
 	unordered_set<int> seen; 
 	queue<int> queue; 
-	// they are a pair of actions, inserting the node into seen and adding the node into the queue.
-	// an atomic action: add into seen, and then add into queue
-	// Initialization:
+	// Initialization: could be a multi-source Breadth-First Search (BFS)
 	// 	there might be a numbers of starting nodes and all these need to be added into the queue initially
 	// 	there might be zero of starting nodes. This is an edge case. 
 	// 	in summary, the number of starting nodes, could be 0, 1, N; 
+	// they are a pair of actions, inserting the node into seen and adding the node into the queue.
+	// an atomic action: add into seen (marked as being scheduled to avoid being enqueued again), and then add into queue(going to be proceeded)
 	seen.insert(START_NODE); 
 	queue.push(START_NODE); 
 	int ans = 0; 
