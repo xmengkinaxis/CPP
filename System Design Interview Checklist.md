@@ -89,7 +89,9 @@
     - [11.2 Caching - How to scale database?  Caching or vertically and horizontally](#112-caching---how-to-scale-database--caching-or-vertically-and-horizontally)
       - [Cache eviction policies](#cache-eviction-policies)
       - [Cache expiration](#cache-expiration)
-      - [Cache strategy (Invalidation)](#cache-strategy-invalidation)
+      - [Cache Coherency / Invalidation Strategy](#cache-coherency--invalidation-strategy)
+      - [Common Cache Strategies](#common-cache-strategies)
+      - [Summary Table (one-glance)](#summary-table-one-glance)
     - [11.3 CDN -\> How to prepare our assets to deliver faster across the world?](#113-cdn---how-to-prepare-our-assets-to-deliver-faster-across-the-world)
     - [11.4 Cache, Scale, and Shard result](#114-cache-scale-and-shard-result)
       - [cache result==\> low latency, high throughput and high available (if db server is down for a while)](#cache-result-low-latency-high-throughput-and-high-available-if-db-server-is-down-for-a-while)
@@ -613,6 +615,7 @@ Benefit: Low latency (real time)
 - **Network Bandwidth**
   - ~10–25 Gbps (cloud VMs often limited to ~10 Gbps).
   - 10 Gbps ≈ 1.25 GB/s max.
+  - 50K concurrent connections???
   - Rule of thumb: **a single server can push ~1 GB/s over the network**.
 
 #### ⚡ Practical Constants for Quick Estimation
@@ -1129,7 +1132,7 @@ Most real-world systems combine multiple storage types:
   
 - **Database Lens**
   - **Model choice?** Relational, key-value, document, graph, time-series
-  - **Partitioning**: Sharding strategy (hash, range, geo-based)
+  - **Partitioning**: Sharding strategy (hash, range, geo-based) (hash: e.g. userID, TweetID, Creation Time, Combination)
   - **Replication**: Sync vs. async, leader-follower vs. leaderless
   - **Indexing**: Which fields to index? Trade-offs between query speed and write speed
   - **Transactions**: ACID vs. BASE, consistency model (strong vs. eventual)
@@ -1710,22 +1713,22 @@ After finishing the design, compare it against the requirements and evaluate tra
   - The “trade-off” here isn’t just listing pros/cons, but showing the reasoning: **Why one matters more in context of the requirements.**
 
 - Goal
-  - Every design choice comes with trade-offs. The goal is to choose the solution whose trade-offs do not severely impact the **most important requirements** of the system.
+  - Every design choice comes with trade-offs. The goal is to choose the solution whose trade-offs do not severely impact the **most important non functional requirements (NFRs)** of the system.
 
 - Steps
   1. Explore alternative solutions.
   2. Identify and explain their major trade-offs.
-  3. Make **informed** decisions to balance those trade-offs against **requirements**.
+  3. Make **informed** decisions to balance those trade-offs against **NFRs**.
 
-- **Considerations**: Trade-offs should **be evaluated in the context of** (considering the requirements of the system):
-  - User needs
+- **Considerations**: Trade-offs should **be evaluated in the context of** (considering **NFRs** of the system):
   - Business goals
+  - User needs
   - Prioritized use cases
   - Conflicting requirements
   - Resource limitations
   - Design constraints
 
-- How to Think About Trade-offs (Interview Framework): Whenever you discuss a design choice, ask:
+- How to Think About Trade-offs (Interview Framework): Whenever you discuss a design choice, ask (the same order of NFRs):
   - **Reliability** – Does it risk downtime or data loss?
   - **Performance** – Does it make things faster? Does it increase latency?
   - **Scalability** – Can it handle more users/data easily?
@@ -2133,7 +2136,7 @@ Con:
 
 ### 11.2 Caching - How to scale database?  Caching or vertically and horizontally
 
-- Cache the DB results adding an extra caching layer between the servers and the database
+- Cache the DB results adding an extra caching layer between servers and the database
 - A cache is a key-value store that reside between applications and data storage;
 - Redis is persistent while memcache scales well.
 
@@ -2142,8 +2145,8 @@ Con:
 - Cache will enable you to make vastly better use of the resources you already have as well as making otherwise unattainable product requirements feasible.
 - Can exist at all levels in architecture, but are often found at the level nearest to the front end, where they are implemented to return data quickly without taxing downstream levels.
 - What should be cached?
-  - long-running queries on databases;
   - high-latency network requests (for external APIs),
+  - long-running queries on databases;
   - computation-intensive processing;
 
 **Disadvantages**:
@@ -2160,32 +2163,73 @@ Con:
 - Definition: Eviction policy determines how the cache handles the replacement of old data with new data when the cache is full
 - **Policies**: Order (first vs last), Recently (time: least vs most), Frequency (least), Random;
 
-- Order
+- Order (time)
   - First In First Out (FIFO), time-serious ???
   - Last In First Out (LIFO)
-- Recent
+- Recent (time)
   - Least Recently Used (LRU), suitable for long-tailed
   - Most Recently Used (MRU)
-- Frequency
+- Frequency (frequent)
   - Least Frequently Used (LFU)
 - Random Replacement (RR)
 
 #### Cache expiration
 
-Determine how long data is kept in the cache before it is considered stale and is removed.
-A shorter expiration time can improve the freshness of the data, but increase the number of accesses to the underlying data source
+- What it is — How long a cached item is allowed to live before deemed stale.
+- Trade-off
+  - Short TTL → fresher data, more cache misses, more DB load
+  - Long TTL → better hit rate & latency, but risk of stale reads
+- Use TTL when data can tolerate some staleness and strong consistency is not required.
 
-#### Cache strategy (Invalidation)
+#### Cache Coherency / Invalidation Strategy
 
-Cache Invalidation: keep the cache coherent with the source of data (e.g. database);  
-strategy: cache and permanent story like disk or database, write only one or both; depend on the data and data access patterns (how data is written and read)  
-metrics: read-intensive vs write-intensive (write-write, write-reread); latency and throughput; consistency and data loss;   
+- Goal: keep cache logically consistent with source of truth (DB/storage)
+- Choice depends on:
+  - Read vs Write intensity (read-heavy? write-heavy?) (write-write, write-reread)
+  - Consistency requirement (can read be stale?)
+  - Latency target (can writes be slow?) and throughput
+  - Durability / data loss tolerance
 
-- Cache aside: general purpose, work best for read-heavy workloads; usually write-around, use write-through or Time To Live(TTL) to invalidate cache in order to avoid the stale data; The application is responsible for reading and writing from the storage. The cache does not interact with storage directly. Application load the entry from database, add it to cache and then return it to user. Lazy loading. Only requested data is cached.   
-- Read-through  
-- Write-through (both): data is written into both cache and database simultaneously. The application uses the cache as the main data store, reading and writing data to it, while the cache is responsible for reading and writing to the database synchronously. pros: fast retrieval, consistency between cache and storage, minimizes the risk of data loss; cons: higher latency for write operation; data written might never be read.   
-- Write-around (storage only): data is written into the permanent storage only (bypassing the cache). pros: cache is not flooded with written operation which is not subsequently be re-read. con: higher latency for the recently written data, for cache-miss, so higher latency;    
-- Write-back (write-behind)(cache only): the data is written to cache alone; asynchronously write entry to the data store. pros: low-latency and high-throughput for write-intensive applications. con: risk of data loss; more complex to implement, for its asynchronously writing.   
+#### Common Cache Strategies
+
+- Cache-Aside (a.k.a Lazy Loading) (read with fall back)
+  - App reads from cache; if miss → read DB → put in cache → return
+  - Writes go to DB only, then optionally invalidate cache
+  - **Best for:** read-heavy workloads, generic use
+  - **Pros:** simple, DB is source-of-truth, flexible TTL
+  - **Cons:** first read is slow (cold miss), possible stale cache until TTL/invalidate
+
+- Read-Through (Cache only)
+  - App always reads through cache
+  - Cache itself loads from DB on miss (not the app)
+  - **Pros:** hides DB from app logic, standardizes reads
+  - **Cons:** implementation complexity depends on cache system
+
+- Write-Through (both)
+  - On write: update **cache & DB synchronously**
+  - **Pros:** consistent cache, safe, simple read path
+  - **Cons:** write becomes slow; writes for never-read data wasted
+
+- Write-Around (DB only)
+  - On write: update **DB only**, skip cache
+  - Cache only receives items on read (lazy fill)
+  - **Pros:** avoids polluting cache with rarely-used writes
+  - **Cons:** recent writes → cache miss → higher read latency
+
+- Write-Back (Write-Behind) (Cache only)
+  - On write: write **to cache only**, flush to DB **asynchronously**
+  - **Pros:** very fast writes; high throughput
+  - **Cons:** risk of data loss on crash; complex to implement safely
+
+#### Summary Table (one-glance)
+
+| Strategy      | Writes go to                   | Reads go to        | Good for                 | Main Risk             |
+| ------------- | ------------------------------ | ------------------ | ------------------------ | --------------------- |
+| Cache-Aside   | DB (cache optional invalidate) | Cache → DB on miss | Read-heavy               | Stale until TTL       |
+| Read-Through  | DB (via cache)                 | Cache (auto-fetch) | Consistent read path     | Cache impl complexity |
+| Write-Through | Cache & DB sync                | Cache              | Consistent cache         | Slow writes           |
+| Write-Around  | DB only                        | Cache (dirty miss) | Avoid cache trashing     | Slow read after write |
+| Write-Back    | Cache only → async to DB       | Cache              | Write-heavy, low latency | Data loss on crash    |
 
 ### 11.3 CDN -> How to prepare our assets to deliver faster across the world?
 
@@ -2580,25 +2624,24 @@ By following these steps, you can create a systematic process for reviewing, eva
 ### 17.1 Framework
 
 1. **Functional Requirements (10m)**
-   - 1.0. NOTE: from external to internal; Users -> Actions/APIs -> System
-   - 1.1. Users
-   - 1.2. Core APIs (CRUD & Actions) (User's perspective/Actions)
-   - 1.3. System
-   - 1.4. Data (Evens/Logs; No direct user involved)
+   - Users
+   - Core APIs (CRUD & Actions) (User's perspective/Actions)
+   - System
+   - Data (Evens/Logs; No direct user involved)
    - NOTE:
-     - User and System (Service) interaction (request and response)
+     - Direction from external to internal; Users -> CRUD Actions/Core APIs -> System
      - User as external and System (Service) as internal
-     - Interaction (request and response) between external and internal
+     - User and System (Service) interaction (request and response) between external and internal
      - Similar to User -> Public API (Core APIs) -> Class (System/Service)
 
 2. **Non-functional Requirements**
-   - 2.1. Availability
-   - 2.2. Reliability (durable, no data lost)
-   - 2.3. Performance (Latency and Throughput target)
-   - 2.4. Scalability
-   - 2.5. Consistency
-   - 2.6. Security
-   - 2.7. Observability
+   - Availability
+   - Reliability (durable, no data lost)
+   - Performance (Latency and Throughput target)
+   - Scalability
+   - Consistency
+   - Security
+   - Observability
    - General-purpose consumer internet systems priority:
      - Availability > Reliability > Scalability > Performance > Security > Consistency > Observability
      - This ordering emphasizes availability first, then correctness (reliability), followed by growth (scalability) and user experience (performance), while still showing awareness of security, consistency, and observability.
@@ -2607,44 +2650,41 @@ By following these steps, you can create a systematic process for reviewing, eva
    - mainly Security (preventing abuse) — secondarily Reliability and Performance: Might need to limit the amount of text/image user can upload to stop the abuse of the service
 
 3. **Quantitative Analysis (Back-of-the-Envelope Estimation on Scale)**
-   - 3.1. Users: Users & DAU
-   - 3.2. Actions: Read vs Write (ratio)
-   - 3.3. Traffics: QPS / TPS (R/W) (average, peak: QPS (x 3))
-   - 3.4. Data: Storage (write) (= # of object x size) (growth, margin, replica/backup)
-   - 3.5. Transports: Bandwidth (write & read) (income/ingress & outcome/egress) (= QPS * object size)
-   - 3.6. Costs: Servers (read replica)
-   - 3.7. CPU & Memory (Cache Memory for read)
+   - Users: Users & DAU
+   - Actions: Read vs Write (ratio)
+   - Traffics: QPS / TPS (R/W) (average, peak: QPS (x 3))
+   - Data: Storage (write) (= # of object x size) (growth, margin, replica/backup)
+   - Transports: Bandwidth (write & read) (income/ingress & outcome/egress) (= QPS * object size)
+   - Costs: Servers (read replica)
+   - CPU & Memory (Cache Memory for read)
 
-4. **High-level Design + Data Flow (5–10m)**
-   - 4.1. Building Blocks (Components: LB, API GW, servers, DB, blobs)
-   - 4.2. Workflow
+4. **High-level Design + Data Flow + APIs Design (5–10m)**
+   - Building Blocks (Components: LB, API GW, servers, DB, blobs)
+   - Workflow
+   - APIs: types, actions, parameter, and returns
 
-5. **APIs Design**
-   - 5.1. API types
-   - 5.2. Actions, parameter returns;
+5. **Data Schema + Data Store**
+   - SQL vs NoSQL
+   - DB Partitioning / Sharding
+   - Object Storage
 
-6. **Data Schema + Data Store**
-   - 6.1. SQL vs NoSQL
-   - 6.2. Object Storage
-   - 6.3. DB Partitioning / Sharding
+6. **Deep Dive (10m)**
+   - Scale
+   - Partition and Replication
+   - VPC
+   - Authentication, Throttling, Load Balancing
+   - Push vs Pull
 
-7. **Deep Dive (10m)**
-   - 7.1. Scale
-   - 7.2. Partition and Replication
-   - 7.3. VPC
-   - 7.4. Authentication, Throttling, Load Balancing
-   - 7.5. Push vs Pull
-
-8. **Evolve and Optimize (5m)**
-   - 8.1. Single Point of Failure
-   - 8.2. Monitoring and Logging (diagnosing and debugging)
-   - 8.3. Bottleneck
-   - 8.4. Performance
-   - 8.5. Testability, Usability, Extensibility, Security
-   - 8.6. Long-term
-   - 8.7. Authentication
-   - 8.8. Containerization
-   - 8.9. Portability (Infrastructure as Code)
+7. **Evolve and Optimize (5m)**
+   - Single Point of Failure
+   - Monitoring and Logging (diagnosing and debugging)
+   - Bottleneck
+   - Performance
+   - Testability, Usability, Extensibility, Security
+   - Long-term
+   - Authentication
+   - Containerization
+   - Portability (Infrastructure as Code)
 
 ### 17.2 Strategy for NFR
 
