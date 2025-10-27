@@ -159,8 +159,8 @@
       - [✅ So, can API Gateway replace Web Server + WebSocket?](#-so-can-api-gateway-replace-web-server--websocket)
       - [🔑 In your note, I’d refine it like this:](#-in-your-note-id-refine-it-like-this)
     - [Single Point of Failure (SPOF) vs Bottleneck](#single-point-of-failure-spof-vs-bottleneck)
-      - [🔹 **Single Point of Failure (SPOF)**](#-single-point-of-failure-spof)
-      - [🔹 **Bottleneck**](#-bottleneck)
+      - [**Single Point of Failure (SPOF)**](#single-point-of-failure-spof)
+      - [**Bottleneck**](#bottleneck)
       - [🔹 **Key Differences**](#-key-differences)
       - [🎯 System Design Interview Priority](#-system-design-interview-priority)
       - [🔑 Rule of Thumb for Interviews](#-rule-of-thumb-for-interviews)
@@ -910,7 +910,7 @@ Most real-world systems combine multiple storage types:
   3. **Admin / Manager Node**
      - Access privileges, dashboards, console.
   4. **Monitoring & Logging Services**
-     - Metrics (Prometheus, Grafana) (The System’s Health Report). Metrics are time-series data points that allow you to quantify the performance and health of every component. They are crucial for setting up Alerts.
+     - Metrics (Prometheus, Grafana) (The System’s Health Report). Metrics are time-series data points that allow you to quantify the performance and health of every component. They are crucial for setting up Alerts. Get insight into how the system is doing, to verify the capacity estimation, other design assumption, resource efficiency, etc. To evolve (scale) the system if need more replication, load balancing, caching.
      - Alerts, logs (ELK stack, Datadog).
   5. **Backup & Disaster Recovery**
      - Snapshots, multi-region replication.
@@ -1111,6 +1111,9 @@ Most real-world systems combine multiple storage types:
   - **Failure handling**:
     - Cache miss → fallback to DB
     - Cache server failure → retry, degrade gracefully
+  - **Intelligent Cache**:
+    - Go with 80-20 rule
+    - Try cache 20% popular videos of generating 80% of traffic
   - **Trade-offs**: Faster reads vs. stale data / higher memory cost
 
 - **Queue / Async Processing Lens**
@@ -2669,22 +2672,30 @@ By following these steps, you can create a systematic process for reviewing, eva
    - Object Storage
 
 6. **Deep Dive (10m)**
-   - Scale
-   - Partition and Replication
-   - VPC
-   - Authentication, Throttling, Load Balancing
-   - Push vs Pull
+   - [Deep Dive Lenses](#60-lld-deep-dive-lenses-short-checklists-for-common-components-to-deep-dive)
+   - API / Service Lens
+   - Cache Lens
+   - Queue / Async Processing Lens
+   - Data Processing Lens
+   - Database Lens
+   - Security & Reliability Lens
 
-7. **Evolve and Optimize (5m)**
-   - Single Point of Failure
-   - Monitoring and Logging (diagnosing and debugging)
-   - Bottleneck
-   - Performance
-   - Testability, Usability, Extensibility, Security
-   - Long-term
-   - Authentication
-   - Containerization
-   - Portability (Infrastructure as Code)
+7. **Wrap-up / Evolve and Optimize (5m)**
+   - Not to dump all remaining topics, but to show you know the system is not “done” and you **know how it evolves under reality** (scale, failures, abuse, maintainability, team growth).
+   - Resilience & Safety
+     - Remove / reduce SPOFs (multi-AZ, replicas, quorum, retry/backoff)
+     - Graceful degradation under partial failure
+     - Abuse / security guardrails (rate limit, auth, quota, WAF)
+     - Long-term durability (backups, retention, migration plan)
+   - Operate & Debug in Production
+     - Observability: metrics / traces / logs / alerts (SLO/SLA/SLA violations); Monitoring and Logging (diagnosing and debugging)
+     - Bottleneck surfacing plan (where to instrument, what to watch)
+     - Incident readiness (replay, dead letter queues, rollbacks, canary)
+   - Future evolution / maintenance
+     - Extensibility hooks (feature flags, plug-in points, schema evolution)
+     - Cost awareness and tuning knobs
+     - Portability and delivery (containerization, IaC, CI/CD, multi-cloud optionality)
+     - Testability (contract tests, load test, chaos test, fault injection)
 
 ### 17.2 Strategy for NFR
 
@@ -3014,31 +3025,23 @@ The short answer is: **API Gateway can sometimes replace a web server, but not a
 ### Single Point of Failure (SPOF) vs Bottleneck
 Great question 👍 Bottlenecks and Single Points of Failure (SPOF) are **related but different concepts** in system design.
 
----
+#### **Single Point of Failure (SPOF)**
 
-#### 🔹 **Single Point of Failure (SPOF)**
+- **Definition:** A component that, if it fails, the entire system (or a critical function) goes down.
+- **Key idea:** It threatens **availability and reliability**.
+- **Examples:**
+  - Only one database server (if it crashes, no reads/writes can happen).
+  - A single load balancer without redundancy.
+  - A single power supply for the whole data center.
 
-* **Definition:** A component that, if it fails, the entire system (or a critical function) goes down.
-* **Key idea:** It threatens **availability and reliability**.
-* **Examples:**
+#### **Bottleneck**
 
-  * Only one database server (if it crashes, no reads/writes can happen).
-  * A single load balancer without redundancy.
-  * A single power supply for the whole data center.
-
----
-
-#### 🔹 **Bottleneck**
-
-* **Definition:** A component that **limits the performance** (throughput or latency) of the entire system.
-* **Key idea:** It threatens **scalability and performance**.
-* **Examples:**
-
-  * A database that can’t handle more than 1,000 writes/sec, while the system needs 10,000.
-  * A single-threaded service in a distributed system.
-  * A network link capped at 100 Mbps while clients demand 1 Gbps.
-
----
+- **Definition:** A component that **limits the performance** (throughput or latency) of the entire system.
+- **Key idea:** It threatens **scalability and performance**.
+- **Examples:**
+  - A database that can’t handle more than 1,000 writes/sec, while the system needs 10,000.
+  - A single-threaded service in a distributed system.
+  - A network link capped at 100 Mbps while clients demand 1 Gbps.
 
 #### 🔹 **Key Differences**
 
