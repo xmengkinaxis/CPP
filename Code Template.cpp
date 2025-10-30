@@ -663,7 +663,6 @@ Meta
 127. Word Ladder; https://leetcode.com/problems/word-ladder/
 --------------
 994. Rotting Oranges; https://leetcode.com/problems/rotting-oranges/; there is an additional condition in the outer loop; multi-source Breadth-First Search (BFS)
-365. Water and Jug Problem; https://leetcode.com/problems/water-and-jug-problem/
 787. Cheapest Flights Within K Stops; https://leetcode.com/problems/cheapest-flights-within-k-stops/; can revisit, but only update when less
 */
 
@@ -805,6 +804,7 @@ vector<int> fnTopKEnhanced(vector<int>& arr, int k) {
 }
 
 /*
+33. Search in Rotated Sorted Array; https://leetcode.com/problems/search-in-rotated-sorted-array/
 81. Search in Rotated Sorted Array II; https://leetcode.com/problems/search-in-rotated-sorted-array-ii/
 4. Median of Two Sorted Arrays; https://leetcode.com/problems/median-of-two-sorted-arrays/; for (int low = 0, high = M; low <= high; )
 */
@@ -1025,6 +1025,7 @@ Diff: backtrack uses the short cut by trimming the candidates or solution space,
 282. Expression Add Operators; https://leetcode.com/problems/expression-add-operators/
 490. The Maze; https://leetcode.com/problems/the-maze/; return bool; keep going on one direction
 79. Word Search; https://leetcode.com/problems/word-search/
+365. Water and Jug Problem; https://leetcode.com/problems/water-and-jug-problem/
 */
 int backtrack(STATE curr, OTHERS) {
 	// might check if the current state is till valid, as 301. Remove Invalid Parentheses

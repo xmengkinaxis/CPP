@@ -458,13 +458,13 @@ The table summarizing how to achieve various important attributes in system desi
 | Attribute           | Strategies to Achieve                                                                                 |
 |---------------------|------------------------------------------------------------------------------------------------------|
 | High Availability   | - Redundancy and failover<br>- Disaster recovery planning<br>- Geographic distribution<br>- Multi-region active-active architecture<br>- Load balancing<br>- Automated scaling<br>- *Isolation*<br>- Zero-downtime deployments<br> |
-| Reliability         | - Redundancy and failover<br>- Monitoring and alerting<br>- Automated testing<br>- Backups and data replication<br>- Disaster recovery planning |
+| Reliability         | - Redundancy and failover<br>- Automated testing<br>- Backups and data replication<br>- Monitoring and alerting<br>- Disaster recovery planning |
 | Low Latency         | - Use of Content Delivery Networks (CDNs)<br>- Distributed caching<br>- Edge computing<br>- Efficient algorithms<br>- Optimized network architecture |
 | High Throughput     | - Horizontal scaling<br>- Load balancing<br>- Use of asynchronous messaging<br>- Distributed databases<br>- Optimized data processing pipelines |
 | Scalability        | - Horizontal scaling<br>- Content delivery networks (CDNs)<br>- Auto-scaling<br>- Microservices architecture<br>- Caching<br>- Asynchronous processing<br>- Distributed databases<br> |
 | Consistency         | - Strong consistency models<br>- Distributed transactions<br>- ACID compliance<br>- Event sourcing<br>- Eventual consistency for specific use cases |
 | Concurrency         | - Optimistic concurrency control<br> - Proper locking mechanisms<br>- Use of distributed locks<br>- Isolation of critical sections|
-| Security            | - Authentication and authorization mechanisms<br>- Encryption<br>- Firewalls<br>- Intrusion detection systems<br>- Regular security audits<br>- Least privilege principle |
+| Security            | - Firewalls<br>- Authentication and authorization mechanisms<br>- Encryption<br>- Least privilege principle<br>- Intrusion detection systems<br>- Regular security audits |
 
 | Strategy                                         | Attributes Achieved                                     |
 |--------------------------------------------------|---------------------------------------------------------|
@@ -494,12 +494,12 @@ The table summarizing how to achieve various important attributes in system desi
 | Isolation of critical sections                 | Concurrency                                          |
 | Use of distributed locks                       | Concurrency                                          |
 | Optimistic concurrency control                 | Concurrency                                          |
+| Firewalls                                      | Security                                             |
 | Authentication and authorization mechanisms   | Security                                             |
 | Encryption                                     | Security                                             |
-| Firewalls                                      | Security                                             |
+| Least privilege principle                      | Security                                             |
 | Intrusion detection systems                    | Security                                             |
 | Regular security audits                        | Security                                             |
-| Least privilege principle                      | Security                                             |
 
 Remember that achieving these attributes often involves trade-offs, and **the strategies you choose will depend on your specific application requirements, budget, and the complexity you're willing to manage**.
 
@@ -924,7 +924,7 @@ Most real-world systems combine multiple storage types:
 
 - **Purpose**
   - Go deeper into the **design of 2–3 critical components** (**performance-sensitive** or **core to functionality**) with the guidance of the proper [LLD Deep Dive Lenses](#60-lld-deep-dive-lenses-short-checklists-for-common-components-to-deep-dive).
-  - Show understanding of **how data flows and how requests are handled at a detailed level**.
+  - Show understanding of **how data flows and how requests are handled at a detailed level**. (Dynamic Behaviors in HLD)
   - Demonstrate ability to **evaluate trade-offs, handle failures, and optimize performance**.
 
 - **Approach**
@@ -1013,8 +1013,8 @@ Most real-world systems combine multiple storage types:
 - **How to Use This in Interview**
   1. **Start with the flow**: “Here’s how a request flows through validation, cache, main component logic, DB, and back.”
   2. **Deep dive into one block**: For example, the **Core Component** (indexing engine, messaging queue, feed ranking, etc.).
-  3. **Show trade-offs**: Talk about caching vs. DB lookup for Read, sync vs. async for Write, partitioning vs. replication for Database.
-  4. **Discuss failure handling**: e.g., cache miss, DB write failure, duplicate keys.
+  3. **Show trade-offs**: Talk about caching vs. DB lookup for Read, sync vs. async for Write, partitioning vs. replication for Database. (Normal situations)
+  4. **Discuss failure handling**: e.g., cache miss, DB write failure, duplicate keys. (Abnormal situations)
 
 - **How to Use in Interview**
   1. **Draw the base skeleton** above (5–6 blocks).
@@ -2662,7 +2662,7 @@ By following these steps, you can create a systematic process for reviewing, eva
    - CPU & Memory (Cache Memory for read)
 
 4. **High-level Design + Data Flow + APIs Design (5–10m)**
-   - Building Blocks (Components: LB, API GW, servers, DB, blobs)
+   - Building Blocks (Components: LB, API GW, servers, DB, blobs) with FR + NFR in mind
    - Workflow
    - APIs: types, actions, parameter, and returns
 

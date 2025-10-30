@@ -184,13 +184,13 @@
 - [785. Is Graph Bipartite?](https://leetcode.com/problems/is-graph-bipartite/) //bfs return a bool; can have a short cut
 - [127. Word Ladder](https://leetcode.com/problems/word-ladder/)
 - [994. Rotting Oranges](https://leetcode.com/problems/rotting-oranges/) //there is an additional condition in the outer loop
-- [365. Water and Jug Problem](https://leetcode.com/problems/water-and-jug-problem/)
 - [787. Cheapest Flights Within K Stops](https://leetcode.com/problems/cheapest-flights-within-k-stops/) // can revisit, but only update when less
 
 ## Binary Search
 
 ### Binary Search Basic
 
+- [33. Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/)
 - [81. Search in Rotated Sorted Array II](https://leetcode.com/problems/search-in-rotated-sorted-array-ii/)
 - [82. Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/) // for (int low = 0, high = M; low <= high; )
 
@@ -226,8 +226,9 @@
 - [77. Combinations](https://leetcode.com/problems/combinations/)
 - [140. Word Break II](https://leetcode.com/problems/word-break-ii/)
 - [282. Expression Add Operators](https://leetcode.com/problems/expression-add-operators/)
-*[ 490. The Maze](https://leetcode.com/problems/the-maze/) // return bool; keep going on one direction
+- [490. The Maze](https://leetcode.com/problems/the-maze/) // return bool; keep going on one direction
 - [79. Word Search](https://leetcode.com/problems/word-search/)
+- [365. Water and Jug Problem](https://leetcode.com/problems/water-and-jug-problem/)
 
 ## Trie
 
