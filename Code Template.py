@@ -465,7 +465,7 @@ def binary_leftmost(arr, target):
     right = len(arr)
 
     while left < right:
-        mid = left + (right - left) // 2
+        mid = (right - left) // 2
 
         if arr[mid] >= target:
             right = mid
@@ -479,7 +479,7 @@ def binary_rightmost(arr, target):
     right = len(arr)
 
     while left < right:
-        mid = left + (right - left) // 2
+        mid = (right - left) // 2
 
         if arr[mid] > target:
             right = mid

@@ -6,7 +6,7 @@
 #include <iostream> // cout, cin
 #include <cctype> // isalnum, isalpha, isdigit, islower, isupper, isspace; toupper, tolower
 #include <sstream> // stringstream
-#include <string> // substr, getline, strlen, stoi, string(n, char), append(n, char), find(str, pos), erase(first, last), strcpy, strncpy, strcmp, stryncmp
+#include <string> // substr, getline, strlen, stoi, string(n, char), append(n, char), find(str, pos), erase(first, last), strcpy, strncpy, strcmp, strncmp
 #include <vector>
 #include <unordered_map> 
 #include <unordered_set>
@@ -150,8 +150,6 @@ Binary Search: use left / right when searching array indices or intervals; using
 19. Need to pay attention to or skip the same items when processing an array to avoid the duplicate result, e.g. 15. 3Sum
 20. Index Marking (Sign Flipping): negate the number at the index to mark it as visited, for an integer array nums of length n where all numbers are in the range [1, n], e.g. 442. Find All Duplicates in an Array
 */
-
-// ??? sort all problems of meta once a week into different algorithms, whose numbers are less than 23 and after 29
 
 /* two pointers on the same data structure with opposite directions
 e.g. Palindrome problems (odd or even, two pointers with the opposite directions): 
@@ -714,9 +712,9 @@ int bfsGraphSteps(vector<vector<int>>& grid) {
 	const auto N = grid.size(); 
 	// deal with the special case, e.g. grid[0][0] or/and grid[N - 1][N - 1]
 
+	grid[0][0] = 2; // mark it as visited by changing its value
 	queue<pair<int, int>> queue; 
 	queue.push({0, 0}); 
-	grid[0][0] = 2; // mark it as visited by changing its value
 	for (int step = 1; !queue.empty(); step++) { // the step must be initialized properly, and is increased level by level
 		for (auto count = queue.size(); 0 < count; --count) {
 			auto [r, c] = queue.front(); queue.pop(); 
@@ -835,7 +833,7 @@ int binarySearch(vector<int>& arr, int target) {
 */
 int binaryLeftMost(vector<int>& arr, int target) {
 	int left = 0;
-	for (int right = arr.size(); left < right; )  {
+	for (int right = arr.size(); left < right; )  { // the exit condition: left == right, but not left > right, for left = mid + 1
 		auto mid = left + (right - left) / 2; 
 		// it could be a condition to calculated here and then checked in the next if statement
 		if (arr[mid] >= target) {

@@ -183,14 +183,14 @@ Clarify the problem, break down the complex problem into parts, discuss the over
 
 1. Manage your **time** efficiently
 2. Discuss **trade-offs** with your interviewers
-3. Start wide and end deep
+3. Start wide (HLD) and end deep (LLD)
 
 ### 0.3 Communicate through process
 
-1. Start with the problem statement: clearly explain the problem and the requirements for the system; then explain your approach and how you plan to tackle the problem
+1. Start with the problem statement: clearly explain the problem and the requirements for the system; then explain your approach(???) and how you plan (???) to tackle the problem
 2. Break down the problem: divide the problem into smaller parts and explain how you will solve each part individually
 3. Use diagrams and sketches to help explain your design
-4. Explain the **trade-offs** you made and the **constraints** you considered; demonstrate your ability to make informed (trade-off) decisions and your understanding of the problem (constraints)
+4. Explain the **trade-offs** you made and the **constraints** you considered; **demonstrate your ability to make informed (trade-off) decisions and your understanding of the problem (constraints)**
 5. Explain your reasoning: clearly explain why you made certain design decisions and how they address the problem and requirements; how you arrived at your solution
 6. Be prepared to answer questions and provide alternatives with pros and cons
 7. Be open to feedback: be prepared to revise your design based on feedback from the interviewer. This will demonstrate your ability to iterate and improve your design based on feedback.
@@ -213,7 +213,7 @@ Interviewer:
 Interviewee:
 
 - The key aspect of system design is to identify the problem area and trade off, and be able to justify a decision over another.
-- The success heavily depends on your ability to communicate your thought process and hold a discussion (collaborate).
+- **The success heavily depends on your ability to communicate your thought process** and hold a discussion (collaborate).
 - Demonstrate your thought process and domain-specific knowledge; Presentation matter.
 - It is critical to demonstrate your ability to recognize and evaluate trade-offs, as it reflects your understanding of various design aspects and their implications
 
@@ -867,7 +867,7 @@ Most real-world systems combine multiple storage types:
   
 - **Steps**
   - **Outline core components and connections (Static)**
-    - Draw a block diagram with **5-6 core components/entities** of the system, which are enough to solve the actual problem from end to end.
+    - Draw a block diagram with **5-6 core components/entities** of the system, which are enough to solve the actual problem from end to end (request and response).
     - Map **features → modules**
     - Define micro-services based on features/APIs (e.g. which micro-service should handle request and reply with a response)
     - Sketch the **main components + connections**
@@ -891,7 +891,7 @@ Most real-world systems combine multiple storage types:
      - API Gateway if multiple services.
   4. **Application/Service Layer**
      - Microservices (feature-based, API-based).
-     - Service partitioning for scaling.
+     - Service partitioning for scaling. (isolated for High Availability)
   5. **Cache Layer**
      - Redis, Memcached, CDN.
      - Used at multiple levels (client-side, service-side, DB-side).
@@ -910,7 +910,7 @@ Most real-world systems combine multiple storage types:
   3. **Admin / Manager Node**
      - Access privileges, dashboards, console.
   4. **Monitoring & Logging Services**
-     - Metrics (Prometheus, Grafana) (The System’s Health Report). Metrics are time-series data points that allow you to quantify the performance and health of every component. They are crucial for setting up Alerts. Get insight into how the system is doing, to verify the capacity estimation, other design assumption, resource efficiency, etc. To evolve (scale) the system if need more replication, load balancing, caching.
+     - Metrics (Prometheus, Grafana) (The System’s Health Report). Metrics are time-series data points that allow you to quantify the **performance and health** of every component. They are crucial for setting up Alerts. Get insight into how the system is doing, to verify the capacity estimation, other design assumption, resource efficiency, etc. To evolve (scale) the system if need more replication, load balancing, caching.
      - Alerts, logs (ELK stack, Datadog).
   5. **Backup & Disaster Recovery**
      - Snapshots, multi-region replication.
@@ -926,23 +926,28 @@ Most real-world systems combine multiple storage types:
   - Go deeper into the **design of 2–3 critical components** (**performance-sensitive** or **core to functionality**) with the guidance of the proper [LLD Deep Dive Lenses](#60-lld-deep-dive-lenses-short-checklists-for-common-components-to-deep-dive).
   - Show understanding of **how data flows and how requests are handled at a detailed level**. (Dynamic Behaviors in HLD)
   - Demonstrate ability to **evaluate trade-offs, handle failures, and optimize performance**.
+  - Aspects
+    - Functionalities: how these components handle the requests
+    - Trade-off: why the system is designed with the requirement and constraints
+    - Failure: abnormal or SOPFs
+    - Performance: optimize for Latency and Throughput
 
 - **Approach**
   
   1. **Component Selection**: (guided by lens)
      - Either pick components yourself or ask interviewers for guidance. The interviewers' feedback should always guide us to what specific parts need focus, elaborate on, and further discussion.
-     - **Prioritize** components that are **core to performance, reliability, or correctness**.
+     - **Prioritize** components that are **core to correctness, reliability, or performance**.
 
   2. **Detail the Component Design**
      - **Goal**: Explain what each component does, how it works internally, and how it interacts with others.
-     - External View → Internal Structure → Dynamic Flow → Justifications; a natural top-down flow — from how others see the component to how it behaves internally.
-     - **External View – Responsibilities and Interfaces (Context First)**
+     - **External View → Internal Structure → Dynamic Flow → Justifications**; a natural top-down flow — from how others see the component to how it behaves internally.
+     - **External View – Responsibilities and Interfaces (Context First)** (as black box)
        - Start from what the component promises to do and how others interact with it
        - What is the responsibility or role of this component?
        - What are its inputs and outputs?
        - What APIs or interfaces does it expose?
        - **Purpose**: Give interviewer the big picture context before diving into internals.
-     - **Interaction View – Communication and Workflow (Dynamic Behavior)**
+     - **Interaction View – Communication and Workflow (Dynamic Behavior)** (as white box)
        - Describe how it interacts with other components during typical operations.
        - Read Flow + Write Flow
        - This is the “dynamic view” — runtime behavior across components.
@@ -955,9 +960,10 @@ Most real-world systems combine multiple storage types:
        - Explain how it **interacts** with other components (Dynamic behavior).
        - Walk through **read and write flows** with examples.
 
-  3. **Design Alternatives**
+  3. **Design Alternatives** (Trade-off)
      - Present **2–3 possible approaches**, list **pros and cons**, and justify your choice.
-     - Always tie back to **system constraints (scale, latency, cost, complexity)** which are principles to choose and justify the approaches. Consider and Discuss potential solutions and trade-offs between different options while keeping system constrains in mind
+     - Always tie back to **system constraints (scale, latency, cost, complexity)** which are principles to choose and justify the approaches.
+     - Consider and Discuss potential solutions and trade-offs between different options while keeping system constrains in mind
 
   4. **Failure Handling**
      - What happens if a request fails? (e.g., duplicate key, timeout, partial write).
@@ -965,8 +971,8 @@ Most real-world systems combine multiple storage types:
 
   5. **Performance Optimizations**: Reduce **latency** using (Read, Write, Data Processing Lens):
        - **Caching**: Read (client, app, DB, CDN).
-       - **Prefetching / Pre-calculation**: Data Processing (e.g., pre-computing heavy queries). Customer behavior can be predicted, and heavy customer requests can be pre-calculated and saved using customer proxy pre-cache.
        - **Parallelization / Asynchronous processing**: Write (async queues, background jobs)
+       - **Prefetching / Pre-calculation**: Data Processing (e.g., pre-computing heavy queries). Customer behavior can be predicted, and heavy customer requests can be pre-calculated and saved using customer proxy pre-cache.
        - Example: Predict customer behavior and pre-cache heavy queries via a proxy.
 
 - **Low-Level Design (Component Deep Dive Template) - Diagram + Deep Dive Lenses** to have both a **visual map** and a **checklist** for interviews.
@@ -1117,11 +1123,10 @@ Most real-world systems combine multiple storage types:
   - **Trade-offs**: Faster reads vs. stale data / higher memory cost
 
 - **Queue / Async Processing Lens**
-  - **When to use?** Heavy writes, async jobs, decoupling producers/consumers (why???)
+  - **When to use?** Heavy writes, async jobs, decoupling producers/consumers
   - **Guarantees?** At-least-once vs. at-most-once vs. exactly-once delivery
   - **Ordering?** FIFO, priority queues, partitioned streams
-  - **Failure handling**:
-    - Retry strategy (exponential backoff, DLQ – Dead Letter Queue)
+  - **Failure handling**: Retry strategy (exponential backoff, DLQ – Dead Letter Queue)
   - **Scaling**: Consumers can scale horizontally
   - **Trade-offs**: Reliability vs. latency
 
@@ -1711,16 +1716,16 @@ After finishing the design, compare it against the requirements and evaluate tra
 ## 8 Trade-off
 
 - Definition
-  - When choose one solution, gain some advantages but also accept some disadvantages, compared to another solution.
+  - When choose one solution, gain some advantages (pro) but also accept some disadvantages (con), compared to another solution. (result)
   - It’s not just pros/cons in isolation, but rather **what to give up in order to get something else, and why that decision fits the requirements**.
-  - The “trade-off” here isn’t just listing pros/cons, but showing the reasoning: **Why one matters more in context of the requirements.**
+  - The “trade-off” here isn’t just listing pros/cons, but showing the reasoning: **Why one matters more in context of the requirements.** (reason)
 
 - Goal
-  - Every design choice comes with trade-offs. The goal is to choose the solution whose trade-offs do not severely impact the **most important non functional requirements (NFRs)** of the system.
+  - Every design choice comes with trade-offs (pro + con). The goal is to choose the solution whose trade-offs (esp. con) do not severely impact the **most important non functional requirements (NFRs)** of the system.
 
 - Steps
-  1. Explore alternative solutions.
-  2. Identify and explain their major trade-offs.
+  1. Explore **alternative** solutions.
+  2. Identify and explain their major **trade-offs (pro + con)**.
   3. Make **informed** decisions to balance those trade-offs against **NFRs**.
 
 - **Considerations**: Trade-offs should **be evaluated in the context of** (considering **NFRs** of the system):
@@ -1731,7 +1736,7 @@ After finishing the design, compare it against the requirements and evaluate tra
   - Resource limitations
   - Design constraints
 
-- How to Think About Trade-offs (Interview Framework): Whenever you discuss a design choice, ask (the same order of NFRs):
+- **Dimensions**: How to Think About Trade-offs (Interview Framework): Whenever you discuss a design choice, ask (the same order of NFRs):
   - **Reliability** – Does it risk downtime or data loss?
   - **Performance** – Does it make things faster? Does it increase latency?
   - **Scalability** – Can it handle more users/data easily?
@@ -1782,7 +1787,7 @@ After finishing the design, compare it against the requirements and evaluate tra
     - ⚠️ Does it increase developer/Ops cost?
 
 - Example Use (Quick 30-second answer in interview): **Q:** Should we use SQL or NoSQL for storing user profiles?
-  - **Answer (using checklist):**
+  - **Answer (using checklist):**: **Systematically evaluate the alternative solutions and their pro + con again these dimensions**
     - **Reliability:** Both can be made highly available, but SQL has mature replication.
     - **Performance:** SQL gives strong query flexibility; NoSQL gives faster writes at scale.
     - **Scalability:** NoSQL scales horizontally more easily. SQL requires sharding earlier.
@@ -1790,7 +1795,7 @@ After finishing the design, compare it against the requirements and evaluate tra
     - **Security:** Both support security, but SQL tends to have more built-in features.
     - **Complexity:** SQL is simpler for structured data and joins; NoSQL is better for unstructured/large scale.
     - **Cost:** At small scale SQL is cheaper; at huge scale NoSQL may reduce infra cost.
-  - **Decision:** If we expect **billions of users and simple profile schema**, lean toward **NoSQL**. If we need **complex queries + strong consistency**, lean toward **SQL**.
+  - **Decision:** (Made according to the NFR requirements ) If we expect **billions of users and simple profile schema**, lean toward **NoSQL**. If we need **complex queries + strong consistency**, lean toward **SQL**.
   - This way, you don’t just say “SQL is consistent, NoSQL is scalable.” You show you can **evaluate trade-offs systematically** and **tie them back to requirements**.
 
 ### 8.1 Common Trade-offs
@@ -2696,6 +2701,7 @@ By following these steps, you can create a systematic process for reviewing, eva
      - Cost awareness and tuning knobs
      - Portability and delivery (containerization, IaC, CI/CD, multi-cloud optionality)
      - Testability (contract tests, load test, chaos test, fault injection)
+     - Complexity (expertise to manage, operational burden)
 
 ### 17.2 Strategy for NFR
 

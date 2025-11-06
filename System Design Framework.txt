@@ -47,7 +47,7 @@ Framework:
 8. Evolve and Optimize (5m)
    Resilience & Safety (SPOFs, Degradation, Abuse, Durability)
    Operate & Debug (Observability, Bottleneck, Incident)
-   Future evolution / maintenance (Extensibility, Testability, Portability, Cost)
+   Future evolution / maintenance (Extensibility, Testability, Portability, Cost, Complexity)
 	
 ################################
 2. Non-functional req
