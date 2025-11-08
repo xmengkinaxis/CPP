@@ -454,6 +454,7 @@ The table summarizing how to achieve various important attributes in system desi
 - The table content is organized in this ways:
   - Same order as the prioritized NFRs
   - In Strategies; start from theory/principle; from big scopes to small scopes; from Frontend to Backend as the request goes through
+  - Both Read and Write are taken into consideration
 
 | Attribute           | Strategies to Achieve                                                                                 |
 |---------------------|------------------------------------------------------------------------------------------------------|
@@ -461,7 +462,7 @@ The table summarizing how to achieve various important attributes in system desi
 | Reliability         | - Redundancy and failover<br>- Automated testing<br>- Backups and data replication<br>- Monitoring and alerting<br>- Disaster recovery planning |
 | Low Latency         | - Use of Content Delivery Networks (CDNs)<br>- Distributed caching<br>- Edge computing<br>- Efficient algorithms<br>- Optimized network architecture |
 | High Throughput     | - Horizontal scaling<br>- Load balancing<br>- Use of asynchronous messaging<br>- Distributed databases<br>- Optimized data processing pipelines |
-| Scalability        | - Horizontal scaling<br>- Content delivery networks (CDNs)<br>- Auto-scaling<br>- Microservices architecture<br>- Caching<br>- Asynchronous processing<br>- Distributed databases<br> |
+| Scalability (RW)    | - Horizontal scaling<br>- Content delivery networks (CDNs)<br>- Auto-scaling<br>- Microservices architecture<br>- Caching<br>- Asynchronous processing<br>- Distributed databases<br> |
 | Consistency         | - Strong consistency models<br>- Distributed transactions<br>- ACID compliance<br>- Event sourcing<br>- Eventual consistency for specific use cases |
 | Concurrency         | - Optimistic concurrency control<br> - Proper locking mechanisms<br>- Use of distributed locks<br>- Isolation of critical sections|
 | Security            | - Firewalls<br>- Authentication and authorization mechanisms<br>- Encryption<br>- Least privilege principle<br>- Intrusion detection systems<br>- Regular security audits |
@@ -501,7 +502,7 @@ The table summarizing how to achieve various important attributes in system desi
 | Intrusion detection systems                    | Security                                             |
 | Regular security audits                        | Security                                             |
 
-Remember that achieving these attributes often involves trade-offs, and **the strategies you choose will depend on your specific application requirements, budget, and the complexity you're willing to manage**.
+Remember that achieving these attributes often involves trade-offs, and **the strategies you choose will depend on your specific application requirements, budget (cost), and the complexity you're willing to manage**.
 
 ### 1.4 Prioritize requirements
 
@@ -1876,6 +1877,7 @@ After finishing the design, compare it against the requirements and evaluate tra
   - Posts are pushed to all followers immediately.
   - ✅ Real-time updates.
   - ❌ Not scalable for celebrities with millions of followers.
+  - For celebrities' post, pull mode means high latency and waste resources for each user pulls once
 - **Pull (Fanout-on-Load)**
   - Posts are fetched when a user loads their feed.
   - ✅ Scales better for high-fanout users.

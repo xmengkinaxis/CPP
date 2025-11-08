@@ -802,6 +802,11 @@ vector<int> fnTopKEnhanced(vector<int>& arr, int k) {
 }
 
 /*
+Binary Search Template #1: Exact Match; find the index of an exact target
+	Search Space: inclusive, [left, right]; [0, size - 1]
+	Search/Loop condition: left <= right; allow left and right points to the same index, to ensure all elements are checked
+	Convergence: right = mid - 1; left = mid + 1; 
+	Terminate: left > right; left == right + 1; search space is empty
 33. Search in Rotated Sorted Array; https://leetcode.com/problems/search-in-rotated-sorted-array/
 81. Search in Rotated Sorted Array II; https://leetcode.com/problems/search-in-rotated-sorted-array-ii/
 4. Median of Two Sorted Arrays; https://leetcode.com/problems/median-of-two-sorted-arrays/; for (int low = 0, high = M; low <= high; )
@@ -815,21 +820,47 @@ int binarySearch(vector<int>& arr, int target) {
 			// do something;
 			return mid; 
 		} else if (arr[mid] > target) {
-			right = mid - 1; 
+			right = mid - 1; // exclude mid for it was checked
 		} else {
 			left = mid + 1; 
 		}
 	}
 	// left is the insertion point
-	return left; 
+	return left; // left > right; left == right + 1
+	// or 
+	// return -1; for no target is found
 }
 
 /* Binary search: duplicate elements, left-most insertion point
+Binary Search Template #2: find the minimum/first valid element (optimization/monotonic)
+#2.1 half-open Interval (exclusive right boundary)
+	Search Space: inclusive, [left, right); [0, size)
+	Search/Loop Condition: left < right
+	Convergence: right = mid; left = mid + 1; mid is a potential answer
+	Terminate: left == right; search space is empty, for right is always excluded
+	Return: left; is forced to stop exactly at the transition point where the condition first becomes true
+	Core Idea: left always points to the first failure index, while right points to the first successful index
+		when left == right, both point to the first successful index;
+#2.2 Inclusive (closed interval)
+	Search Space: inclusive, [low, high]; [0, size - 1]
+	Search/Loop Condition: low <= high
+	Convergence: high = mid - 1; low = mid + 1; 
+	Terminate: low > high; low == high + 1; search space is empty
+	Core Idea: when low and high crosses over, low enters the successful region from the failure region
 852. Peak Index in a Mountain Array, https://leetcode.com/problems/peak-index-in-a-mountain-array/
 1870. Minimum Speed to Arrive on Time; https://leetcode.com/problems/minimum-speed-to-arrive-on-time/
 1539. Kth Missing Positive Number; https://leetcode.com/problems/kth-missing-positive-number/
 778. Swim in Rising Water; https://leetcode.com/problems/swim-in-rising-water/; why not binaryMinimum ???
 658. Find K Closest Elements; https://leetcode.com/problems/find-k-closest-elements/
+
+Monotonic Property:
+	is the entire reason we can use binary search.
+	A function or relationship is monotonic if it consistently moves in one direction 
+	(either always increasing or always decreasing) and never changes its direction.
+	The goal of the binary search is simply to find the exact boundary between these two regions—the point 
+	where the result flips from false to true.
+
+#2.1
 */
 int binaryLeftMost(vector<int>& arr, int target) {
 	int left = 0;
@@ -838,12 +869,13 @@ int binaryLeftMost(vector<int>& arr, int target) {
 		// it could be a condition to calculated here and then checked in the next if statement
 		if (arr[mid] >= target) {
 			right = mid; // right make the above condition always true, and right become smaller and smaller
+						 // right is the potential answer, but continue to search left for a smaller one
 		} else {
 			left = mid + 1; // when for-loop is break-out, left would make the above condition become true for the first time; 
 							// therefore, left becomes the smallest right which can make the condition true
 		}
 	}
-	return left; 
+	return left; // left == right; 
 }
 /* Binary search on a spatial range
 int minSpeedOnTime(vector<int>& dist, double hour) {
@@ -869,7 +901,6 @@ int minSpeedOnTime(vector<int>& dist, double hour) {
 
 /* Binary search: duplicate elements, right-most insertion point
 1060. Missing Element in Sorted Array; https://leetcode.com/problems/missing-element-in-sorted-array/
-similar : 162. Find Peak Element; https://leetcode.com/problems/find-peak-element/; right = nums.size() - 1 and if (nums[mid] > nums[mid + 1])
 */
 int binaryRightMost(vector<int>& arr, int target) {
 	int left = 0;
@@ -969,6 +1000,7 @@ vector<int> binaryFirstLast(vector<int> &nums, int target)
 If looking for a minimum:
 1011. Capacity To Ship Packages Within D Days; https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/
 378. Kth Smallest Element in a Sorted Matrix; https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/
+#2.2 inclusive
 */
 bool check(int x) { return true; }
 int binaryMinimum(vector<int>& arr) {
@@ -978,12 +1010,12 @@ int binaryMinimum(vector<int>& arr) {
 	while (low <= high) {
 		auto mid = low + (high - low) / 2; 
 		if (check(mid)) {
-			high = mid - 1; // different from the normal binary search here, "high = mid - 1" rather than high = "mid"; 
+			high = mid - 1; // try smaller, but keep the mid implicitly as the best answer so far 
 		} else {
 			low = mid + 1;  // when exit, low will be the minimum (first/smallest) to meet the check function
 		}
 	}
-	return low; // return the minimum
+	return low; // return the minimum, for low == high + 1 (the previous mid which meets the check condition)
 }
 
 /* Binary search: for greedy problems
@@ -1003,6 +1035,28 @@ int binaryMaximum(vector<int>& arr) {
 		}
 	}
 	return high; // return the maximum
+}
+
+/*
+Binary Search Template #3: find a single element (a final index) by property/neighbor (peak/boundary) rather than finding an insertion point or boundary index
+	Search Space: inclusive, [left, right]
+	Search/Loop condition: left < right
+	Convergence: right = mid - 1; left = mid + 1; 
+	Terminate: left == right; search space is a single element
+162. Find Peak Element; https://leetcode.com/problems/find-peak-element/; right = nums.size() - 1 and if (nums[mid] > nums[mid + 1])
+*/
+int binaryPeak(vector<int>& nums) {
+	int left = 0; 
+	// the search spacer is inclusive, [0, size - 1]
+	for (int right = nums.size() - 1; left < right; ) { // left < right, meaning the search space contains at least two possible indices
+		auto mid = left + (right - left) / 2; 
+		if (nums[mid] > nums[mid + 1]) {
+			right = mid;  // keeps mid in the search space while discarding the elements to its right
+		} else {
+			left = mid + 1; // discard mid and all elements to its left, and force the search to continue moving towards the higher values
+		}
+	}
+	return left; // the loop terminates when left == right, the single remaining index 
 }
 
 /* Backtrack vs DFS
