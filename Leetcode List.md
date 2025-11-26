@@ -260,7 +260,7 @@
 
 - [63. Unique Paths II](https://leetcode.com/problems/unique-paths-ii/) //grid, up or left
 - [518. Coin Change II](https://leetcode.com/problems/coin-change-ii/) //not adjacent
-- [1216. Valid Palindrome III](https://leetcode.com/problems/valid-palindrome-iii/) //upper triangular matrix; -/|
+- [1216. Valid Palindrome III](https://leetcode.com/problems/valid-palindrome-iii/) //upper triangular matrix;
 - [97. Interleaving String](https://leetcode.com/problems/interleaving-string/)
 
 ## Greedy
@@ -278,7 +278,6 @@
 
 - [41. First Missing Positive](https://leetcode.com/problems/first-missing-positive/) // nums[i] - 1 == i || nums[nums[i] - 1] == nums[i]
 - [287. Find the Duplicate Number](https://leetcode.com/problems/find-the-duplicate-number/)
-
 - [268. Find Missing Number](https://leetcode.com/problems/missing-number/description/)
 - [442. Find all duplicates](https://leetcode.com/problems/find-all-duplicates-in-an-array/)
 

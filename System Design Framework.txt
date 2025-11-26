@@ -3,7 +3,7 @@ Framework:
 
 1. Functional Requirements (10m)
    User
-   Core APIs (CRUD & Actions)
+   Core APIs (CRUD & Actions + Entities/Objects)
    System
    Data (Evens/Logs)
 
@@ -15,6 +15,7 @@ Framework:
    Consistency
    Security
    Observability
+   Locality 
 
 3. Quantitative Analysis (Back-of-the-Envelope Estimation on Scale)
    Users & DAU

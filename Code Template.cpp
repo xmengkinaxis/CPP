@@ -2,6 +2,7 @@
 // cheat sheet and code template
 // https://hackernoon.com/14-patterns-to-ace-any-coding-interview-question-c5bb3357f6ed
 // 14 Patterns to Ace Any Coding Interview Question
+// https://hackingcpp.com/cpp/std/associative_containers.html
 
 #include <iostream> // cout, cin
 #include <cctype> // isalnum, isalpha, isdigit, islower, isupper, isspace; toupper, tolower
@@ -17,6 +18,7 @@
 #include <algorithm> // sort, min, max, remove(first, last, value), reverse
 #include <numeric> // accumulate(begin, end, 0) to calculate the sum in a range, max_element, partial_sum(begin, end, begin) to calculate the partial sum in a range, 
 					// iota(begin, end, initial) to fill a range with the consecutive increasing values
+#include <iterator> // begin, end, rbegin, rend, cbegin, cend; prev(it, n), next(it, n), advance(it, n), distance(it1, it2); 
 
 using namespace std; 
 
@@ -117,7 +119,7 @@ Binary Search: use left / right when searching array indices or intervals; using
 /* useful coding skills
 1. Use unordered_set to speed up the lookup if the input is an array
 2. Change the grid value in place as used as seen/visit
-3. Can use unordered_set or vector<bool> as seen/visit
+3. Can use unordered_set or vector<bool> as seen/visit; vector<bool> is referred if the size is fixed, for it is sample and fast; 
 4. Use a local variable to store and restore a value before and after recursively invoking backtrack
 5. Use a value instead of a reference in recursively invoking backtrack; passing by value will act as if do and undo for the original value is unchanged
 6. Start with top-right toward bottom-left for a sorted matrix (2D vector). e.g. 378. Kth Smallest Element in a Sorted Matrix
@@ -149,6 +151,7 @@ Binary Search: use left / right when searching array indices or intervals; using
 18. can use minus to convert a maxHeap to minHeap, instead of creating a special comparison function
 19. Need to pay attention to or skip the same items when processing an array to avoid the duplicate result, e.g. 15. 3Sum
 20. Index Marking (Sign Flipping): negate the number at the index to mark it as visited, for an integer array nums of length n where all numbers are in the range [1, n], e.g. 442. Find All Duplicates in an Array
+21. Must pass string by reference in backtrack to avoid exceeding Memory Limit, e.g. 301. Remove Invalid Parentheses
 */
 
 /* two pointers on the same data structure with opposite directions
@@ -1047,7 +1050,7 @@ Binary Search Template #3: find a single element (a final index) by property/nei
 */
 int binaryPeak(vector<int>& nums) {
 	int left = 0; 
-	// the search spacer is inclusive, [0, size - 1]
+	// the search space is inclusive, [0, size - 1]
 	for (int right = nums.size() - 1; left < right; ) { // left < right, meaning the search space contains at least two possible indices
 		auto mid = left + (right - left) / 2; 
 		if (nums[mid] > nums[mid + 1]) {
@@ -1382,6 +1385,12 @@ sliding
 146. LRU Cache; https://leetcode.com/problems/lru-cache/
 13. Roman to Integer; https://leetcode.com/problems/roman-to-integer/
 953. Verifying an Alien Dictionary; https://leetcode.com/problems/verifying-an-alien-dictionary/
+
+more complex: 2 level or 2 maps
+981. Time Based Key-Value Store; https://leetcode.com/problems/time-based-key-value-store/description/
+
+unordered_map + multiset
+2034. Stock Price Fluctuation; https://leetcode.com/problems/stock-price-fluctuation/
 */
 
 /* stack

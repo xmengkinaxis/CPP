@@ -2635,7 +2635,7 @@ By following these steps, you can create a systematic process for reviewing, eva
 
 1. **Functional Requirements (10m)**
    - Users
-   - Core APIs (CRUD & Actions) (User's perspective/Actions)
+   - Core APIs (CRUD & Actions + Entities/Objects, e.g. Places/Comments/Reviews) (User's perspective/Actions)
    - System
    - Data (Evens/Logs; No direct user involved)
    - NOTE:
@@ -2658,6 +2658,7 @@ By following these steps, you can create a systematic process for reviewing, eva
    - Finance/healthcare priority (correctness first):
      - Reliability > Consistency > Security > Availability > Performance > Scalability > Observability
    - mainly Security (preventing abuse) — secondarily Reliability and Performance: Might need to limit the amount of text/image user can upload to stop the abuse of the service
+   - Locality: easy to query and aggregate without joining regions; can be the first level deployment; the second level to hash in order to scale and load balance;
 
 3. **Quantitative Analysis (Back-of-the-Envelope Estimation on Scale)**
    - Users: Users & DAU
