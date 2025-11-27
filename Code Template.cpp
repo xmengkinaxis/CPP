@@ -838,16 +838,16 @@ int binarySearch(vector<int>& arr, int target) {
 Binary Search Template #2: find the minimum/first valid element (optimization/monotonic)
 #2.1 half-open Interval (exclusive right boundary)
 	Search Space: inclusive, [left, right); [0, size)
-	Search/Loop Condition: left < right
-	Convergence: right = mid; left = mid + 1; mid is a potential answer
+	Search/Loop Condition: left < right; memorizing: using <, for right is excluded
+	Convergence: right = mid; left = mid + 1; mid is a potential answer; memorizing: using mid to exclude mid, for right is excluded
 	Terminate: left == right; search space is empty, for right is always excluded
 	Return: left; is forced to stop exactly at the transition point where the condition first becomes true
 	Core Idea: left always points to the first failure index, while right points to the first successful index
 		when left == right, both point to the first successful index;
 #2.2 Inclusive (closed interval)
 	Search Space: inclusive, [low, high]; [0, size - 1]
-	Search/Loop Condition: low <= high
-	Convergence: high = mid - 1; low = mid + 1; 
+	Search/Loop Condition: low <= high; memorizing: using <=, for high is included; 
+	Convergence: high = mid - 1; low = mid + 1; memorizing: using mid - 1 to exclude mid, for right is included
 	Terminate: low > high; low == high + 1; search space is empty
 	Core Idea: when low and high crosses over, low enters the successful region from the failure region
 852. Peak Index in a Mountain Array, https://leetcode.com/problems/peak-index-in-a-mountain-array/
@@ -855,6 +855,7 @@ Binary Search Template #2: find the minimum/first valid element (optimization/mo
 1539. Kth Missing Positive Number; https://leetcode.com/problems/kth-missing-positive-number/
 778. Swim in Rising Water; https://leetcode.com/problems/swim-in-rising-water/; why not binaryMinimum ???
 658. Find K Closest Elements; https://leetcode.com/problems/find-k-closest-elements/
+35. Search Insert Position; https://leetcode.com/problems/search-insert-position/description/; insert position
 
 Monotonic Property:
 	is the entire reason we can use binary search.
@@ -878,7 +879,7 @@ int binaryLeftMost(vector<int>& arr, int target) {
 							// therefore, left becomes the smallest right which can make the condition true
 		}
 	}
-	return left; // left == right; 
+	return left; // left == right; // insert position too
 }
 /* Binary search on a spatial range
 int minSpeedOnTime(vector<int>& dist, double hour) {
@@ -1046,6 +1047,10 @@ Binary Search Template #3: find a single element (a final index) by property/nei
 	Search/Loop condition: left < right
 	Convergence: right = mid - 1; left = mid + 1; 
 	Terminate: left == right; search space is a single element
+	NOTE: much similar to #2.1 half-open Interval (exclusive right boundary), except:
+		Search Space: right is included
+		Search/Loop Condition: compare neighbors, e.g. nums[mid] > nums[mid + 1]
+		e.g. binaryPeak() vs binaryLeftMost()
 162. Find Peak Element; https://leetcode.com/problems/find-peak-element/; right = nums.size() - 1 and if (nums[mid] > nums[mid + 1])
 */
 int binaryPeak(vector<int>& nums) {
@@ -1053,7 +1058,7 @@ int binaryPeak(vector<int>& nums) {
 	// the search space is inclusive, [0, size - 1]
 	for (int right = nums.size() - 1; left < right; ) { // left < right, meaning the search space contains at least two possible indices
 		auto mid = left + (right - left) / 2; 
-		if (nums[mid] > nums[mid + 1]) {
+		if (nums[mid] > nums[mid + 1]) { // compare neighbors
 			right = mid;  // keeps mid in the search space while discarding the elements to its right
 		} else {
 			left = mid + 1; // discard mid and all elements to its left, and force the search to continue moving towards the higher values
@@ -1270,7 +1275,7 @@ At the framework level, Dijkstra looks almost identical to BFS — the only esse
 
 using namespace std;
 
-using Edge = pair<int, int>;   // (neighbor, weight)
+using Edge = pair<int, int>;   // (neighbor, weight), weighted DAG
 using HeapNode = pair<int, int>; // (distance, node)
 
 vector<int> dijkstra(int n, int source, const vector<vector<Edge>>& graph) {
@@ -1279,7 +1284,7 @@ vector<int> dijkstra(int n, int source, const vector<vector<Edge>>& graph) {
 
     using MinHeap = priority_queue<HeapNode, vector<HeapNode>, greater<>>;
     MinHeap heap;
-    heap.push({0, source});
+    heap.push({0, source}); // {distance, node}; distance is used in this minHeap sorting
 
     while (!heap.empty()) {
         auto [currDist, node] = heap.top();
@@ -1289,7 +1294,7 @@ vector<int> dijkstra(int n, int source, const vector<vector<Edge>>& graph) {
 
         for (const auto& [neighbor, weight] : graph[node]) {
             int newDist = currDist + weight;
-            if (newDist < distances[neighbor]) {
+            if (newDist < distances[neighbor]) { // act similarly to visited/seen
                 distances[neighbor] = newDist;
                 heap.push({newDist, neighbor});
             }
@@ -1318,6 +1323,7 @@ two rounds; first from left to right, second from right to left; in order to fin
 163. Missing Ranges; https://leetcode.com/problems/missing-ranges/
 986. Interval List Intersections; https://leetcode.com/problems/interval-list-intersections/
 435. Non-overlapping Intervals; https://leetcode.com/problems/non-overlapping-intervals/
+452. Minimum Number of Arrows to Burst Balloons; https://leetcode.com/problems/minimum-number-of-arrows-to-burst-balloons/description/
 */
 
 /* combine data structures
@@ -1336,7 +1342,12 @@ stack + vector
 716. Max Stack; https://leetcode.com/problems/max-stack/
 */
 
-// sell and buy stocks
+/* sell and buy stocks
+121. Best Time to Buy and Sell Stock; https://leetcode.com/problems/best-time-to-buy-and-sell-stock/description/
+122. Best Time to Buy and Sell Stock II; https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/description/
+123. Best Time to Buy and Sell Stock III; https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/description/
+188. Best Time to Buy and Sell Stock IV; https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/description/
+*/
 
 /* Parsing string 
 String into integer: 
@@ -1412,6 +1423,7 @@ unordered_map + multiset
 
 /* Greedy
 135. Candy; https://leetcode.com/problems/candy/
+452. Minimum Number of Arrows to Burst Balloons; https://leetcode.com/problems/minimum-number-of-arrows-to-burst-balloons/description/
 455. Assign Cookies https://leetcode.com/problems/assign-cookies/description/
 435. Non-overlapping Intervals; https://leetcode.com/problems/non-overlapping-intervals/
 605. Can Place Flowers; https://leetcode.com/problems/can-place-flowers/
@@ -1463,9 +1475,15 @@ void cyclicSort(vector<int>& nums) {
 }
 
 
+/* simulation
+1701. Average Waiting Time; https://leetcode.com/problems/average-waiting-time/description/
+36. Valid Sudoku; https://leetcode.com/problems/valid-sudoku/description/
+*/
+
 
 /* 2D array
 498. Diagonal Traverse; https://leetcode.com/problems/diagonal-traverse/
+36. Valid Sudoku; https://leetcode.com/problems/valid-sudoku/description/
 */
 
 /* Linked list
