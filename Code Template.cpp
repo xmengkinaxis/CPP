@@ -119,7 +119,7 @@ Binary Search: use left / right when searching array indices or intervals; using
 /* useful coding skills
 1. Use unordered_set to speed up the lookup if the input is an array
 2. Change the grid value in place as used as seen/visit
-3. Can use unordered_set or vector<bool> as seen/visit; vector<bool> is referred if the size is fixed, for it is sample and fast; 
+3. Can use unordered_set or vector<bool> as seen/visit or check repetition; vector<bool> is referred if the size is fixed, for it is sample and fast; 
 4. Use a local variable to store and restore a value before and after recursively invoking backtrack
 5. Use a value instead of a reference in recursively invoking backtrack; passing by value will act as if do and undo for the original value is unchanged
 6. Start with top-right toward bottom-left for a sorted matrix (2D vector). e.g. 378. Kth Smallest Element in a Sorted Matrix
@@ -1315,7 +1315,7 @@ two rounds; first from left to right, second from right to left; in order to fin
 
 /* Intervals 
 	sort by start or end; 
-	when merging, newEnd = max(newEnd, end); newStart = min(newStart, start);
+	when merging, for overlapped intervals: next start < old end, newEnd = max(newEnd, end); newStart = min(newStart, start);
 	when overlapping, newEnd = min(minEnd, end); newStart = max(newStart, start);
 56. Merge Intervals; https://leetcode.com/problems/merge-intervals/
 57. Insert Interval; https://leetcode.com/problems/insert-interval/
