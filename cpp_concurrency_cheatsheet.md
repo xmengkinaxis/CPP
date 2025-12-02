@@ -206,10 +206,188 @@ std::sort(std::execution::par, v.begin(), v.end());
 
 ---
 
-## 结束
-如需，我可以：
-- 给你生成 PDF 版本
-- 把每个 pattern 添加实际案例
-- 给你生成可编译 C++ 示例项目
-- 加上图解（锁竞争、死锁、线程池模型）
+# C++ 并发 / 并行编程 Cheatsheet（工业级 Patterns + 可编译示例）
 
+本文件整合核心概念、最佳实践、工业界常用模式、可编译示例、图解说明，适合作为快速学习与参考。
+
+---
+
+## 🧩 1. 核心概念
+```cpp
+#include <thread>
+#include <mutex>
+#include <shared_mutex>
+#include <condition_variable>
+#include <atomic>
+#include <future>
+#include <iostream>
+#include <vector>
+```
+
+### **线程 (std::thread)**
+```cpp
+void func() { std::cout << "Hello from thread" << std::endl; }
+std::thread t(func);
+t.join();
+```
+
+### **互斥锁 mutex (std::mutex)**
+```cpp
+std::mutex mtx;
+{
+    std::lock_guard<std::mutex> lock(mtx);
+    // critical section
+}
+```
+
+### **读写锁 shared_mutex**
+```cpp
+std::shared_mutex rwlock;
+void reader() { std::shared_lock lock(rwlock); }
+void writer() { std::unique_lock lock(rwlock); }
+```
+
+### **条件变量 condition_variable**
+```cpp
+std::condition_variable cv;
+std::mutex cv_m;
+bool ready = false;
+cv.wait(lock, []{ return ready; });
+```
+
+### **原子操作 atomic**
+```cpp
+std::atomic<int> counter(0);
+counter.fetch_add(1);
+```
+
+---
+
+## 🧩 2. 工业级 Patterns + 示例
+
+### **Pattern 1 — Per-Key Lock**
+```cpp
+#include <unordered_map>
+std::unordered_map<std::string, int> mDB;
+std::unordered_map<std::string, std::mutex> keyMutex;
+
+void setFieldValue(const std::string& key, int value) {
+    std::lock_guard<std::mutex> lock(keyMutex[key]);
+    mDB[key] = value;
+}
+```
+
+### **Pattern 2 — Sharded Lock**
+```cpp
+static const int NUM_SHARDS = 64;
+std::array<std::mutex, NUM_SHARDS> shardLocks;
+std::mutex& getLock(const std::string& key) {
+    return shardLocks[ std::hash<std::string>{}(key) % NUM_SHARDS ];
+}
+```
+
+### **Pattern 3 — Reader–Writer Lock**
+```cpp
+#include <shared_mutex>
+std::shared_mutex rwlock;
+int data;
+
+int readValue() {
+    std::shared_lock lock(rwlock);
+    return data;
+}
+void writeValue(int x) {
+    std::unique_lock lock(rwlock);
+    data = x;
+}
+```
+
+### **Pattern 4 — Thread Pool / async**
+```cpp
+#include <future>
+auto f = std::async(std::launch::async, [](){ return 42; });
+int result = f.get();
+```
+
+### **Pattern 5 — Actor / Message Queue (无锁队列示例)**
+```cpp
+#include <queue>
+#include <atomic>
+#include <thread>
+std::queue<int> q;
+std::atomic<bool> done(false);
+std::mutex q_m;
+
+void producer() {
+    for(int i=0;i<10;i++) {
+        std::lock_guard<std::mutex> lock(q_m);
+        q.push(i);
+    }
+}
+void consumer() {
+    while(!done) {
+        std::lock_guard<std::mutex> lock(q_m);
+        if(!q.empty()) {
+            int val = q.front(); q.pop();
+            std::cout << val << std::endl;
+        }
+    }
+}
+```
+
+---
+
+## 🧩 3. 并发对比表
+| 工具 | 能力 | 用途 |
+|------|------|------|
+| mutex | 排他锁 | 数据保护 |
+| shared_mutex | 多读单写 | 读多写少 |
+| condition_variable | 事件等待 | Producer/Consumer |
+| atomic | 无锁 | 简单计数、标志 |
+
+---
+
+## 🧩 4. 常见问题 / 避坑
+- 忘记 join 或 detach 线程 → crash
+- 手动 unlock 容易忘记 → 死锁或崩溃
+- 锁顺序不一致 → 死锁
+- 访问 map / vector 时未加锁 → 悬空指针或数据竞争
+- 不同 key 使用不同 mutex，最大化并行
+
+---
+
+## 🧩 5. 可视化概念
+```
+[Thread Pool]
+  worker0 --- task queue --- task done
+  worker1 --- task queue --- task done
+
+[Per-Key Lock]
+  key1 <mutex> --- only one thread updates key1
+  key2 <mutex> --- only one thread updates key2
+
+[Deadlock Example]
+  Thread A: lock1 -> lock2
+  Thread B: lock2 -> lock1
+  -> deadlock
+```
+
+---
+
+## 🧩 6. 高性能建议
+- 避免共享数据，局部变量优先
+- 锁粒度按 key / 按 shard 分片
+- 读多写少使用 shared_mutex
+- 尽量使用 RAII 管理锁
+- 线程池处理大量小任务而不是不断 spawn thread
+
+---
+
+## 📌 总结
+- 结合 per-key 或 sharded 锁可以实现高并发 DB 或缓存修改
+- Actor / message queue 可实现无锁并发处理
+- async / future / thread pool 是工业界高效并发方案
+- lock_guard / unique_lock + RAII 是 C++ 并发安全基石
+- 注意死锁、锁顺序、访问 map/vector 时加锁
+
+---
