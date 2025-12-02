@@ -850,12 +850,41 @@ Binary Search Template #2: find the minimum/first valid element (optimization/mo
 	Convergence: high = mid - 1; low = mid + 1; memorizing: using mid - 1 to exclude mid, for right is included
 	Terminate: low > high; low == high + 1; search space is empty
 	Core Idea: when low and high crosses over, low enters the successful region from the failure region
-852. Peak Index in a Mountain Array, https://leetcode.com/problems/peak-index-in-a-mountain-array/
-1870. Minimum Speed to Arrive on Time; https://leetcode.com/problems/minimum-speed-to-arrive-on-time/
-1539. Kth Missing Positive Number; https://leetcode.com/problems/kth-missing-positive-number/
-778. Swim in Rising Water; https://leetcode.com/problems/swim-in-rising-water/; why not binaryMinimum ???
-658. Find K Closest Elements; https://leetcode.com/problems/find-k-closest-elements/
-35. Search Insert Position; https://leetcode.com/problems/search-insert-position/description/; insert position
+
++---------------------------+--------------------------------------+-----------------------------------------+-----------------------------------------+
+|                           | Template #1                          | Template #2.1 (Half-Open Interval)      | Template #2.2 (Closed Interval)         |
+|                           | Exact Match                          | Find First Valid (minimum)              | Find First Valid (minimum)              |
++---------------------------+--------------------------------------+-----------------------------------------+-----------------------------------------+
+| Search Space              | [left, right]                        | [left, right)                           | [low, high]                              |
+|                           | inclusive                            | right excluded                          | inclusive                                |
++---------------------------+--------------------------------------+-----------------------------------------+-----------------------------------------+
+| Loop Condition            | left <= right                        | left < right                            | low <= high                              |
+| Memory Trick              | <= because right is included         | < because right excluded                | <= because high included                 |
++---------------------------+--------------------------------------+-----------------------------------------+-----------------------------------------+
+| Mid                       | mid = left + (r-l)/2                 | mid = left + (r-l)/2                    | mid = low + (h-l)/2                      |
++---------------------------+--------------------------------------+-----------------------------------------+-----------------------------------------+
+| Convergence               | right = mid - 1                      | right = mid                             | high = mid - 1                           |
+|                           | left  = mid + 1                      | left  = mid + 1                         | low  = mid + 1                           |
+| Memory Trick              | remove mid via +/-1                  | remove mid directly                     | remove mid via +/-1                      |
+|                           |                                      | because right is excluded               | because high is included                 |
++---------------------------+--------------------------------------+-----------------------------------------+-----------------------------------------+
+| Termination               | left > right                         | left == right                           | low > high                               |
+|                           | search space empty                    | search space empty                      | search space empty                        |
++---------------------------+--------------------------------------+-----------------------------------------+-----------------------------------------+
+| Return Value              | depends on problem                   | left (first success index)              | low (first success index)                |
++---------------------------+--------------------------------------+-----------------------------------------+-----------------------------------------+
+| Core Idea                 | find exact value                     | left = first failure,                   | low crosses from failure                 |
+|                           |                                      | right = first success                   | into success region                      |
+|                           |                                      | meet at first success                   | when low > high                           |
++---------------------------+--------------------------------------+-----------------------------------------+-----------------------------------------+
+
+Template #3 (Peak / Local Property Search)
+-------------------------------------------
+- Search space: [left, right], inclusive
+- Loop: left < right
+- Converge: compare neighbors (e.g., nums[mid] > nums[mid+1])
+- Terminate: left == right → final target (peak or special element)
+- Notes: similar to #2.1 but right is included and logic uses neighbor relationships
 
 Monotonic Property:
 	is the entire reason we can use binary search.
@@ -865,6 +894,13 @@ Monotonic Property:
 	where the result flips from false to true.
 
 #2.1
+852. Peak Index in a Mountain Array, https://leetcode.com/problems/peak-index-in-a-mountain-array/
+1870. Minimum Speed to Arrive on Time; https://leetcode.com/problems/minimum-speed-to-arrive-on-time/
+1539. Kth Missing Positive Number; https://leetcode.com/problems/kth-missing-positive-number/
+778. Swim in Rising Water; https://leetcode.com/problems/swim-in-rising-water/; why not binaryMinimum ???
+658. Find K Closest Elements; https://leetcode.com/problems/find-k-closest-elements/
+35. Search Insert Position; https://leetcode.com/problems/search-insert-position/description/; insert position
+
 */
 int binaryLeftMost(vector<int>& arr, int target) {
 	int left = 0;
@@ -1051,8 +1087,15 @@ Binary Search Template #3: find a single element (a final index) by property/nei
 		Search Space: right is included
 		Search/Loop Condition: compare neighbors, e.g. nums[mid] > nums[mid + 1]
 		e.g. binaryPeak() vs binaryLeftMost()
+	
+NOTE: 
+	#3 Local property binary search rather than #2 Boundary-based binary search 
+	NOT sorted; 
+	NO Monotonic Property; 
+	NO failure and successful sections; 
 162. Find Peak Element; https://leetcode.com/problems/find-peak-element/; right = nums.size() - 1 and if (nums[mid] > nums[mid + 1])
 */
+
 int binaryPeak(vector<int>& nums) {
 	int left = 0; 
 	// the search space is inclusive, [0, size - 1]
@@ -1314,9 +1357,31 @@ two rounds; first from left to right, second from right to left; in order to fin
 */
 
 /* Intervals 
-	sort by start or end; 
+Intervals — Sorting Guide
+1. Sort by start:
+   - Merge intervals
+   - Insert interval
+   - Interval list intersections: two lists sorted by start and use two pointers
+   - Detect conflicts; new start <= old end
+   - Minimum number of rooms/Meeting rooms II; use heap if sorted by start
+   - Sweep-line scanning
+   Rule of thumb:
+     If you need to process intervals in chronological order → sort by start.
+	 sort by start when merging, for the previous interval will determine if it should be merged with the later one
+
+2. Sort by end:
+   - Select maximum non-overlapping intervals （Interval Scheduling Optimization） 
+   - Remove minimum intervals to avoid overlap
+   - Classical “activity selection” problems
+   Rule of thumb:
+     If you need a greedy “best next interval” → sort by end.
+	 Select maximum non-overlapping intervals, must sort by end in order to use greedy; 
+	 sort by end; choose the earliest ending interval to reserve more for future; this is greedy; 
+
+Merge vs Overlap
 	when merging, for overlapped intervals: next start < old end, newEnd = max(newEnd, end); newStart = min(newStart, start);
-	when overlapping, newEnd = min(minEnd, end); newStart = max(newStart, start);
+	when overlapping/intersection, newEnd = min(minEnd, end); newStart = max(newStart, start);
+
 56. Merge Intervals; https://leetcode.com/problems/merge-intervals/
 57. Insert Interval; https://leetcode.com/problems/insert-interval/
 253. Meeting Rooms II; https://leetcode.com/problems/meeting-rooms-ii/
